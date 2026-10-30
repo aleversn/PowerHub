@@ -71,10 +71,6 @@ export default {
         "en": "Active",
         "cn": "运行中"
     },
-    "Paused": {
-        "en": "Paused",
-        "cn": "已暂停"
-    },
     "Success": {
         "en": "Success",
         "cn": "成功"
@@ -674,5 +670,117 @@ export default {
     "Used by the monitor collector.": {
         "en": "Used by the monitor collector.",
         "cn": "由监控采集器使用。"
+    },
+    "Server Detail": {
+        "en": "Server Detail",
+        "cn": "服务器详情"
+    },
+    "Inspect CPU, memory, GPU, network, and disk details for one server.": {
+        "en": "Inspect CPU, memory, GPU, network, and disk details for one server.",
+        "cn": "查看单台服务器的 CPU、内存、GPU、网络和磁盘详情。"
+    },
+    "Back": {
+        "en": "Back",
+        "cn": "返回"
+    },
+    "SYS": {
+        "en": "SYS",
+        "cn": "系统"
+    },
+    "USER": {
+        "en": "USER",
+        "cn": "用户"
+    },
+    "IO WAIT": {
+        "en": "IO WAIT",
+        "cn": "IO 等待"
+    },
+    "STEAL": {
+        "en": "STEAL",
+        "cn": "被抢占"
+    },
+    "CORES": {
+        "en": "CORES",
+        "cn": "核心"
+    },
+    "IDLE": {
+        "en": "IDLE",
+        "cn": "空闲"
+    },
+    "LOAD": {
+        "en": "LOAD",
+        "cn": "负载"
+    },
+    "Memory": {
+        "en": "Memory",
+        "cn": "内存"
+    },
+    "FREE": {
+        "en": "FREE",
+        "cn": "空闲"
+    },
+    "USED": {
+        "en": "USED",
+        "cn": "已用"
+    },
+    "PAGE CACHE": {
+        "en": "PAGE CACHE",
+        "cn": "页面缓存"
+    },
+    "GPU": {
+        "en": "GPU",
+        "cn": "GPU"
+    },
+    "VRAM": {
+        "en": "VRAM",
+        "cn": "显存"
+    },
+    "No GPU detected": {
+        "en": "No GPU detected",
+        "cn": "未检测到 GPU"
+    },
+    "Network": {
+        "en": "Network",
+        "cn": "网络"
+    },
+    "UP": {
+        "en": "UP",
+        "cn": "上行"
+    },
+    "DOWN": {
+        "en": "DOWN",
+        "cn": "下行"
+    },
+    "Virtual interfaces": {
+        "en": "Virtual interfaces",
+        "cn": "虚拟网卡"
+    },
+    "R": {
+        "en": "R",
+        "cn": "读"
+    },
+    "W": {
+        "en": "W",
+        "cn": "写"
+    },
+    "IOPS": {
+        "en": "IOPS",
+        "cn": "IOPS"
+    },
+    "WAIT": {
+        "en": "WAIT",
+        "cn": "等待"
+    },
+    "No disk data": {
+        "en": "No disk data",
+        "cn": "暂无磁盘数据"
+    },
+    "Server not found": {
+        "en": "Server not found",
+        "cn": "未找到服务器"
+    },
+    "The selected server is no longer available.": {
+        "en": "The selected server is no longer available.",
+        "cn": "所选服务器已不存在。"
     }
 }

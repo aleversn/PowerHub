@@ -68,6 +68,17 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: 'server-status/:id',
+                    name: 'server-detail',
+                    component: AsyncLoad(
+                        () => import('@/views/serverDetail/index.vue')
+                    ),
+                    meta: {
+                        title: 'Server Detail',
+                        description: 'Inspect CPU, memory, GPU, network, and disk details for one server.'
+                    }
+                },
+                {
                     path: 'servers',
                     name: 'servers',
                     component: AsyncLoad(

@@ -77,6 +77,11 @@
                     :key="server.id"
                     class="server-card"
                     :class="server.status"
+                    tabindex="0"
+                    role="button"
+                    @click="openServer(server)"
+                    @keydown.enter="openServer(server)"
+                    @keydown.space.prevent="openServer(server)"
                 >
                     <header class="server-card-header">
                         <div class="server-title">
@@ -229,7 +234,7 @@
                             border-radius="8"
                             style="width: 34px; height: 34px"
                             :title="local('Refresh')"
-                            @click="refreshServer(server.id)"
+                            @click.stop="refreshServer(server.id)"
                         >
                             <i class="ms-Icon ms-Icon--Refresh"></i>
                         </fv-button>
@@ -305,6 +310,10 @@ export default {
         ...mapActions(useServerStore, ['refreshServer', 'refreshAll', 'startAutoRefresh', 'stopAutoRefresh', 'setAutoRefresh']),
         refreshVisibleServers() {
             this.refreshAll();
+        },
+        openServer(server) {
+            if (!server?.id) return;
+            this.$router.push({ name: 'server-detail', params: { id: server.id } });
         },
         loadRingValues(server) {
             const metrics = server.metrics || {};

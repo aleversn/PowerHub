@@ -17,6 +17,93 @@ const createId = (address) => {
 const clampMetric = (value) => Math.min(Math.max(Math.round(Number(value) || 0), 0), 100);
 const clampTraffic = (value) => Math.max(Number(Number(value || 0).toFixed(1)), 0);
 const clampBytes = (value) => Math.max(Number(value) || 0, 0);
+const roundOne = (value) => Math.round((Number(value) || 0) * 10) / 10;
+
+const normalizeCpuBreakdown = (breakdown = {}) => ({
+    user: roundOne(breakdown.user),
+    system: roundOne(breakdown.system),
+    iowait: roundOne(breakdown.iowait),
+    steal: roundOne(breakdown.steal),
+    idle: roundOne(breakdown.idle),
+    usage: roundOne(breakdown.usage)
+});
+
+const normalizeCpuCores = (cores) =>
+    Array.isArray(cores)
+        ? cores.map((core, index) => ({
+              id: String(core.id ?? index),
+              usage: clampMetric(core.usage)
+          }))
+        : [];
+
+const normalizeDisks = (disks) =>
+    Array.isArray(disks)
+        ? disks.map((disk, index) => ({
+              id: disk.id || `${disk.mount || disk.filesystem || 'disk'}-${index}`,
+              filesystem: disk.filesystem || '',
+              type: disk.type || '',
+              mount: disk.mount || '',
+              size: clampBytes(disk.size),
+              used: clampBytes(disk.used),
+              available: clampBytes(disk.available),
+              usage: clampMetric(disk.usage)
+          }))
+        : [];
+
+const normalizeDiskDevices = (devices) =>
+    Array.isArray(devices)
+        ? devices.map((device) => ({
+              name: device.name || '',
+              whole: Boolean(device.whole),
+              readTotal: clampBytes(device.readTotal),
+              writeTotal: clampBytes(device.writeTotal),
+              readRate: clampBytes(device.readRate),
+              writeRate: clampBytes(device.writeRate),
+              readIops: clampBytes(device.readIops),
+              writeIops: clampBytes(device.writeIops),
+              readWaitMs: clampBytes(device.readWaitMs),
+              writeWaitMs: clampBytes(device.writeWaitMs),
+              busyMs: clampBytes(device.busyMs)
+          }))
+        : [];
+
+const normalizeNetInterfaces = (interfaces) =>
+    Array.isArray(interfaces)
+        ? interfaces.map((item) => {
+              const rxTotal = clampBytes(item.rxTotal);
+              const txTotal = clampBytes(item.txTotal);
+              const total = rxTotal + txTotal;
+              return {
+                  name: item.name || '',
+                  rxTotal,
+                  txTotal,
+                  rxRate: clampBytes(item.rxRate),
+                  txRate: clampBytes(item.txRate),
+                  rxPackets: clampBytes(item.rxPackets),
+                  txPackets: clampBytes(item.txPackets),
+                  rxRatio: item.rxRatio ?? (total > 0 ? Math.round((rxTotal / total) * 100) : 0),
+                  txRatio: item.txRatio ?? (total > 0 ? Math.round((txTotal / total) * 100) : 0),
+                  virtual: Boolean(item.virtual)
+              };
+          })
+        : [];
+
+const normalizeGpus = (gpus) =>
+    Array.isArray(gpus)
+        ? gpus.map((gpu, index) => ({
+              id: gpu.id || String(index),
+              name: gpu.name || `GPU ${index + 1}`,
+              memoryTotal: clampBytes(gpu.memoryTotal),
+              memoryUsed: clampBytes(gpu.memoryUsed),
+              memoryFree: clampBytes(gpu.memoryFree),
+              utilization: clampMetric(gpu.utilization),
+              temperature:
+                  Number.isFinite(Number(gpu.temperature)) && Number(gpu.temperature) > 0
+                      ? roundOne(gpu.temperature)
+                      : null,
+              source: gpu.source || ''
+          }))
+        : [];
 
 const createEmptyMetrics = () => ({
     load1: 0,
@@ -24,10 +111,18 @@ const createEmptyMetrics = () => ({
     load15: 0,
     cores: 1,
     cpu: 0,
+    cpuBreakdown: normalizeCpuBreakdown(),
+    cpuCores: [],
     memory: 0,
+    memoryTotal: 0,
+    memoryUsed: 0,
+    memoryFree: 0,
+    pageCache: 0,
     swap: 0,
     swapTotal: 0,
     disk: 0,
+    disks: [],
+    diskDevices: [],
     temperature: null,
     netInRate: 0,
     netOutRate: 0,
@@ -35,8 +130,11 @@ const createEmptyMetrics = () => ({
     diskWriteRate: 0,
     netInTotal: 0,
     netOutTotal: 0,
+    netInterfaces: [],
+    gpus: [],
     diskReadTotal: 0,
     diskWriteTotal: 0,
+    uptimeSeconds: 0,
     collectedAt: ''
 });
 
@@ -56,10 +154,18 @@ const normalizeMetrics = (metrics = {}) => ({
     load15: clampMetric(metrics.load15 ?? metrics.load),
     cores: Math.max(Number(metrics.cores) || 1, 1),
     cpu: clampMetric(metrics.cpu),
+    cpuBreakdown: normalizeCpuBreakdown(metrics.cpuBreakdown),
+    cpuCores: normalizeCpuCores(metrics.cpuCores),
     memory: clampMetric(metrics.memory),
+    memoryTotal: clampBytes(metrics.memoryTotal),
+    memoryUsed: clampBytes(metrics.memoryUsed),
+    memoryFree: clampBytes(metrics.memoryFree),
+    pageCache: clampBytes(metrics.pageCache),
     swap: clampMetric(metrics.swap),
     swapTotal: clampBytes(metrics.swapTotal),
     disk: clampMetric(metrics.disk),
+    disks: normalizeDisks(metrics.disks),
+    diskDevices: normalizeDiskDevices(metrics.diskDevices),
     temperature:
         Number.isFinite(Number(metrics.temperature)) && Number(metrics.temperature) > 0
             ? Math.round(Number(metrics.temperature) * 10) / 10
@@ -70,8 +176,11 @@ const normalizeMetrics = (metrics = {}) => ({
     diskWriteRate: clampBytes(metrics.diskWriteRate),
     netInTotal: clampBytes(metrics.netInTotal),
     netOutTotal: clampBytes(metrics.netOutTotal),
+    netInterfaces: normalizeNetInterfaces(metrics.netInterfaces),
+    gpus: normalizeGpus(metrics.gpus),
     diskReadTotal: clampBytes(metrics.diskReadTotal),
     diskWriteTotal: clampBytes(metrics.diskWriteTotal),
+    uptimeSeconds: clampBytes(metrics.uptimeSeconds),
     collectedAt: metrics.collectedAt || ''
 });
 
@@ -131,6 +240,8 @@ const normalizeServer = (server = {}, index = 0) => {
         password: server.password || '',
         status: server.status || 'offline',
         enabled: server.enabled !== false,
+        os: server.os || 'Linux',
+        hostname: server.hostname || '',
         uptimeDays: Number(server.uptimeDays) || 0,
         lastSeen: server.lastSeen || '',
         error: server.error || '',
@@ -296,18 +407,54 @@ export const useServerStore = defineStore('servers', {
                 return clampBytes((Number(next) - Number(last)) / elapsed);
             };
 
+            const previousInterfaces = new Map(
+                (previous.netInterfaces || []).map((item) => [item.name, item])
+            );
+            const netInterfaces = (incoming.netInterfaces || []).map((item) => {
+                const before = previousInterfaces.get(item.name) || {};
+                const rxTotal = clampBytes(item.rxTotal);
+                const txTotal = clampBytes(item.txTotal);
+                const total = rxTotal + txTotal;
+                return {
+                    ...item,
+                    rxTotal,
+                    txTotal,
+                    rxRate: rate(rxTotal, before.rxTotal),
+                    txRate: rate(txTotal, before.txTotal),
+                    rxRatio: total > 0 ? Math.round((rxTotal / total) * 100) : 0,
+                    txRatio: total > 0 ? 100 - Math.round((rxTotal / total) * 100) : 0
+                };
+            });
+
+            const previousDevices = new Map(
+                (previous.diskDevices || []).map((item) => [item.name, item])
+            );
+            const diskDevices = (incoming.diskDevices || []).map((item) => {
+                const before = previousDevices.get(item.name) || {};
+                return {
+                    ...item,
+                    readRate: rate(item.readTotal, before.readTotal),
+                    writeRate: rate(item.writeTotal, before.writeTotal)
+                };
+            });
+
             const metrics = normalizeMetrics({
                 ...incoming,
+                netInterfaces,
+                diskDevices,
                 netInRate: rate(incoming.netInTotal, previous.netInTotal),
                 netOutRate: rate(incoming.netOutTotal, previous.netOutTotal),
                 diskReadRate: rate(incoming.diskReadTotal, previous.diskReadTotal),
                 diskWriteRate: rate(incoming.diskWriteTotal, previous.diskWriteTotal),
+                uptimeSeconds: result.uptimeSeconds || incoming.uptimeSeconds,
                 collectedAt
             });
 
             server.metrics = metrics;
             server.history = appendHistory(server.history, metrics);
             server.uptimeDays = Math.floor((result.uptimeSeconds || 0) / 86400);
+            server.os = result.os || server.os || 'Linux';
+            server.hostname = result.hostname || server.hostname || '';
             server.lastSeen = collectedAt;
             server.status =
                 metrics.memory > 88 || metrics.disk > 92 || metrics.cpu > 92 || metrics.swap > 90
