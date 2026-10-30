@@ -8,6 +8,7 @@
             :expand-width="260"
             :compact-width="76"
             :flyout-display="880"
+            :full-size-display="0"
             :mobile-display="640"
             background="transparent"
             :foreground="headerForeground"

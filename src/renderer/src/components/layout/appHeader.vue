@@ -1,16 +1,6 @@
 <template>
     <header class="app-header">
         <div class="app-header-left">
-            <fv-button
-                :theme="resolvedTheme"
-                border-radius="8"
-                :background="'transparent'"
-                :border-width="0"
-                style="width: 36px; height: 36px"
-                @click="toggleSidebar"
-            >
-                <i class="ms-Icon ms-Icon--GlobalNavButton"></i>
-            </fv-button>
             <div class="page-heading">
                 <h1>{{ pageTitle }}</h1>
                 <p>{{ pageDescription }}</p>
@@ -55,7 +45,6 @@ export default {
     name: 'AppHeader',
     computed: {
         ...mapState(useAppConfigStore, [
-            'config',
             'resolvedTheme',
             'isDark',
             'local'
@@ -68,13 +57,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(useAppConfigStore, [
-            'setSidebarCollapsed',
-            'toggleTheme'
-        ]),
-        toggleSidebar() {
-            this.setSidebarCollapsed(!this.config.sidebarCollapsed);
-        }
+        ...mapActions(useAppConfigStore, ['toggleTheme'])
     }
 };
 </script>
