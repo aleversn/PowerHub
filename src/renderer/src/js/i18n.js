@@ -775,6 +775,10 @@ export default {
         "en": "No disk data",
         "cn": "暂无磁盘数据"
     },
+    "No network data": {
+        "en": "No network data",
+        "cn": "暂无网络数据"
+    },
     "Server not found": {
         "en": "Server not found",
         "cn": "未找到服务器"

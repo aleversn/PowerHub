@@ -1,0 +1,46 @@
+// Shared server-detail panel primitives.
+// Import with: @use "../components/panel" as panel;
+// then inside the component root: @include panel.card; @include panel.head;
+
+@mixin card {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--servercat-border);
+    border-radius: 14px;
+    background: var(--servercat-card);
+    box-shadow: var(--ph-shadow-sm);
+}
+
+@mixin head {
+    margin-bottom: 12px;
+    color: var(--servercat-muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+
+    span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    strong {
+        color: var(--servercat-text);
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+@mixin empty {
+    min-height: 54px;
+    border: 1px dashed var(--servercat-border);
+    border-radius: 10px;
+    color: var(--servercat-muted);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+}
