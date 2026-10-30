@@ -14,7 +14,7 @@ const createId = (address) => {
     return `server-${slug || Date.now().toString(36)}-${Date.now().toString(36)}`;
 };
 
-const clampMetric = (value) => Math.min(Math.max(Math.round(Number(value) || 0), 0), 100);
+const clampMetric = (value) => Math.min(Math.max(Math.round((Number(value) || 0) * 10) / 10, 0), 100);
 const clampTraffic = (value) => Math.max(Number(Number(value || 0).toFixed(1)), 0);
 const clampBytes = (value) => Math.max(Number(value) || 0, 0);
 const roundOne = (value) => Math.round((Number(value) || 0) * 10) / 10;
@@ -28,13 +28,17 @@ const normalizeCpuBreakdown = (breakdown = {}) => ({
     usage: roundOne(breakdown.usage)
 });
 
-const normalizeCpuCores = (cores) =>
-    Array.isArray(cores)
-        ? cores.map((core, index) => ({
-              id: String(core.id ?? index),
-              usage: clampMetric(core.usage)
-          }))
-        : [];
+const normalizeCpuCore = (core, index = 0) => ({
+    id: String(core.id ?? index),
+    usage: clampMetric(core.usage),
+    user: clampMetric(core.user),
+    system: clampMetric(core.system),
+    iowait: clampMetric(core.iowait),
+    steal: clampMetric(core.steal),
+    idle: clampMetric(core.idle)
+});
+
+const normalizeCpuCores = (cores) => (Array.isArray(cores) ? cores.map(normalizeCpuCore) : []);
 
 const normalizeDisks = (disks) =>
     Array.isArray(disks)
@@ -109,6 +113,9 @@ const createEmptyMetrics = () => ({
     load1: 0,
     load5: 0,
     load15: 0,
+    load1Raw: 0,
+    load5Raw: 0,
+    load15Raw: 0,
     cores: 1,
     cpu: 0,
     cpuBreakdown: normalizeCpuBreakdown(),
@@ -141,6 +148,7 @@ const createEmptyMetrics = () => ({
 const createHistory = (metrics = createEmptyMetrics()) => ({
     load: Array.from({ length: HISTORY_POINTS }, () => clampMetric(metrics.load1)),
     cpu: Array.from({ length: HISTORY_POINTS }, () => clampMetric(metrics.cpu)),
+    cpuCores: [],
     memory: Array.from({ length: HISTORY_POINTS }, () => clampMetric(metrics.memory)),
     swap: Array.from({ length: HISTORY_POINTS }, () => clampMetric(metrics.swap)),
     disk: Array.from({ length: HISTORY_POINTS }, () => clampMetric(metrics.disk)),
@@ -152,6 +160,9 @@ const normalizeMetrics = (metrics = {}) => ({
     load1: clampMetric(metrics.load1 ?? metrics.load),
     load5: clampMetric(metrics.load5 ?? metrics.load),
     load15: clampMetric(metrics.load15 ?? metrics.load),
+    load1Raw: roundOne(metrics.load1Raw ?? metrics.load1Raw ?? metrics.load1),
+    load5Raw: roundOne(metrics.load5Raw ?? metrics.load5Raw ?? metrics.load5),
+    load15Raw: roundOne(metrics.load15Raw ?? metrics.load15Raw ?? metrics.load15),
     cores: Math.max(Number(metrics.cores) || 1, 1),
     cpu: clampMetric(metrics.cpu),
     cpuBreakdown: normalizeCpuBreakdown(metrics.cpuBreakdown),
@@ -184,9 +195,16 @@ const normalizeMetrics = (metrics = {}) => ({
     collectedAt: metrics.collectedAt || ''
 });
 
+const appendCpuCoreHistory = (history = {}, metrics = createEmptyMetrics()) => {
+    const snapshot = (metrics.cpuCores || []).map(normalizeCpuCore);
+    const frames = [...(history.cpuCores || []), snapshot].slice(-HISTORY_POINTS);
+    return frames;
+};
+
 const appendHistory = (history = {}, metrics = createEmptyMetrics()) => ({
     load: [...(history.load || []).slice(1), metrics.load1],
     cpu: [...(history.cpu || []).slice(1), metrics.cpu],
+    cpuCores: appendCpuCoreHistory(history, metrics),
     memory: [...(history.memory || []).slice(1), metrics.memory],
     swap: [...(history.swap || []).slice(1), metrics.swap],
     disk: [...(history.disk || []).slice(1), metrics.disk],

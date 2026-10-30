@@ -306,15 +306,11 @@ export default {
     }
 
     &.is-load {
-        .chart-caption {
-            span {
-                display: none;
-            }
+        width: 64px;
+        height: 64px;
 
-            strong {
-                margin-top: 0;
-                font-size: 12px;
-            }
+        .chart-caption {
+            display: none;
         }
     }
 }

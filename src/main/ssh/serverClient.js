@@ -9,7 +9,7 @@ const asNumber = (value, fallback = 0) => {
 
 const clampPercent = (value) => {
     const number = asNumber(value, 0);
-    return Math.min(Math.max(Math.round(number), 0), 100);
+    return Math.min(Math.max(Math.round(number * 10) / 10, 0), 100);
 };
 
 const roundOne = (value) => Math.round(asNumber(value, 0) * 10) / 10;
@@ -136,15 +136,21 @@ async function readHostname(client) {
     }
 }
 
-function parseLoad(loadavg, nproc) {
+function parseLoad(loadavg, cores) {
     const parts = trimOutput(loadavg).split(/\s+/);
-    const fromLoadavg = asNumber(String(parts[3] || '').split('/')[1], 0);
-    const cores = Math.max(asNumber(nproc, 0) || fromLoadavg || 1, 1);
+    const coreCount = Math.max(asNumber(cores, 0), 1);
+    const raw1 = roundOne(parts[0]);
+    const raw5 = roundOne(parts[1]);
+    const raw15 = roundOne(parts[2]);
+    const loadPercent = (value) => clampPercent((asNumber(value, 0) / coreCount) * 100);
     return {
-        cores,
-        load1: clampPercent((asNumber(parts[0], 0) / cores) * 100),
-        load5: clampPercent((asNumber(parts[1], 0) / cores) * 100),
-        load15: clampPercent((asNumber(parts[2], 0) / cores) * 100)
+        cores: coreCount,
+        load1: loadPercent(raw1),
+        load5: loadPercent(raw5),
+        load15: loadPercent(raw15),
+        load1Raw: raw1,
+        load5Raw: raw5,
+        load15Raw: raw15
     };
 }
 
@@ -231,7 +237,12 @@ function parseCpuUsage(cpu1, cpu2) {
             const breakdown = cpuBreakdown(first.get(label), second.get(label));
             return {
                 id: label.slice(3),
-                usage: roundOne(breakdown.usage)
+                usage: roundOne(breakdown.usage),
+                user: roundOne(breakdown.user),
+                system: roundOne(breakdown.system),
+                iowait: roundOne(breakdown.iowait),
+                steal: roundOne(breakdown.steal),
+                idle: roundOne(breakdown.idle)
             };
         });
 
@@ -457,9 +468,11 @@ function parseDiskDevices(diskstats) {
         .filter(Boolean);
 }
 
-export function parseMetrics({ loadavg, nproc, cpu1, cpu2, free, uptime, df, net, diskstats, thermal, sensors }) {
-    const { load1, load5, load15, cores } = parseLoad(loadavg, nproc);
+export function parseMetrics({ loadavg, nproc, cpuinfo, cpu1, cpu2, free, uptime, df, net, diskstats, thermal, sensors }) {
     const cpu = parseCpuUsage(cpu1, cpu2);
+    const cpuInfoCores = splitLines(cpuinfo).filter((line) => /^processor\s*:/i.test(line)).length;
+    const cores = cpu.cores.length || cpuInfoCores || Math.max(asNumber(nproc, 0), 1);
+    const { load1, load5, load15, load1Raw, load5Raw, load15Raw } = parseLoad(loadavg, cores);
     const memory = parseMemory(free);
     const disks = parseDisks(df);
     const netInterfaces = parseNetworkInterfaces(net);
@@ -491,6 +504,9 @@ export function parseMetrics({ loadavg, nproc, cpu1, cpu2, free, uptime, df, net
             load1,
             load5,
             load15,
+            load1Raw,
+            load5Raw,
+            load15Raw,
             cores,
             cpu: cpu.usage,
             cpuBreakdown: cpu.breakdown,
@@ -524,13 +540,16 @@ export async function collectServerMetrics(server = {}) {
             'sh -lc',
             JSON.stringify(
                 [
+                    'export LC_ALL=C',
                     'printf "__LOAD__\\n"',
                     'cat /proc/loadavg 2>/dev/null',
                     'printf "__NPROC__\\n"',
-                    'nproc 2>/dev/null || grep -c processor /proc/cpuinfo 2>/dev/null',
+                    'getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || true',
+                    'printf "__CPUINFO__\\n"',
+                    'grep "^processor" /proc/cpuinfo 2>/dev/null || true',
                     'printf "__CPU1__\\n"',
                     'grep "^cpu" /proc/stat 2>/dev/null',
-                    'sleep 0.5',
+                    'sleep 1',
                     'printf "__CPU2__\\n"',
                     'grep "^cpu" /proc/stat 2>/dev/null',
                     'printf "__FREE__\\n"',
@@ -547,11 +566,11 @@ export async function collectServerMetrics(server = {}) {
             )
         ].join(' ');
 
-        const result = await execRemote(client, command, 12000);
+        const result = await execRemote(client, command, 15000);
         const sections = {};
         let current = '';
         splitLines(result.stdout).forEach((line) => {
-            const section = line.match(/^__([A-Z]+)__$/);
+            const section = line.match(/^__([A-Z0-9]+)__$/);
             if (section) {
                 current = section[1].toLowerCase();
                 sections[current] = [];
@@ -563,6 +582,7 @@ export async function collectServerMetrics(server = {}) {
         const parsed = parseMetrics({
             loadavg: (sections.load || []).join('\n'),
             nproc: (sections.nproc || []).join('\n'),
+            cpuinfo: (sections.cpuinfo || []).join('\n'),
             cpu1: (sections.cpu1 || []).join('\n'),
             cpu2: (sections.cpu2 || []).join('\n'),
             free: (sections.free || []).join('\n'),
