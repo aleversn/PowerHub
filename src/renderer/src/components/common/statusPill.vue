@@ -102,13 +102,13 @@ export default {
     &.is-paused {
         color: var(--ph-text-muted);
     }
-}
 
-.status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 15%, transparent);
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 15%, transparent);
+    }
 }
 </style>

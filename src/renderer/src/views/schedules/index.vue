@@ -1,5 +1,5 @@
 <template>
-    <div class="page-stack">
+    <div class="page-stack schedules-page">
         <sectionCard
             :title="local('Schedules')"
             :description="local('Run HTTP requests on a Cron or interval plan. Demo data is local.')"
@@ -241,159 +241,161 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.schedule-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 14px;
-}
-
-.schedule-card {
-    min-width: 0;
-    padding: 16px;
-    border: 1px solid var(--ph-border);
-    border-radius: 14px;
-    background: var(--ph-surface-soft);
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.schedule-card__header,
-.schedule-card__footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.schedule-main {
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    h3,
-    p {
-        @include nowrap;
+.schedules-page {
+    .schedule-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 14px;
     }
 
-    h3 {
-        margin: 0;
-        color: var(--ph-text);
-        font-size: 14px;
-        line-height: 1.35;
-    }
-
-    p {
-        margin: 3px 0 0;
-        color: var(--ph-text-muted);
-        font-size: 11px;
-    }
-}
-
-.schedule-icon {
-    width: 38px;
-    height: 38px;
-    flex: 0 0 38px;
-    border-radius: 11px;
-    background: var(--ph-accent-soft);
-    color: var(--ph-accent);
-    display: grid;
-    place-items: center;
-}
-
-.cron-strip {
-    min-height: 40px;
-    padding: 0 12px;
-    border: 1px solid var(--ph-border);
-    border-radius: 10px;
-    background: var(--ph-surface);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-
-    code {
-        color: var(--ph-accent);
-        font-family: Consolas, 'Courier New', monospace;
-        font-size: 12px;
-    }
-
-    span {
-        @include nowrap;
-
-        color: var(--ph-text-muted);
-        font-size: 10px;
-    }
-}
-
-.schedule-meta {
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-
-    div {
+    .schedule-card {
         min-width: 0;
-    }
-
-    dt,
-    dd {
-        margin: 0;
-    }
-
-    dt {
-        color: var(--ph-text-muted);
-        font-size: 10px;
-    }
-
-    dd {
-        @include nowrap;
-
-        margin-top: 4px;
-        color: var(--ph-text-secondary);
-        font-size: 12px;
-    }
-}
-
-.schedule-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--ph-text-secondary);
-    font-size: 11px;
-}
-
-.editor-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-
-    label {
-        min-width: 0;
+        padding: 16px;
+        border: 1px solid var(--ph-border);
+        border-radius: 14px;
+        background: var(--ph-surface-soft);
         display: flex;
         flex-direction: column;
-        gap: 7px;
+        gap: 14px;
+    }
 
-        > span {
+    .schedule-card__header,
+    .schedule-card__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .schedule-main {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        h3,
+        p {
+            @include nowrap;
+        }
+
+        h3 {
+            margin: 0;
+            color: var(--ph-text);
+            font-size: 14px;
+            line-height: 1.35;
+        }
+
+        p {
+            margin: 3px 0 0;
+            color: var(--ph-text-muted);
+            font-size: 11px;
+        }
+    }
+
+    .schedule-icon {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        border-radius: 11px;
+        background: var(--ph-accent-soft);
+        color: var(--ph-accent);
+        display: grid;
+        place-items: center;
+    }
+
+    .cron-strip {
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--ph-border);
+        border-radius: 10px;
+        background: var(--ph-surface);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+
+        code {
+            color: var(--ph-accent);
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        span {
+            @include nowrap;
+
+            color: var(--ph-text-muted);
+            font-size: 10px;
+        }
+    }
+
+    .schedule-meta {
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+
+        div {
+            min-width: 0;
+        }
+
+        dt,
+        dd {
+            margin: 0;
+        }
+
+        dt {
+            color: var(--ph-text-muted);
+            font-size: 10px;
+        }
+
+        dd {
+            @include nowrap;
+
+            margin-top: 4px;
             color: var(--ph-text-secondary);
             font-size: 12px;
         }
     }
-}
 
-.switch-row {
-    min-height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: var(--ph-text-secondary);
-    font-size: 12px;
-}
+    .schedule-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--ph-text-secondary);
+        font-size: 11px;
+    }
 
-.panel-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    .editor-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        label {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+
+            > span {
+                color: var(--ph-text-secondary);
+                font-size: 12px;
+            }
+        }
+    }
+
+    .switch-row {
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--ph-text-secondary);
+        font-size: 12px;
+    }
+
+    .panel-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
 }
 </style>

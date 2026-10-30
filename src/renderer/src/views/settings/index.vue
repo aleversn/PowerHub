@@ -284,94 +284,94 @@ export default {
 <style lang="scss" scoped>
 .settings-page {
     max-width: 1120px;
-}
 
-.setting-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.setting-row {
-    min-height: 66px;
-    border-bottom: 1px solid var(--ph-border-subtle);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-
-    &:last-child {
-        border-bottom: 0;
-    }
-}
-
-.setting-copy {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-
-    strong {
-        color: var(--ph-text);
-        font-size: 13px;
-        font-weight: 600;
+    .setting-list {
+        display: flex;
+        flex-direction: column;
     }
 
-    span {
-        @include nowrap;
-
-        margin-top: 4px;
-        color: var(--ph-text-muted);
-        font-size: 11px;
-    }
-}
-
-.segmented-control {
-    padding: 3px;
-    border: 1px solid var(--ph-border);
-    border-radius: 10px;
-    background: var(--ph-surface-soft);
-    display: flex;
-    gap: 2px;
-
-    button {
-        min-height: 30px;
-        padding: 0 11px;
-        border: 0;
-        border-radius: 7px;
-        background: transparent;
-        color: var(--ph-text-secondary);
+    .setting-row {
+        min-height: 66px;
+        border-bottom: 1px solid var(--ph-border-subtle);
         display: flex;
         align-items: center;
-        gap: 6px;
-        font: inherit;
-        font-size: 11px;
-        cursor: pointer;
+        justify-content: space-between;
+        gap: 20px;
 
-        &.active {
-            background: var(--ph-surface);
-            color: var(--ph-accent);
-            box-shadow: var(--ph-shadow-sm);
+        &:last-child {
+            border-bottom: 0;
         }
     }
-}
 
-.settings-footer {
-    display: flex;
-    justify-content: flex-end;
-}
-
-@media (max-width: 720px) {
-    .setting-row {
-        align-items: flex-start;
+    .setting-copy {
+        min-width: 0;
+        display: flex;
         flex-direction: column;
-        padding: 14px 0;
+
+        strong {
+            color: var(--ph-text);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        span {
+            @include nowrap;
+
+            margin-top: 4px;
+            color: var(--ph-text-muted);
+            font-size: 11px;
+        }
     }
 
     .segmented-control {
-        width: 100%;
+        padding: 3px;
+        border: 1px solid var(--ph-border);
+        border-radius: 10px;
+        background: var(--ph-surface-soft);
+        display: flex;
+        gap: 2px;
 
         button {
-            flex: 1;
-            justify-content: center;
+            min-height: 30px;
+            padding: 0 11px;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--ph-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font: inherit;
+            font-size: 11px;
+            cursor: pointer;
+
+            &.active {
+                background: var(--ph-surface);
+                color: var(--ph-accent);
+                box-shadow: var(--ph-shadow-sm);
+            }
+        }
+    }
+
+    .settings-footer {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    @media (max-width: 720px) {
+        .setting-row {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 14px 0;
+        }
+
+        .segmented-control {
+            width: 100%;
+
+            button {
+                flex: 1;
+                justify-content: center;
+            }
         }
     }
 }

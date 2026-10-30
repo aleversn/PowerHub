@@ -36,45 +36,45 @@ export default {
     background: var(--ph-background);
     display: flex;
     overflow: hidden;
-}
 
-.app-main {
-    min-width: 0;
-    min-height: 0;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+    .app-main {
+        min-width: 0;
+        min-height: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
 
-.app-content {
-    position: relative;
-    min-width: 0;
-    min-height: 0;
-    flex: 1;
-    padding: 18px 22px 28px;
-    overflow: auto;
-}
-
-.page-fade-enter-active,
-.page-fade-leave-active {
-    transition:
-        opacity 140ms ease,
-        transform 140ms ease;
-}
-
-.page-fade-enter-from {
-    opacity: 0;
-    transform: translateY(5px);
-}
-
-.page-fade-leave-to {
-    opacity: 0;
-    transform: translateY(-3px);
-}
-
-@media (max-width: 640px) {
     .app-content {
-        padding: 14px 12px 22px;
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        flex: 1;
+        padding: 18px 22px 28px;
+        overflow: auto;
+    }
+
+    .page-fade-enter-active,
+    .page-fade-leave-active {
+        transition:
+            opacity 140ms ease,
+            transform 140ms ease;
+    }
+
+    .page-fade-enter-from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    .page-fade-leave-to {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+
+    @media (max-width: 640px) {
+        .app-content {
+            padding: 14px 12px 22px;
+        }
     }
 }
 </style>

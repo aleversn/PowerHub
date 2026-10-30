@@ -1,5 +1,5 @@
 <template>
-    <div class="page-stack">
+    <div class="page-stack endpoints-page">
         <sectionCard
             :title="local('Endpoint collection')"
             :description="local('Manage HTTP requests, default headers, and monitor health.')"
@@ -234,148 +234,150 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.table-toolbar {
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-}
-
-.record-count {
-    color: var(--ph-text-muted);
-    font-size: 11px;
-}
-
-.endpoint-table {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.endpoint-table__head,
-.endpoint-table__row {
-    display: grid;
-    grid-template-columns: minmax(240px, 1.8fr) 86px 100px 108px 72px 42px;
-    align-items: center;
-    gap: 14px;
-}
-
-.endpoint-table__head {
-    min-height: 36px;
-    border-bottom: 1px solid var(--ph-border);
-    color: var(--ph-text-muted);
-    font-size: 10px;
-    text-transform: uppercase;
-}
-
-.endpoint-table__row {
-    min-height: 66px;
-    border-bottom: 1px solid var(--ph-border-subtle);
-    color: var(--ph-text-secondary);
-    font-size: 12px;
-
-    &:last-child {
-        border-bottom: 0;
-    }
-}
-
-.endpoint-main {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-
-    strong,
-    span {
-        @include nowrap;
+.endpoints-page {
+    .table-toolbar {
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
     }
 
-    strong {
-        color: var(--ph-text);
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    span {
-        margin-top: 4px;
+    .record-count {
         color: var(--ph-text-muted);
-        font-size: 10px;
-    }
-}
-
-.method-badge {
-    width: fit-content;
-    min-width: 52px;
-    padding: 4px 7px;
-    border-radius: 6px;
-    background: rgba(16, 124, 16, 0.1);
-    color: var(--ph-success);
-    font-size: 10px;
-    font-weight: 700;
-    text-align: center;
-
-    &.post,
-    &.put,
-    &.patch {
-        background: rgba(0, 120, 212, 0.1);
-        color: var(--ph-accent);
+        font-size: 11px;
     }
 
-    &.delete {
-        background: rgba(196, 43, 28, 0.1);
-        color: var(--ph-danger);
-    }
-}
-
-.muted-cell {
-    @include nowrap;
-
-    color: var(--ph-text-secondary);
-}
-
-.editor-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-
-    label {
+    .endpoint-table {
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 7px;
-
-        > span {
-            color: var(--ph-text-secondary);
-            font-size: 12px;
-        }
-    }
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: 12px;
-}
-
-.panel-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-@media (max-width: 760px) {
-    .endpoint-table {
-        overflow-x: auto;
     }
 
     .endpoint-table__head,
     .endpoint-table__row {
-        min-width: 760px;
+        display: grid;
+        grid-template-columns: minmax(240px, 1.8fr) 86px 100px 108px 72px 42px;
+        align-items: center;
+        gap: 14px;
     }
 
-    .table-toolbar {
-        align-items: flex-start;
+    .endpoint-table__head {
+        min-height: 36px;
+        border-bottom: 1px solid var(--ph-border);
+        color: var(--ph-text-muted);
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+
+    .endpoint-table__row {
+        min-height: 66px;
+        border-bottom: 1px solid var(--ph-border-subtle);
+        color: var(--ph-text-secondary);
+        font-size: 12px;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    .endpoint-main {
+        min-width: 0;
+        display: flex;
         flex-direction: column;
+
+        strong,
+        span {
+            @include nowrap;
+        }
+
+        strong {
+            color: var(--ph-text);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        span {
+            margin-top: 4px;
+            color: var(--ph-text-muted);
+            font-size: 10px;
+        }
+    }
+
+    .method-badge {
+        width: fit-content;
+        min-width: 52px;
+        padding: 4px 7px;
+        border-radius: 6px;
+        background: rgba(16, 124, 16, 0.1);
+        color: var(--ph-success);
+        font-size: 10px;
+        font-weight: 700;
+        text-align: center;
+
+        &.post,
+        &.put,
+        &.patch {
+            background: rgba(0, 120, 212, 0.1);
+            color: var(--ph-accent);
+        }
+
+        &.delete {
+            background: rgba(196, 43, 28, 0.1);
+            color: var(--ph-danger);
+        }
+    }
+
+    .muted-cell {
+        @include nowrap;
+
+        color: var(--ph-text-secondary);
+    }
+
+    .editor-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        label {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+
+            > span {
+                color: var(--ph-text-secondary);
+                font-size: 12px;
+            }
+        }
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        gap: 12px;
+    }
+
+    .panel-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    @media (max-width: 760px) {
+        .endpoint-table {
+            overflow-x: auto;
+        }
+
+        .endpoint-table__head,
+        .endpoint-table__row {
+            min-width: 760px;
+        }
+
+        .table-toolbar {
+            align-items: flex-start;
+            flex-direction: column;
+        }
     }
 }
 </style>

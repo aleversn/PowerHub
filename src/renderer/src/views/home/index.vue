@@ -38,25 +38,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h1 {
-    font-weight: 400;
-    margin-top: 15px;
-}
-h3 {
-    margin: 40px 0 0;
-}
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-li {
-    display: inline-block;
-    margin: 0 10px;
-}
-a {
-    color: #42b983;
-}
+<style lang="scss" scoped>
 .hello {
     width: 100%;
     height: 100%;
@@ -67,10 +49,34 @@ a {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
-.button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+    h1 {
+        font-weight: 400;
+        margin-top: 15px;
+    }
+
+    h3 {
+        margin: 40px 0 0;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        display: inline-block;
+        margin: 0 10px;
+    }
+
+    a {
+        color: #42b983;
+    }
+
+    .button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 }
 </style>

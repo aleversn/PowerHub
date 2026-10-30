@@ -1,5 +1,5 @@
 <template>
-    <div class="page-stack">
+    <div class="page-stack runs-page">
         <sectionCard
             :title="local('Run history')"
             :description="local('Inspect recent request results, status codes, and duration.')"
@@ -101,101 +101,103 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.runs-table {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.runs-table__head,
-.runs-table__row {
-    display: grid;
-    grid-template-columns: minmax(230px, 1.6fr) 106px 82px 86px 96px 118px;
-    align-items: center;
-    gap: 14px;
-}
-
-.runs-table__head {
-    min-height: 36px;
-    border-bottom: 1px solid var(--ph-border);
-    color: var(--ph-text-muted);
-    font-size: 10px;
-    text-transform: uppercase;
-}
-
-.runs-table__row {
-    min-height: 62px;
-    border-bottom: 1px solid var(--ph-border-subtle);
-    color: var(--ph-text-secondary);
-    font-size: 12px;
-
-    &:last-child {
-        border-bottom: 0;
-    }
-}
-
-.run-main {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-
-    strong,
-    span {
-        @include nowrap;
-    }
-
-    strong {
-        color: var(--ph-text);
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    span {
-        margin-top: 4px;
-        color: var(--ph-text-muted);
-        font-size: 10px;
-    }
-}
-
-.status-code {
-    width: fit-content;
-    padding: 4px 7px;
-    border-radius: 6px;
-    font-family: Consolas, 'Courier New', monospace;
-    font-size: 11px;
-
-    &.success {
-        background: rgba(16, 124, 16, 0.1);
-        color: var(--ph-success);
-    }
-
-    &.warning {
-        background: rgba(157, 93, 0, 0.1);
-        color: var(--ph-warning);
-    }
-
-    &.failed {
-        background: rgba(196, 43, 28, 0.1);
-        color: var(--ph-danger);
-    }
-}
-
-.numeric-cell {
-    font-variant-numeric: tabular-nums;
-}
-
-.trigger-cell {
-    color: var(--ph-text-secondary);
-}
-
-@media (max-width: 820px) {
+.runs-page {
     .runs-table {
-        overflow-x: auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
     }
 
     .runs-table__head,
     .runs-table__row {
-        min-width: 780px;
+        display: grid;
+        grid-template-columns: minmax(230px, 1.6fr) 106px 82px 86px 96px 118px;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .runs-table__head {
+        min-height: 36px;
+        border-bottom: 1px solid var(--ph-border);
+        color: var(--ph-text-muted);
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+
+    .runs-table__row {
+        min-height: 62px;
+        border-bottom: 1px solid var(--ph-border-subtle);
+        color: var(--ph-text-secondary);
+        font-size: 12px;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    .run-main {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+
+        strong,
+        span {
+            @include nowrap;
+        }
+
+        strong {
+            color: var(--ph-text);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        span {
+            margin-top: 4px;
+            color: var(--ph-text-muted);
+            font-size: 10px;
+        }
+    }
+
+    .status-code {
+        width: fit-content;
+        padding: 4px 7px;
+        border-radius: 6px;
+        font-family: Consolas, 'Courier New', monospace;
+        font-size: 11px;
+
+        &.success {
+            background: rgba(16, 124, 16, 0.1);
+            color: var(--ph-success);
+        }
+
+        &.warning {
+            background: rgba(157, 93, 0, 0.1);
+            color: var(--ph-warning);
+        }
+
+        &.failed {
+            background: rgba(196, 43, 28, 0.1);
+            color: var(--ph-danger);
+        }
+    }
+
+    .numeric-cell {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .trigger-cell {
+        color: var(--ph-text-secondary);
+    }
+
+    @media (max-width: 820px) {
+        .runs-table {
+            overflow-x: auto;
+        }
+
+        .runs-table__head,
+        .runs-table__row {
+            min-width: 780px;
+        }
     }
 }
 </style>

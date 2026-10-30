@@ -2,17 +2,17 @@
     <section class="section-card">
         <header
             v-if="title || description || $slots.actions"
-            class="section-card__header"
+            class="section-header"
         >
-            <div class="section-card__heading">
+            <div class="section-heading">
                 <h2 v-if="title">{{ title }}</h2>
                 <p v-if="description">{{ description }}</p>
             </div>
-            <div v-if="$slots.actions" class="section-card__actions">
+            <div v-if="$slots.actions" class="section-actions">
                 <slot name="actions"></slot>
             </div>
         </header>
-        <div class="section-card__body">
+        <div class="section-body">
             <slot></slot>
         </div>
     </section>
@@ -42,41 +42,41 @@ export default {
     background: var(--ph-surface);
     box-shadow: var(--ph-shadow-sm);
     overflow: hidden;
-}
 
-.section-card__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 18px;
-    padding: 20px 22px 0;
-}
-
-.section-card__heading {
-    min-width: 0;
-
-    h2 {
-        margin: 0;
-        color: var(--ph-text);
-        font-size: 16px;
-        font-weight: 600;
-        line-height: 1.4;
+    .section-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 20px 22px 0;
     }
 
-    p {
-        margin: 6px 0 0;
-        color: var(--ph-text-secondary);
-        font-size: 13px;
-        line-height: 1.6;
+    .section-heading {
+        min-width: 0;
+
+        h2 {
+            margin: 0;
+            color: var(--ph-text);
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        p {
+            margin: 6px 0 0;
+            color: var(--ph-text-secondary);
+            font-size: 13px;
+            line-height: 1.6;
+        }
     }
-}
 
-.section-card__actions {
-    flex-shrink: 0;
-}
+    .section-actions {
+        flex-shrink: 0;
+    }
 
-.section-card__body {
-    min-width: 0;
-    padding: 18px 22px 22px;
+    .section-body {
+        min-width: 0;
+        padding: 18px 22px 22px;
+    }
 }
 </style>
