@@ -2,8 +2,6 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
-
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({

@@ -1,0 +1,176 @@
+// PowerHub 项目级全局样式。主题变量、页面骨架与通用工具类统一放在这里。
+// fabulous.scss / global.scss 保持与 Fab3 一致，仅提供 mixin 与全局 reset。
+
+$breakpoint-mobile: 640px;
+$breakpoint-tablet: 880px;
+$breakpoint-desktop: 1180px;
+
+$title-font: 'Segoe UI', 'Microsoft YaHei UI', 'Microsoft YaHei', sans-serif;
+$code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
+
+:root {
+    --ph-font: #{$title-font};
+    --ph-code-font: #{$code-font};
+    --ph-brand: #0078d4;
+    --ph-brand-gradient: linear-gradient(
+        135deg,
+        #6b5ce7 0%,
+        #8f66dd 48%,
+        #c35fbc 100%
+    );
+    --ph-accent: #0067b8;
+    --ph-accent-soft: rgba(0, 120, 212, 0.1);
+    --ph-success: #107c10;
+    --ph-warning: #9d5d00;
+    --ph-danger: #c42b1c;
+    --ph-background: #f3f6fb;
+    --ph-surface: rgba(255, 255, 255, 0.92);
+    --ph-surface-soft: rgba(247, 249, 253, 0.92);
+    --ph-surface-hover: rgba(0, 0, 0, 0.045);
+    --ph-sidebar: rgba(248, 250, 254, 0.94);
+    --ph-header: rgba(248, 250, 254, 0.72);
+    --ph-border: rgba(0, 0, 0, 0.11);
+    --ph-border-subtle: rgba(0, 0, 0, 0.065);
+    --ph-text: #202124;
+    --ph-text-secondary: #505867;
+    --ph-text-muted: #7a8392;
+    --ph-shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.045);
+    --ph-shadow-md: 0 14px 38px rgba(0, 0, 0, 0.09);
+}
+
+:root[data-theme='dark'] {
+    --ph-accent: #62bdfc;
+    --ph-accent-soft: rgba(98, 189, 252, 0.13);
+    --ph-success: #6ccb5f;
+    --ph-warning: #fce100;
+    --ph-danger: #ff99a4;
+    --ph-background: #14161a;
+    --ph-surface: rgba(31, 34, 39, 0.94);
+    --ph-surface-soft: rgba(36, 39, 45, 0.92);
+    --ph-surface-hover: rgba(255, 255, 255, 0.065);
+    --ph-sidebar: rgba(25, 28, 33, 0.96);
+    --ph-header: rgba(25, 28, 33, 0.72);
+    --ph-border: rgba(255, 255, 255, 0.12);
+    --ph-border-subtle: rgba(255, 255, 255, 0.075);
+    --ph-text: #f5f7fa;
+    --ph-text-secondary: #c2c8d2;
+    --ph-text-muted: #949dab;
+    --ph-shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.18);
+    --ph-shadow-md: 0 14px 38px rgba(0, 0, 0, 0.28);
+}
+
+@mixin scrollbar {
+    scrollbar-color: rgba(120, 130, 145, 0.45) transparent;
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border: 3px solid transparent;
+        border-radius: 999px;
+        background: rgba(120, 130, 145, 0.42);
+        background-clip: padding-box;
+
+        &:hover {
+            background: rgba(120, 130, 145, 0.62);
+            background-clip: padding-box;
+        }
+    }
+}
+
+@mixin focus-ring {
+    outline: 2px solid rgba(0, 120, 212, 0.68);
+    outline-offset: 2px;
+}
+
+@mixin ellipsis-lines($lines: 2) {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $lines;
+}
+
+html {
+    min-width: 320px;
+    color-scheme: light dark;
+    font-family: var(--ph-font);
+    font-size: 14px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background: var(--ph-background);
+    color: var(--ph-text);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+::selection {
+    background: rgba(0, 120, 212, 0.28);
+}
+
+.page-stack {
+    width: 100%;
+    max-width: 1480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+:root[data-density='compact'] {
+    .page-stack {
+        gap: 12px;
+    }
+}
+
+:root[data-density='compact'] .section-card__body {
+    padding-top: 14px;
+    padding-bottom: 16px;
+}
+
+:root[data-density='compact'] .data-table__row,
+:root[data-density='compact'] .endpoint-table__row,
+:root[data-density='compact'] .runs-table__row {
+    min-height: 52px;
+}
+
+* {
+    @include scrollbar;
+}
+
+a,
+button,
+[role='button'] {
+    -webkit-tap-highlight-color: transparent;
+}
+
+a:focus-visible,
+button:focus-visible,
+[role='button']:focus-visible {
+    @include focus-ring;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

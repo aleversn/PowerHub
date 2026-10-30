@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <title-bar></title-bar>
+        <titleBar :theme="resolvedTheme"></titleBar>
         <div class="global-container">
             <router-view></router-view>
         </div>
@@ -8,34 +8,56 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
+
 import titleBar from '@/components/general/titleBar.vue';
+import i18n from '@/js/i18n';
+import { useAppConfigStore } from '@/stores/appConfig';
 
 export default {
     name: 'App',
     components: {
         titleBar
+    },
+    computed: {
+        ...mapState(useAppConfigStore, ['resolvedTheme'])
+    },
+    mounted() {
+        this.initialize();
+        this.reviseI18N(i18n);
+    },
+    methods: {
+        ...mapActions(useAppConfigStore, ['initialize', 'reviseI18N'])
     }
 };
 </script>
 
 <style lang="scss">
-html {
-    background: transparent;
-}
+html,
+body,
 #app {
-    position: fixed;
     width: 100%;
     height: 100%;
-    background: transparent;
+    margin: 0;
+    overflow: hidden;
+}
+
+html {
+    background: var(--ph-background);
+}
+
+#app {
+    background: var(--ph-background);
+    color: var(--ph-text);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
 
     .global-container {
         position: relative;
         width: 100%;
-        height: 100%;
+        min-height: 0;
         flex: 1;
+        overflow: hidden;
     }
 }
 </style>

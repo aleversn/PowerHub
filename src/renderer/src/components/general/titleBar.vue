@@ -35,56 +35,51 @@
     </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-
-const props = defineProps({
-    background: {
-        type: String,
-        default: ''
+<script>
+export default {
+    name: 'TitleBar',
+    props: {
+        background: {
+            type: String,
+            default: ''
+        },
+        theme: {
+            type: String,
+            default: 'light'
+        }
     },
-    theme: {
-        type: String,
-        default: 'light'
+    data() {
+        return {
+            isMaximized: false,
+            windowStatusTimer: null
+        };
+    },
+    mounted() {
+        this.timerInit();
+    },
+    beforeUnmount() {
+        if (this.windowStatusTimer) {
+            clearInterval(this.windowStatusTimer);
+        }
+    },
+    methods: {
+        timerInit() {
+            const getStatus = async () => {
+                this.isMaximized = await window.api.isMaximized();
+            };
+            this.windowStatusTimer = setInterval(getStatus, 50);
+        },
+        minimize() {
+            window.electron.ipcRenderer.send('min');
+        },
+        maximize() {
+            window.electron.ipcRenderer.send('max');
+        },
+        close() {
+            window.electron.ipcRenderer.send('close');
+        }
     }
-});
-
-const ipc = window.electron.ipcRenderer;
-
-// state
-const isMaximized = ref(false);
-const windowStatusTimer = ref(null);
-
-// methods
-const timerInit = () => {
-    const getStatus = async () => {
-        isMaximized.value = await window.api.isMaximized();
-    };
-    windowStatusTimer.value = setInterval(getStatus, 50);
 };
-
-const minimize = () => {
-    ipc.send('min');
-};
-
-const maximize = () => {
-    ipc.send('max');
-};
-
-const close = () => {
-    ipc.send('close');
-};
-
-// Life cycle
-onMounted(() => {
-    timerInit();
-});
-
-onBeforeUnmount(() => {
-    if (windowStatusTimer.value) {
-        clearInterval(windowStatusTimer.value);
-    }
-});
 </script>
 
 <style lang="scss" scoped>
