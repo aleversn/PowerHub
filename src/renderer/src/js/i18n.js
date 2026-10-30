@@ -394,5 +394,285 @@ export default {
     "Confirm": {
         "en": "Confirm",
         "cn": "确认"
+    },
+    "Server inventory": {
+        "en": "Server inventory",
+        "cn": "服务器清单"
+    },
+    "Add and manage the servers PowerHub should monitor.": {
+        "en": "Add and manage the servers PowerHub should monitor.",
+        "cn": "添加并管理 PowerHub 需要监控的服务器。"
+    },
+    "Add server": {
+        "en": "Add server",
+        "cn": "添加服务器"
+    },
+    "Search servers": {
+        "en": "Search servers",
+        "cn": "搜索服务器"
+    },
+    "connected": {
+        "en": "connected",
+        "cn": "已连接"
+    },
+    "servers": {
+        "en": "servers",
+        "cn": "台服务器"
+    },
+    "Server": {
+        "en": "Server",
+        "cn": "服务器"
+    },
+    "Address": {
+        "en": "Address",
+        "cn": "地址"
+    },
+    "Group": {
+        "en": "Group",
+        "cn": "分组"
+    },
+    "Monitor": {
+        "en": "Monitor",
+        "cn": "监控"
+    },
+    "Remove": {
+        "en": "Remove",
+        "cn": "移除"
+    },
+    "No servers found": {
+        "en": "No servers found",
+        "cn": "未找到服务器"
+    },
+    "Add a server or clear the current search.": {
+        "en": "Add a server or clear the current search.",
+        "cn": "请添加服务器，或清空当前搜索条件。"
+    },
+    "Display name": {
+        "en": "Display name",
+        "cn": "显示名称"
+    },
+    "Example: Production API": {
+        "en": "Example: Production API",
+        "cn": "例如：生产 API"
+    },
+    "Hostname": {
+        "en": "Hostname",
+        "cn": "主机名"
+    },
+    "api-prod-01.internal": {
+        "en": "api-prod-01.internal",
+        "cn": "api-prod-01.internal"
+    },
+    "IP address": {
+        "en": "IP address",
+        "cn": "IP 地址"
+    },
+    "10.0.0.10": {
+        "en": "10.0.0.10",
+        "cn": "10.0.0.10"
+    },
+    "SSH port": {
+        "en": "SSH port",
+        "cn": "SSH 端口"
+    },
+    "Region": {
+        "en": "Region",
+        "cn": "区域"
+    },
+    "Operating system": {
+        "en": "Operating system",
+        "cn": "操作系统"
+    },
+    "Monitor immediately": {
+        "en": "Monitor immediately",
+        "cn": "立即监控"
+    },
+    "Start showing this server on the status board.": {
+        "en": "Start showing this server on the status board.",
+        "cn": "立即在状态面板中显示该服务器。"
+    },
+    "Enabled servers": {
+        "en": "Enabled servers",
+        "cn": "启用服务器"
+    },
+    "configured": {
+        "en": "configured",
+        "cn": "已配置"
+    },
+    "Connected": {
+        "en": "Connected",
+        "cn": "已连接"
+    },
+    "Live monitor state": {
+        "en": "Live monitor state",
+        "cn": "实时监控状态"
+    },
+    "Average load": {
+        "en": "Average load",
+        "cn": "平均负载"
+    },
+    "Average memory": {
+        "en": "Average memory",
+        "cn": "平均内存"
+    },
+    "Updated recently": {
+        "en": "Updated recently",
+        "cn": "最近已更新"
+    },
+    "Status board": {
+        "en": "Status board",
+        "cn": "状态面板"
+    },
+    "Monitor load, memory, disk, and network activity across your servers.": {
+        "en": "Monitor load, memory, disk, and network activity across your servers.",
+        "cn": "监控服务器的负载、内存、磁盘与网络活动。"
+    },
+    "Live demo data": {
+        "en": "Live demo data",
+        "cn": "实时演示数据"
+    },
+    "Disk": {
+        "en": "Disk",
+        "cn": "磁盘"
+    },
+    "In": {
+        "en": "In",
+        "cn": "入站"
+    },
+    "Out": {
+        "en": "Out",
+        "cn": "出站"
+    },
+    "Read": {
+        "en": "Read",
+        "cn": "读取"
+    },
+    "Write": {
+        "en": "Write",
+        "cn": "写入"
+    },
+    "Network trend": {
+        "en": "Network trend",
+        "cn": "网络趋势"
+    },
+    "Last 24 samples": {
+        "en": "Last 24 samples",
+        "cn": "最近 24 个采样点"
+    },
+    "Uptime": {
+        "en": "Uptime",
+        "cn": "运行时间"
+    },
+    "days": {
+        "en": "days",
+        "cn": "天"
+    },
+    "Last seen": {
+        "en": "Last seen",
+        "cn": "最后在线"
+    },
+    "No monitored servers": {
+        "en": "No monitored servers",
+        "cn": "暂无监控服务器"
+    },
+    "Enable a server from the Servers page to show it here.": {
+        "en": "Enable a server from the Servers page to show it here.",
+        "cn": "请在服务器页面启用服务器后在此显示。"
+    },
+    "Edit server": {
+        "en": "Edit server",
+        "cn": "编辑服务器"
+    },
+    "Server identity": {
+        "en": "Server identity",
+        "cn": "服务器标识"
+    },
+    "A display name and the address PowerHub should connect to.": {
+        "en": "A display name and the address PowerHub should connect to.",
+        "cn": "用于展示的名称，以及 PowerHub 实际连接的地址。"
+    },
+    "IP or hostname": {
+        "en": "IP or hostname",
+        "cn": "IP 或主机名"
+    },
+    "SSH credentials": {
+        "en": "SSH credentials",
+        "cn": "SSH 凭据"
+    },
+    "Used later by the monitor collector.": {
+        "en": "Used later by the monitor collector.",
+        "cn": "后续由监控采集器使用。"
+    },
+    "Password": {
+        "en": "Password",
+        "cn": "密码"
+    },
+    "Close": {
+        "en": "Close",
+        "cn": "关闭"
+    },
+    "Untitled server": {
+        "en": "Untitled server",
+        "cn": "未命名服务器"
+    },
+    "Never": {
+        "en": "Never",
+        "cn": "从未"
+    },
+    "Live": {
+        "en": "Live",
+        "cn": "实时"
+    },
+    "Paused": {
+        "en": "Paused",
+        "cn": "已暂停"
+    },
+    "Pause auto refresh": {
+        "en": "Pause auto refresh",
+        "cn": "暂停自动刷新"
+    },
+    "Resume auto refresh": {
+        "en": "Resume auto refresh",
+        "cn": "恢复自动刷新"
+    },
+    "CPU": {
+        "en": "CPU",
+        "cn": "CPU"
+    },
+    "Swap": {
+        "en": "Swap",
+        "cn": "交换"
+    },
+    "Net": {
+        "en": "Net",
+        "cn": "网络"
+    },
+    "Temp": {
+        "en": "Temp",
+        "cn": "温度"
+    },
+    "Total": {
+        "en": "Total",
+        "cn": "累计"
+    },
+    "Average temperature": {
+        "en": "Average temperature",
+        "cn": "平均温度"
+    },
+    "No temperature sensor": {
+        "en": "No temperature sensor",
+        "cn": "无温度传感器"
+    },
+    "SSH metrics": {
+        "en": "SSH metrics",
+        "cn": "SSH 指标"
+    },
+    "Testing connection": {
+        "en": "Testing connection",
+        "cn": "正在测试连接"
+    },
+    "Used by the monitor collector.": {
+        "en": "Used by the monitor collector.",
+        "cn": "由监控采集器使用。"
     }
 }

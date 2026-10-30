@@ -21,13 +21,18 @@
         "@creatorsn/vfluent3": "^0.3.105",
         "@electron-toolkit/preload": "^3.0.2",
         "@electron-toolkit/utils": "^4.0.0",
+        "better-sqlite3": "^13.0.3",
+        "drizzle-orm": "^0.45.4",
+        "echarts": "^6.1.0",
         "pinia": "^2.1.7",
+        "ssh2": "^1.17.0",
         "vue-router": "^4.5.1"
     },
     "devDependencies": {
         "@electron-toolkit/eslint-config": "^2.0.0",
         "@electron-toolkit/eslint-config-prettier": "^3.0.0",
         "@vitejs/plugin-vue": "^6.0.0",
+        "drizzle-kit": "^0.31.11",
         "electron": "^37.2.3",
         "electron-builder": "^25.1.8",
         "electron-vite": "^4.0.0",

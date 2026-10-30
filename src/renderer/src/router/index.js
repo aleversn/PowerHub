@@ -57,6 +57,28 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: 'server-status',
+                    name: 'server-status',
+                    component: AsyncLoad(
+                        () => import('@/views/serverStatus/index.vue')
+                    ),
+                    meta: {
+                        title: 'Server Status',
+                        description: 'Monitor load, memory, disk, and network activity across your servers.'
+                    }
+                },
+                {
+                    path: 'servers',
+                    name: 'servers',
+                    component: AsyncLoad(
+                        () => import('@/views/servers/index.vue')
+                    ),
+                    meta: {
+                        title: 'Servers',
+                        description: 'Add and manage the servers PowerHub should monitor.'
+                    }
+                },
+                {
                     path: 'settings',
                     name: 'settings',
                     component: AsyncLoad(

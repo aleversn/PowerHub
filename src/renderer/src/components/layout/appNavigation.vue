@@ -87,15 +87,13 @@ export default {
                     key: 'server-status',
                     name: () => this.local('Server Status'),
                     icon: 'Health',
-                    route: '/server-status',
-                    disabled: true
+                    route: '/server-status'
                 },
                 {
                     key: 'servers',
                     name: () => this.local('Servers'),
                     icon: 'Server',
-                    route: '/servers',
-                    disabled: true
+                    route: '/servers'
                 }
             ];
         }

@@ -2,6 +2,10 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
+import { initDatabase, closeDatabase } from './db/index.js'
+import { registerWorkspaceIpc } from './ipc/workspace.js'
+import { seedDemoData } from './repositories/workspace.js'
+
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
@@ -69,6 +73,14 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  // 初始化 SQLite（drizzle）并注册工作区 IPC。
+  initDatabase({
+    file: join(app.getPath('userData'), 'powerhub.db'),
+    migrationsFolder: join(__dirname, 'db/migrations')
+  })
+  seedDemoData()
+  registerWorkspaceIpc()
+
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
 
@@ -93,6 +105,10 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+app.on('will-quit', () => {
+  closeDatabase()
 })
 
 // In this file you can include the rest of your app's specific main process
