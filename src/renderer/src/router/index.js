@@ -35,6 +35,28 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: 'endpoints/:id',
+                    name: 'endpoint-editor',
+                    component: AsyncLoad(
+                        () => import('@/views/endpoints/editor.vue')
+                    ),
+                    meta: {
+                        title: 'Endpoint editor',
+                        description: 'Edit request details, send live HTTP requests, and inspect responses.'
+                    }
+                },
+                {
+                    path: 'variables',
+                    name: 'variables',
+                    component: AsyncLoad(
+                        () => import('@/views/variables/index.vue')
+                    ),
+                    meta: {
+                        title: 'Collection variables',
+                        description: 'Manage collection-scoped variables reused by requests and scripts.'
+                    }
+                },
+                {
                     path: 'schedules',
                     name: 'schedules',
                     component: AsyncLoad(

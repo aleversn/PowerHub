@@ -1,6 +1,19 @@
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
 
-// 接口请求集合。
+// 接口集合。endpoint.collection 存集合名称，空值统一归入默认集合。
+export const collections = sqliteTable(
+    'collections',
+    {
+        id: text('id').primaryKey(),
+        name: text('name').notNull(),
+        sortOrder: integer('sort_order').notNull().default(0),
+        createdAt: text('created_at').notNull(),
+        updatedAt: text('updated_at').notNull()
+    },
+    (table) => [index('collections_sort_idx').on(table.sortOrder)]
+);
+
+// 接口请求配置。
 export const endpoints = sqliteTable(
     'endpoints',
     {
@@ -8,8 +21,18 @@ export const endpoints = sqliteTable(
         name: text('name').notNull(),
         method: text('method').notNull().default('GET'),
         url: text('url').notNull(),
-        collection: text('collection').notNull().default('Personal'),
+        collection: text('collection').notNull().default('Default collection'),
+        description: text('description').notNull().default(''),
+        params: text('params').notNull().default('[]'),
+        headersData: text('headers_data').notNull().default('[]'),
+        authType: text('auth_type').notNull().default('none'),
+        authData: text('auth_data').notNull().default('{}'),
+        bodyType: text('body_type').notNull().default('none'),
+        body: text('body').notNull().default(''),
+        preRequestScript: text('pre_request_script').notNull().default(''),
+        postResponseScript: text('post_response_script').notNull().default(''),
         headers: integer('headers').notNull().default(0),
+        sortOrder: integer('sort_order').notNull().default(0),
         enabled: integer('enabled', { mode: 'boolean' })
             .notNull()
             .default(true),
@@ -20,6 +43,7 @@ export const endpoints = sqliteTable(
     },
     (table) => [
         index('endpoints_collection_idx').on(table.collection),
+        index('endpoints_sort_idx').on(table.sortOrder),
         index('endpoints_enabled_idx').on(table.enabled)
     ]
 );
@@ -65,12 +89,40 @@ export const runs = sqliteTable(
         duration: integer('duration'),
         startedAt: text('started_at').notNull(),
         triggeredBy: text('triggered_by').notNull().default('manual'),
-        mode: text('mode').notNull().default('mock')
+        mode: text('mode').notNull().default('live'),
+        requestUrl: text('request_url'),
+        response: text('response'),
+        responseHeaders: text('response_headers').notNull().default('{}'),
+        error: text('error')
     },
     (table) => [
         index('runs_endpoint_idx').on(table.endpointId),
         index('runs_schedule_idx').on(table.scheduleId),
         index('runs_started_idx').on(table.startedAt)
+    ]
+);
+
+// 集合级变量（environment）。type 支持 text / blob；value 为字符串，blob 以 data URL 或文本形式存储。
+export const collectionVariables = sqliteTable(
+    'collection_variables',
+    {
+        id: text('id').primaryKey(),
+        collection: text('collection').notNull().default('Default collection'),
+        key: text('key').notNull(),
+        value: text('value').notNull().default(''),
+        type: text('type').notNull().default('text'),
+        hidden: integer('hidden', { mode: 'boolean' }).notNull().default(false),
+        enabled: integer('enabled', { mode: 'boolean' })
+            .notNull()
+            .default(true),
+        description: text('description').notNull().default(''),
+        sortOrder: integer('sort_order').notNull().default(0),
+        createdAt: text('created_at').notNull(),
+        updatedAt: text('updated_at').notNull()
+    },
+    (table) => [
+        index('collection_variables_collection_idx').on(table.collection),
+        index('collection_variables_sort_idx').on(table.sortOrder)
     ]
 );
 
@@ -82,8 +134,10 @@ export const settings = sqliteTable('settings', {
 });
 
 export const schema = {
+    collections,
     endpoints,
     schedules,
     runs,
-    settings
+    settings,
+    collectionVariables
 };

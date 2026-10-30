@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 
 import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
@@ -143,7 +143,13 @@ export default {
             ];
         }
     },
+    async mounted() {
+        await this.workspaceInitialize();
+    },
     methods: {
+        ...mapActions(useWorkspaceStore, {
+            workspaceInitialize: 'initialize'
+        }),
         endpointName(id) {
             return this.endpointById[id]?.name || '-';
         },

@@ -215,8 +215,16 @@ export default {
             );
         }
     },
+    async mounted() {
+        await this.workspaceInitialize();
+    },
     methods: {
-        ...mapActions(useWorkspaceStore, ['addSchedule', 'runEndpoint', 'toggleSchedule']),
+        ...mapActions(useWorkspaceStore, {
+            workspaceInitialize: 'initialize',
+            addSchedule: 'addSchedule',
+            runEndpoint: 'runEndpoint',
+            toggleSchedule: 'toggleSchedule'
+        }),
         endpointName(id) {
             return this.endpointById[id]?.name || '-';
         },
@@ -234,7 +242,7 @@ export default {
             this.editorOpen = false;
         },
         runSchedule(schedule) {
-            this.runEndpoint(schedule.endpointId, schedule.id, 'schedule');
+            this.runEndpoint(schedule.endpointId, {}, schedule.id, 'schedule');
         }
     }
 };

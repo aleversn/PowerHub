@@ -83,10 +83,7 @@ export default {
         "en": "Warning",
         "cn": "警告"
     },
-    "Running": {
-        "en": "Running",
-        "cn": "运行中"
-    },
+
     "Run now": {
         "en": "Run now",
         "cn": "立即运行"
@@ -794,5 +791,290 @@ export default {
     "The selected server is no longer available.": {
         "en": "The selected server is no longer available.",
         "cn": "所选服务器已不存在。"
+    },
+    "New collection": {
+        "en": "New collection",
+        "cn": "新建合集"
+    },
+    "Default collection": {
+        "en": "Default collection",
+        "cn": "默认合集"
+    },
+    "Collection name": {
+        "en": "Collection name",
+        "cn": "合集名称"
+    },
+    "Move to collection": {
+        "en": "Move to collection",
+        "cn": "移动到合集"
+    },
+    "Duplicate": {
+        "en": "Duplicate",
+        "cn": "复制"
+    },
+    "Docs": {
+        "en": "Docs",
+        "cn": "文档"
+    },
+    "Params": {
+        "en": "Params",
+        "cn": "参数"
+    },
+    "Authorization": {
+        "en": "Authorization",
+        "cn": "认证"
+    },
+    "Headers": {
+        "en": "Headers",
+        "cn": "请求头"
+    },
+    "Body": {
+        "en": "Body",
+        "cn": "请求体"
+    },
+    "Send": {
+        "en": "Send",
+        "cn": "发送"
+    },
+    "Sending": {
+        "en": "Sending",
+        "cn": "发送中"
+    },
+    "Response": {
+        "en": "Response",
+        "cn": "响应"
+    },
+    "Response body": {
+        "en": "Response body",
+        "cn": "响应内容"
+    },
+    "No response yet": {
+        "en": "No response yet",
+        "cn": "暂无响应"
+    },
+    "Request failed": {
+        "en": "Request failed",
+        "cn": "请求失败"
+    },
+    "Key": {
+        "en": "Key",
+        "cn": "键"
+    },
+    "Value": {
+        "en": "Value",
+        "cn": "值"
+    },
+    "Add row": {
+        "en": "Add row",
+        "cn": "新增一行"
+    },
+    "Body type": {
+        "en": "Body type",
+        "cn": "请求体类型"
+    },
+    "Raw": {
+        "en": "Raw",
+        "cn": "原始文本"
+    },
+    "JSON": {
+        "en": "JSON",
+        "cn": "JSON"
+    },
+    "Form data": {
+        "en": "Form data",
+        "cn": "表单数据"
+    },
+    "URL encoded": {
+        "en": "URL encoded",
+        "cn": "URL 编码"
+    },
+    "Bearer token": {
+        "en": "Bearer token",
+        "cn": "Bearer 令牌"
+    },
+    "Basic auth": {
+        "en": "Basic auth",
+        "cn": "Basic 认证"
+    },
+    "API key": {
+        "en": "API key",
+        "cn": "API 密钥"
+    },
+    "Query": {
+        "en": "Query",
+        "cn": "查询参数"
+    },
+    "Save endpoint": {
+        "en": "Save endpoint",
+        "cn": "保存接口"
+    },
+    "Saving": {
+        "en": "Saving",
+        "cn": "保存中"
+    },
+    "Size": {
+        "en": "Size",
+        "cn": "大小"
+    },
+    "None": {
+        "en": "None",
+        "cn": "无"
+    },
+    "Key-value rows": {
+        "en": "Key-value rows",
+        "cn": "键值行"
+    },
+    "Back to endpoints": {
+        "en": "Back to endpoints",
+        "cn": "返回接口列表"
+    },
+    "Rename": {
+        "en": "Rename",
+        "cn": "重命名"
+    },
+    "Move up": {
+        "en": "Move up",
+        "cn": "上移"
+    },
+    "Move down": {
+        "en": "Move down",
+        "cn": "下移"
+    },
+    "Endpoint not found": {
+        "en": "Endpoint not found",
+        "cn": "未找到接口"
+    },
+    "The selected endpoint is no longer available.": {
+        "en": "The selected endpoint is no longer available.",
+        "cn": "当前选中的接口已不存在。"
+    },
+    "Describe this endpoint": {
+        "en": "Describe this endpoint",
+        "cn": "描述该接口"
+    },
+    "This request does not have a body.": {
+        "en": "This request does not have a body.",
+        "cn": "该请求没有请求体。"
+    },
+    "Send this request to inspect the live response.": {
+        "en": "Send this request to inspect the live response.",
+        "cn": "发送请求后可查看实时响应。"
+    },
+    "No authorization": {
+        "en": "No authorization",
+        "cn": "无认证"
+    },
+    "Add to": {
+        "en": "Add to",
+        "cn": "添加到"
+    },
+    "Username": {
+        "en": "Username",
+        "cn": "用户名"
+    },
+    "No endpoints yet": {
+        "en": "No endpoints yet",
+        "cn": "暂无接口"
+    },
+    "Create an endpoint to start testing live requests.": {
+        "en": "Create an endpoint to start testing live requests.",
+        "cn": "创建接口后即可开始测试真实请求。"
+    },
+    "Description": {
+        "en": "Description",
+        "cn": "描述"
+    },
+    "No URL yet": {
+        "en": "No URL yet",
+        "cn": "暂无 URL"
+    },
+    "Scripts": {
+        "en": "Scripts",
+        "cn": "脚本"
+    },
+    "Pre-request": {
+        "en": "Pre-request",
+        "cn": "请求前"
+    },
+    "Post-response": {
+        "en": "Post-response",
+        "cn": "响应后"
+    },
+    "Snippets": {
+        "en": "Snippets",
+        "cn": "代码片段"
+    },
+    "Run script": {
+        "en": "Run script",
+        "cn": "运行脚本"
+    },
+
+    "Script results": {
+        "en": "Script results",
+        "cn": "脚本结果"
+    },
+    "Unnamed test": {
+        "en": "Unnamed test",
+        "cn": "未命名测试"
+    },
+    "Clear": {
+        "en": "Clear",
+        "cn": "清空"
+    },
+    "Run JavaScript before and after the request.": {
+        "en": "Run JavaScript before and after the request.",
+        "cn": "在请求发送前后运行 JavaScript。"
+    },
+    "Use pm.environment.set to prepare variables before the request is sent.": {
+        "en": "Use pm.environment.set to prepare variables before the request is sent.",
+        "cn": "使用 pm.environment.set 在请求发送前准备变量。"
+    },
+    "Use pm.response and pm.test to inspect the response and save variables.": {
+        "en": "Use pm.response and pm.test to inspect the response and save variables.",
+        "cn": "使用 pm.response 和 pm.test 检查响应并保存变量。"
+    },
+    "The script is empty.": {
+        "en": "The script is empty.",
+        "cn": "脚本内容为空。"
+    },
+    "Variables": {
+        "en": "Variables",
+        "cn": "变量"
+    },
+    "Collection variables": {
+        "en": "Collection variables",
+        "cn": "集合变量"
+    },
+    "New variable": {
+        "en": "New variable",
+        "cn": "新建变量"
+    },
+    "Save variables": {
+        "en": "Save variables",
+        "cn": "保存变量"
+    },
+    "Type": {
+        "en": "Type",
+        "cn": "类型"
+    },
+    "Text": {
+        "en": "Text",
+        "cn": "文本"
+    },
+    "Blob": {
+        "en": "Blob",
+        "cn": "二进制"
+    },
+    "No variables yet": {
+        "en": "No variables yet",
+        "cn": "暂无变量"
+    },
+    "Add a variable to reuse a value across this collection.": {
+        "en": "Add a variable to reuse a value across this collection.",
+        "cn": "添加变量即可在该集合内复用取值。"
+    },
+    "Store values for a collection and reuse them by name in requests and scripts.": {
+        "en": "Store values for a collection and reuse them by name in requests and scripts.",
+        "cn": "为集合保存变量，并在请求和脚本中按名称复用。"
     }
 }

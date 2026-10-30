@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 
 import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
@@ -75,7 +75,14 @@ export default {
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local', 'formatDate']),
         ...mapState(useWorkspaceStore, ['endpointById', 'runs'])
     },
+    async mounted() {
+        await this.workspaceInitialize();
+    },
     methods: {
+        ...mapActions(useWorkspaceStore, {
+            workspaceInitialize: 'initialize',
+            refreshRuns: 'refreshRuns'
+        }),
         endpointName(id) {
             return this.endpointById[id]?.name || '-';
         },
@@ -87,11 +94,10 @@ export default {
             if (statusCode >= 400) return 'warning';
             return 'success';
         },
-        refresh() {
+        async refresh() {
             this.refreshing = true;
-            window.setTimeout(() => {
-                this.refreshing = false;
-            }, 300);
+            await this.refreshRuns();
+            this.refreshing = false;
         },
         triggerLabel(triggeredBy) {
             return this.local(triggeredBy === 'manual' ? 'Manual' : 'Schedule');

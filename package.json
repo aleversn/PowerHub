@@ -24,7 +24,9 @@
         "better-sqlite3": "^13.0.3",
         "drizzle-orm": "^0.45.4",
         "echarts": "^6.1.0",
+        "monaco-editor": "0.55.1",
         "pinia": "^2.1.7",
+        "postman-sandbox": "^6.9.0",
         "ssh2": "^1.17.0",
         "vue-router": "^4.5.1"
     },

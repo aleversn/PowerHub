@@ -2,12 +2,30 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
 
 const workspace = {
+    collections: {
+        list: () => ipcRenderer.invoke('workspace:collections:list'),
+        create: (payload) => ipcRenderer.invoke('workspace:collections:create', payload),
+        update: (id, patch) => ipcRenderer.invoke('workspace:collections:update', id, patch),
+        remove: (id) => ipcRenderer.invoke('workspace:collections:remove', id)
+    },
     endpoints: {
         list: () => ipcRenderer.invoke('workspace:endpoints:list'),
         create: (payload) => ipcRenderer.invoke('workspace:endpoints:create', payload),
         update: (id, patch) => ipcRenderer.invoke('workspace:endpoints:update', id, patch),
+        duplicate: (id) => ipcRenderer.invoke('workspace:endpoints:duplicate', id),
         toggle: (id) => ipcRenderer.invoke('workspace:endpoints:toggle', id),
-        remove: (id) => ipcRenderer.invoke('workspace:endpoints:remove', id)
+        move: (id, collection) => ipcRenderer.invoke('workspace:endpoints:move', id, collection),
+        remove: (id) => ipcRenderer.invoke('workspace:endpoints:remove', id),
+        send: (id, payload) => ipcRenderer.invoke('workspace:endpoints:send', id, payload),
+        runScript: (payload) => ipcRenderer.invoke('workspace:endpoints:runScript', payload)
+    },
+    variables: {
+        list: (collection) => ipcRenderer.invoke('workspace:variables:list', collection),
+        create: (payload) => ipcRenderer.invoke('workspace:variables:create', payload),
+        update: (id, patch) => ipcRenderer.invoke('workspace:variables:update', id, patch),
+        remove: (id) => ipcRenderer.invoke('workspace:variables:remove', id),
+        replace: (collection, variables) =>
+            ipcRenderer.invoke('workspace:variables:replace', collection, variables)
     },
     schedules: {
         list: () => ipcRenderer.invoke('workspace:schedules:list'),

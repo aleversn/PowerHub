@@ -1,160 +1,276 @@
 <template>
     <div class="page-stack endpoints-page">
         <sectionCard
-            :title="local('Endpoint collection')"
+            :title="local('API Requests')"
             :description="local('Manage HTTP requests, default headers, and monitor health.')"
         >
             <template #actions>
-                <fv-button
-                    :theme="resolvedTheme"
-                    background="#0078d4"
-                    foreground="#ffffff"
-                    border-radius="8"
-                    icon="Add"
-                    style="height: 34px"
-                    @click="editorOpen = true"
-                >
-                    {{ local('New endpoint') }}
-                </fv-button>
-            </template>
-
-            <div class="table-toolbar">
-                <fv-text-box
-                    v-model="keyword"
-                    :theme="resolvedTheme"
-                    :placeholder="local('Search')"
-                    icon="Search"
-                    border-radius="8"
-                    style="width: min(320px, 100%)"
-                ></fv-text-box>
-                <span class="record-count"
-                    >{{ filteredEndpoints.length }} endpoints</span
-                >
-            </div>
-
-            <div class="endpoint-table">
-                <div class="endpoint-table__head">
-                    <span>{{ local('Name') }}</span>
-                    <span>{{ local('Method') }}</span>
-                    <span>{{ local('Collection') }}</span>
-                    <span>{{ local('Health') }}</span>
-                    <span>{{ local('Enabled') }}</span>
-                    <span></span>
-                </div>
-                <div
-                    v-for="endpoint in filteredEndpoints"
-                    :key="endpoint.id"
-                    class="endpoint-table__row"
-                >
-                    <div class="endpoint-main">
-                        <strong>{{ endpoint.name }}</strong>
-                        <span>{{ endpoint.url }}</span>
-                    </div>
-                    <span
-                        class="method-badge"
-                        :class="endpoint.method.toLowerCase()"
-                    >
-                        {{ endpoint.method }}
-                    </span>
-                    <span class="muted-cell">{{ endpoint.collection }}</span>
-                    <statusPill :status="endpoint.health" />
-                    <fv-toggle-switch
-                        :model-value="endpoint.enabled"
-                        :theme="resolvedTheme"
-                        :width="38"
-                        :height="20"
-                        switch-on-background="#0078d4"
-                        @update:model-value="
-                            toggleEndpoint(endpoint.id)
-                        "
-                    ></fv-toggle-switch>
+                <div class="toolbar-actions">
                     <fv-button
                         :theme="resolvedTheme"
                         border-radius="8"
-                        style="width: 34px; height: 34px"
-                        :title="local('Run now')"
-                        @click="runEndpoint(endpoint.id)"
-                    >
-                        <i class="ms-Icon ms-Icon--Play"></i>
-                    </fv-button>
-                </div>
-            </div>
-        </sectionCard>
-
-        <fv-panel
-            v-model="editorOpen"
-            :title="local('Endpoint editor')"
-            :theme="resolvedTheme"
-            width="430px"
-            :is-footer="true"
-            :is-central-side="true"
-            :is-light-dismiss="true"
-        >
-            <template #container>
-                <div class="editor-form">
-                    <label>
-                        <span>{{ local('Name') }}</span>
-                        <fv-text-box
-                            v-model="newEndpoint.name"
-                            :theme="resolvedTheme"
-                            :placeholder="local('Example: Production health check')"
-                            border-radius="8"
-                        ></fv-text-box>
-                    </label>
-                    <div class="form-row">
-                        <label>
-                            <span>{{ local('Method') }}</span>
-                            <fv-drop-down
-                                :model-value="selectedMethod"
-                                :options="methodOptions"
-                                :theme="resolvedTheme"
-                                border-radius="8"
-                                @update:model-value="changeMethod"
-                            ></fv-drop-down>
-                        </label>
-                        <label>
-                            <span>{{ local('Collection') }}</span>
-                            <fv-text-box
-                                v-model="newEndpoint.collection"
-                                :theme="resolvedTheme"
-                                border-radius="8"
-                            ></fv-text-box>
-                        </label>
-                    </div>
-                    <label>
-                        <span>{{ local('Request URL') }}</span>
-                        <fv-text-box
-                            v-model="newEndpoint.url"
-                            :theme="resolvedTheme"
-                            :placeholder="local('https://api.example.com/health')"
-                            border-radius="8"
-                        ></fv-text-box>
-                    </label>
-                </div>
-            </template>
-            <template #footer>
-                <div class="panel-actions">
-                    <fv-button
-                        :theme="resolvedTheme"
-                        border-radius="8"
+                        icon="Add"
                         style="height: 34px"
-                        @click="editorOpen = false"
+                        @click="showCollectionCreator = !showCollectionCreator"
                     >
-                        {{ local('Cancel') }}
+                        {{ local('New collection') }}
                     </fv-button>
                     <fv-button
                         :theme="resolvedTheme"
                         background="#0078d4"
                         foreground="#ffffff"
                         border-radius="8"
+                        icon="Add"
                         style="height: 34px"
-                        @click="createEndpoint"
+                        @click="createEndpoint()"
                     >
-                        {{ local('Create') }}
+                        {{ local('New endpoint') }}
                     </fv-button>
                 </div>
             </template>
-        </fv-panel>
+
+            <div class="collection-toolbar">
+                <fv-text-box
+                    v-model="keyword"
+                    :theme="resolvedTheme"
+                    :placeholder="local('Search')"
+                    icon="Search"
+                    border-radius="8"
+                    style="width: min(340px, 100%)"
+                ></fv-text-box>
+                <span class="record-count">
+                    {{ filteredEndpointCount }} {{ local('Endpoints') }}
+                </span>
+            </div>
+
+            <div v-if="showCollectionCreator" class="collection-creator">
+                <fv-text-box
+                    v-model="newCollectionName"
+                    :theme="resolvedTheme"
+                    :placeholder="local('Collection name')"
+                    border-radius="8"
+                    style="min-width: 240px; flex: 1"
+                    @keyup.enter="createCollection"
+                ></fv-text-box>
+                <fv-button
+                    :theme="resolvedTheme"
+                    background="#0078d4"
+                    foreground="#ffffff"
+                    border-radius="8"
+                    style="height: 34px"
+                    @click="createCollection"
+                >
+                    {{ local('Create') }}
+                </fv-button>
+                <fv-button
+                    :theme="resolvedTheme"
+                    border-radius="8"
+                    style="height: 34px"
+                    @click="cancelCreateCollection"
+                >
+                    {{ local('Cancel') }}
+                </fv-button>
+            </div>
+
+            <div v-if="errorMessage" class="endpoint-alert">
+                {{ errorMessage }}
+            </div>
+
+            <div v-if="!filteredGroups.length" class="empty-state">
+                <i class="ms-Icon ms-Icon--Inbox"></i>
+                <strong>{{ local('No endpoints yet') }}</strong>
+                <span>{{ local('Create an endpoint to start testing live requests.') }}</span>
+            </div>
+
+            <div v-else class="collection-list">
+                <fv-collapse
+                    v-for="group in filteredGroups"
+                    :key="group.id"
+                    :theme="resolvedTheme"
+                    :icon="group.name === DEFAULT_COLLECTION ? 'Home' : 'Folder'"
+                    :title="group.name"
+                    :content="collectionSummary(group)"
+                    :model-value="isGroupExpanded(group)"
+                    :background="collapseBackground"
+                    :hover-background="collapseHoverBackground"
+                    :border-color="collapseBorderColor"
+                    :default-height="76"
+                    :max-height="1600"
+                    :visible-overflow="true"
+                    class="collection-collapse"
+                    @update:model-value="setGroupExpanded(group, $event)"
+                >
+                    <template #extension>
+                        <div class="collection-extension" @click.stop>
+                            <template v-if="renamingCollectionId === group.id">
+                                <fv-text-box
+                                    v-model="renamingCollectionName"
+                                    :theme="resolvedTheme"
+                                    :placeholder="local('Collection name')"
+                                    border-radius="8"
+                                    style="width: 190px"
+                                    @keyup.enter="saveCollectionName(group)"
+                                ></fv-text-box>
+                                <fv-button
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    style="height: 32px"
+                                    @click="saveCollectionName(group)"
+                                >
+                                    {{ local('Save') }}
+                                </fv-button>
+                                <fv-button
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    style="height: 32px"
+                                    @click="cancelRenameCollection"
+                                >
+                                    {{ local('Cancel') }}
+                                </fv-button>
+                            </template>
+                            <template v-else>
+                                <fv-button
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    icon="Add"
+                                    style="height: 32px"
+                                    @click="createEndpoint(group.name)"
+                                >
+                                    {{ local('New endpoint') }}
+                                </fv-button>
+                                <fv-button
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    icon="Edit"
+                                    style="width: 34px; height: 32px"
+                                    :title="local('Rename')"
+                                    @click="beginRenameCollection(group)"
+                                >
+                                </fv-button>
+                                <fv-button
+                                    v-if="group.name !== DEFAULT_COLLECTION"
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    icon="Delete"
+                                    style="width: 34px; height: 32px"
+                                    :title="local('Delete')"
+                                    @click="deleteCollection(group)"
+                                >
+                                </fv-button>
+                            </template>
+                        </div>
+                    </template>
+
+                    <div class="endpoint-list">
+                        <div
+                            v-for="endpoint in group.endpoints"
+                            :key="endpoint.id"
+                            class="endpoint-row"
+                            role="button"
+                            tabindex="0"
+                            @click="openEndpoint(endpoint)"
+                            @keyup.enter="openEndpoint(endpoint)"
+                        >
+                            <span
+                                class="method-badge"
+                                :class="endpoint.method.toLowerCase()"
+                            >
+                                {{ endpoint.method }}
+                            </span>
+
+                            <div class="endpoint-main">
+                                <strong>{{ endpoint.name }}</strong>
+                                <span>{{ endpoint.url || local('No URL yet') }}</span>
+                            </div>
+
+                            <statusPill :status="endpoint.health" />
+
+                            <fv-toggle-switch
+                                :model-value="endpoint.enabled"
+                                :theme="resolvedTheme"
+                                :width="38"
+                                :height="20"
+                                switch-on-background="#0078d4"
+                                @click.stop
+                                @update:model-value="toggleEndpoint(endpoint.id)"
+                            ></fv-toggle-switch>
+
+                            <div class="endpoint-actions" @click.stop>
+                                <fv-button
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    style="width: 32px; height: 32px"
+                                    :title="local('Move up')"
+                                    :disabled="!canMoveWithinCollection(group, endpoint, -1)"
+                                    @click="moveWithinCollection(group, endpoint, -1)"
+                                >
+                                    <i class="ms-Icon ms-Icon--Up"></i>
+                                </fv-button>
+                                <fv-button
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    style="width: 32px; height: 32px"
+                                    :title="local('Move down')"
+                                    :disabled="!canMoveWithinCollection(group, endpoint, 1)"
+                                    @click="moveWithinCollection(group, endpoint, 1)"
+                                >
+                                    <i class="ms-Icon ms-Icon--Down"></i>
+                                </fv-button>
+                                <fv-button
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    style="width: 32px; height: 32px"
+                                    :title="local('Send')"
+                                    :disabled="sendingEndpointId === endpoint.id"
+                                    @click="sendEndpoint(endpoint)"
+                                >
+                                    <i
+                                        class="ms-Icon"
+                                        :class="
+                                            sendingEndpointId === endpoint.id
+                                                ? 'ms-Icon--Sync'
+                                                : 'ms-Icon--Play'
+                                        "
+                                    ></i>
+                                </fv-button>
+                                <fv-button
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    style="width: 32px; height: 32px"
+                                    :title="local('Duplicate')"
+                                    @click="duplicateEndpoint(endpoint.id)"
+                                >
+                                    <i class="ms-Icon ms-Icon--Copy"></i>
+                                </fv-button>
+                                <fv-drop-down
+                                    :model-value="collectionSelection(endpoint)"
+                                    :options="moveOptions"
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    input-height="32px"
+                                    input-font-size="12px"
+                                    style="width: 150px"
+                                    @update:model-value="moveToCollection(endpoint, $event)"
+                                ></fv-drop-down>
+                                <fv-button
+                                    :theme="resolvedTheme"
+                                    border-radius="8"
+                                    style="width: 32px; height: 32px"
+                                    :title="local('Delete')"
+                                    @click="deleteEndpoint(endpoint)"
+                                >
+                                    <i class="ms-Icon ms-Icon--Delete"></i>
+                                </fv-button>
+                            </div>
+                        </div>
+
+                        <div v-if="!group.endpoints.length" class="collection-empty">
+                            {{ local('No endpoints yet') }}
+                        </div>
+                    </div>
+                </fv-collapse>
+            </div>
+        </sectionCard>
     </div>
 </template>
 
@@ -166,6 +282,8 @@ import statusPill from '@/components/common/statusPill.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useWorkspaceStore } from '@/stores/workspace';
 
+const DEFAULT_COLLECTION = 'Default collection';
+
 export default {
     name: 'EndpointsView',
     components: {
@@ -174,60 +292,241 @@ export default {
     },
     data() {
         return {
+            DEFAULT_COLLECTION,
             keyword: '',
-            editorOpen: false,
-            newEndpoint: {
-                name: '',
-                method: 'GET',
-                collection: 'Personal',
-                url: ''
-            },
-            methodOptions: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(
-                (method) => ({
-                    key: method,
-                    text: method
-                })
-            )
+            showCollectionCreator: false,
+            newCollectionName: '',
+            expandedGroups: {},
+            renamingCollectionId: '',
+            renamingCollectionName: '',
+            sendingEndpointId: '',
+            errorMessage: ''
         };
     },
     computed: {
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
-        ...mapState(useWorkspaceStore, ['endpoints']),
-        selectedMethod() {
-            return this.methodOptions.filter(
-                (option) => option.key === this.newEndpoint.method
-            );
+        ...mapState(useWorkspaceStore, {
+            workspaceEndpointGroups: 'collectionGroups',
+            collections: 'collections'
+        }),
+        collapseBackground() {
+            return this.resolvedTheme === 'dark'
+                ? 'rgba(23, 29, 39, 0.6)'
+                : 'rgba(255, 255, 255, 0.72)';
         },
-        filteredEndpoints() {
+        collapseHoverBackground() {
+            return this.resolvedTheme === 'dark'
+                ? 'rgba(19, 24, 35, 1)'
+                : 'rgba(247, 249, 253, 0.96)';
+        },
+        collapseBorderColor() {
+            return this.resolvedTheme === 'dark'
+                ? 'rgba(120, 120, 120, 0.2)'
+                : 'rgba(0, 0, 0, 0.08)';
+        },
+        moveOptions() {
+            return this.collections.map((collection) => ({
+                key: collection.name,
+                text: collection.name
+            }));
+        },
+        filteredGroups() {
             const search = this.keyword.trim().toLowerCase();
-            if (!search) return this.endpoints;
-            return this.endpoints.filter((endpoint) =>
-                [
-                    endpoint.name,
-                    endpoint.url,
-                    endpoint.collection,
-                    endpoint.method
-                ]
-                    .join(' ')
-                    .toLowerCase()
-                    .includes(search)
+            const groups = this.workspaceEndpointGroups
+                .map((group) => ({
+                    ...group,
+                    endpoints: [...group.endpoints].sort(
+                        (left, right) =>
+                            Number(left.sortOrder || 0) - Number(right.sortOrder || 0)
+                    )
+                }))
+                .sort(
+                    (left, right) =>
+                        Number(left.sortOrder || 0) - Number(right.sortOrder || 0)
+                );
+            if (!search) return groups;
+            return groups
+                .map((group) => ({
+                    ...group,
+                    endpoints: group.endpoints.filter((endpoint) =>
+                        [
+                            endpoint.name,
+                            endpoint.url,
+                            endpoint.collection,
+                            endpoint.method
+                        ]
+                            .join(' ')
+                            .toLowerCase()
+                            .includes(search)
+                    )
+                }))
+                .filter((group) => group.endpoints.length);
+        },
+        filteredEndpointCount() {
+            return this.filteredGroups.reduce(
+                (count, group) => count + group.endpoints.length,
+                0
             );
         }
     },
+    mounted() {
+        this.workspaceInitialize();
+    },
     methods: {
-        ...mapActions(useWorkspaceStore, ['addEndpoint', 'runEndpoint', 'toggleEndpoint']),
-        changeMethod(options) {
-            this.newEndpoint.method = options?.[0]?.key || 'GET';
+        ...mapActions(useWorkspaceStore, {
+            workspaceInitialize: 'initialize',
+            addEndpoint: 'addEndpoint',
+            updateEndpoint: 'updateEndpoint',
+            duplicateEndpoint: 'duplicateEndpoint',
+            toggleEndpoint: 'toggleEndpoint',
+            moveEndpoint: 'moveEndpoint',
+            removeEndpoint: 'removeEndpoint',
+            addCollection: 'addCollection',
+            updateCollection: 'updateCollection',
+            removeCollection: 'removeCollection',
+            runEndpoint: 'runEndpoint'
+        }),
+        collectionSummary(group) {
+            return `${group.endpoints.length} ${this.local('Endpoints')}`;
         },
-        createEndpoint() {
-            this.addEndpoint(this.newEndpoint);
-            Object.assign(this.newEndpoint, {
-                name: '',
+        isGroupExpanded(group) {
+            return this.expandedGroups[group.id] !== false;
+        },
+        setGroupExpanded(group, value) {
+            this.expandedGroups = {
+                ...this.expandedGroups,
+                [group.id]: Boolean(value)
+            };
+        },
+        collectionSelection(endpoint) {
+            const option = this.moveOptions.find(
+                (item) => item.key === endpoint.collection
+            );
+            return option ? [option] : [];
+        },
+        async createEndpoint(collection = DEFAULT_COLLECTION) {
+            const result = await this.addEndpoint({
+                name: 'Untitled endpoint',
                 method: 'GET',
-                collection: 'Personal',
-                url: ''
+                url: '',
+                collection: collection || DEFAULT_COLLECTION
             });
-            this.editorOpen = false;
+            if (!result.ok) {
+                this.errorMessage = result.message;
+                return;
+            }
+            this.openEndpoint(result.endpoint);
+        },
+        openEndpoint(endpoint) {
+            this.$router.push({
+                name: 'endpoint-editor',
+                params: { id: endpoint.id }
+            });
+        },
+        async sendEndpoint(endpoint) {
+            this.sendingEndpointId = endpoint.id;
+            const result = await this.runEndpoint(endpoint.id, {}, null, 'manual');
+            this.sendingEndpointId = '';
+            if (!result.ok) this.errorMessage = result.message;
+        },
+        async moveToCollection(endpoint, value) {
+            const nextCollection = value?.[0]?.key;
+            if (!nextCollection || nextCollection === endpoint.collection) return;
+            const result = await this.moveEndpoint(endpoint.id, nextCollection);
+            if (!result.ok) this.errorMessage = result.message;
+        },
+        completeGroup(group) {
+            return (
+                this.workspaceEndpointGroups.find(
+                    (item) => item.name === group.name
+                ) || group
+            );
+        },
+        canMoveWithinCollection(group, endpoint, direction) {
+            const endpoints = [...this.completeGroup(group).endpoints].sort(
+                (left, right) =>
+                    Number(left.sortOrder || 0) - Number(right.sortOrder || 0)
+            );
+            const currentIndex = endpoints.findIndex(
+                (item) => item.id === endpoint.id
+            );
+            return currentIndex >= 0 && Boolean(endpoints[currentIndex + direction]);
+        },
+        async moveWithinCollection(group, endpoint, direction) {
+            const endpoints = [...this.completeGroup(group).endpoints].sort(
+                (left, right) =>
+                    Number(left.sortOrder || 0) - Number(right.sortOrder || 0)
+            );
+            const currentIndex = endpoints.findIndex(
+                (item) => item.id === endpoint.id
+            );
+            const targetIndex = currentIndex + direction;
+            if (currentIndex < 0 || targetIndex < 0 || targetIndex >= endpoints.length) {
+                return;
+            }
+            const reordered = [...endpoints];
+            const [moved] = reordered.splice(currentIndex, 1);
+            reordered.splice(targetIndex, 0, moved);
+            await Promise.all(
+                reordered.map((item, index) =>
+                    Number(item.sortOrder) === index
+                        ? Promise.resolve({ ok: true })
+                        : this.updateEndpoint(item.id, { sortOrder: index })
+                )
+            );
+        },
+        async createCollection() {
+            const name = this.newCollectionName.trim();
+            if (!name) return;
+            const result = await this.addCollection({ name });
+            if (!result.ok) {
+                this.errorMessage = result.message;
+                return;
+            }
+            this.newCollectionName = '';
+            this.showCollectionCreator = false;
+        },
+        cancelCreateCollection() {
+            this.newCollectionName = '';
+            this.showCollectionCreator = false;
+        },
+        beginRenameCollection(group) {
+            this.renamingCollectionId = group.id;
+            this.renamingCollectionName = group.name;
+        },
+        cancelRenameCollection() {
+            this.renamingCollectionId = '';
+            this.renamingCollectionName = '';
+        },
+        async saveCollectionName(group) {
+            const name = this.renamingCollectionName.trim();
+            if (!name || name === group.name) {
+                this.cancelRenameCollection();
+                return;
+            }
+            const result = await this.updateCollection(group.id, { name });
+            if (!result.ok) {
+                this.errorMessage = result.message;
+                return;
+            }
+            this.cancelRenameCollection();
+        },
+        async deleteCollection(group) {
+            if (group.name === DEFAULT_COLLECTION) return;
+            const confirmed = window.confirm(
+                `${this.local('Delete')} "${group.name}"?`
+            );
+            if (!confirmed) return;
+            const result = await this.removeCollection(group.id);
+            if (!result.ok) this.errorMessage = result.message;
+        },
+        async deleteEndpoint(endpoint) {
+            const confirmed = window.confirm(
+                `${this.local('Delete')} "${endpoint.name}"?`
+            );
+            if (!confirmed) return;
+            const result = await this.removeEndpoint(endpoint.id);
+            if (!result.ok) this.errorMessage = result.message;
         }
     }
 };
@@ -235,12 +534,19 @@ export default {
 
 <style lang="scss" scoped>
 .endpoints-page {
-    .table-toolbar {
-        margin-bottom: 14px;
+    .toolbar-actions,
+    .collection-toolbar,
+    .collection-creator,
+    .collection-extension,
+    .endpoint-actions {
         display: flex;
         align-items: center;
+        gap: 8px;
+    }
+
+    .collection-toolbar {
+        margin-bottom: 14px;
         justify-content: space-between;
-        gap: 14px;
     }
 
     .record-count {
@@ -248,36 +554,64 @@ export default {
         font-size: 11px;
     }
 
-    .endpoint-table {
+    .collection-creator {
+        margin-bottom: 14px;
+        padding: 12px;
+        border: 1px solid var(--ph-border);
+        border-radius: 12px;
+        background: var(--ph-surface-soft);
+    }
+
+    .endpoint-alert {
+        margin-bottom: 14px;
+        padding: 10px 12px;
+        border: 1px solid rgba(196, 43, 28, 0.25);
+        border-radius: 10px;
+        background: rgba(196, 43, 28, 0.08);
+        color: var(--ph-danger);
+        font-size: 12px;
+    }
+
+    .collection-list {
         min-width: 0;
         display: flex;
         flex-direction: column;
+        gap: 12px;
     }
 
-    .endpoint-table__head,
-    .endpoint-table__row {
+    .collection-collapse {
+        width: 100%;
+    }
+
+    .collection-extension {
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .endpoint-list {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 12px 14px 14px;
+    }
+
+    .endpoint-row {
+        min-width: 0;
+        min-height: 56px;
+        padding: 8px 10px;
+        border: 1px solid var(--ph-border-subtle);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.44);
         display: grid;
-        grid-template-columns: minmax(240px, 1.8fr) 86px 100px 108px 72px 42px;
+        grid-template-columns: 64px minmax(170px, 1fr) 96px 52px auto;
         align-items: center;
-        gap: 14px;
-    }
+        gap: 12px;
+        cursor: pointer;
 
-    .endpoint-table__head {
-        min-height: 36px;
-        border-bottom: 1px solid var(--ph-border);
-        color: var(--ph-text-muted);
-        font-size: 10px;
-        text-transform: uppercase;
-    }
-
-    .endpoint-table__row {
-        min-height: 66px;
-        border-bottom: 1px solid var(--ph-border-subtle);
-        color: var(--ph-text-secondary);
-        font-size: 12px;
-
-        &:last-child {
-            border-bottom: 0;
+        &:hover {
+            border-color: var(--ph-border);
+            background: var(--ph-surface-hover);
         }
     }
 
@@ -328,55 +662,66 @@ export default {
         }
     }
 
-    .muted-cell {
-        @include nowrap;
-
-        color: var(--ph-text-secondary);
+    .collection-empty,
+    .empty-state {
+        color: var(--ph-text-muted);
+        font-size: 12px;
     }
 
-    .editor-form {
+    .collection-empty {
+        padding: 12px;
+        border: 1px dashed var(--ph-border);
+        border-radius: 10px;
+    }
+
+    .empty-state {
+        min-height: 220px;
+        border: 1px dashed var(--ph-border);
+        border-radius: 14px;
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
 
-        label {
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
+        .ms-Icon {
+            font-size: 28px;
+        }
 
-            > span {
-                color: var(--ph-text-secondary);
-                font-size: 12px;
-            }
+        strong {
+            color: var(--ph-text);
+            font-size: 14px;
         }
     }
 
-    .form-row {
-        display: grid;
-        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-        gap: 12px;
-    }
+    @media (max-width: 1180px) {
+        .endpoint-row {
+            grid-template-columns: 64px minmax(150px, 1fr) 90px 48px;
+        }
 
-    .panel-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
+        .endpoint-actions {
+            grid-column: 1 / -1;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
     }
 
     @media (max-width: 760px) {
-        .endpoint-table {
-            overflow-x: auto;
-        }
-
-        .endpoint-table__head,
-        .endpoint-table__row {
-            min-width: 760px;
-        }
-
-        .table-toolbar {
-            align-items: flex-start;
+        .toolbar-actions,
+        .collection-toolbar,
+        .collection-creator,
+        .endpoint-actions {
+            align-items: stretch;
             flex-direction: column;
+        }
+
+        .collection-extension {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .endpoint-row {
+            grid-template-columns: 1fr;
         }
     }
 }

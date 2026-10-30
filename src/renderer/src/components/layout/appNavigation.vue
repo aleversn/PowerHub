@@ -67,6 +67,12 @@ export default {
                     route: '/endpoints'
                 },
                 {
+                    key: 'variables',
+                    name: () => this.local('Variables'),
+                    icon: 'Variable',
+                    route: '/variables'
+                },
+                {
                     key: 'schedules',
                     name: () => this.local('Schedules'),
                     icon: 'DateTime',
