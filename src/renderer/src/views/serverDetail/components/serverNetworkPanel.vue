@@ -5,7 +5,16 @@
                 <i class="ms-Icon ms-Icon--Network"></i>
                 {{ local('Network') }}
             </span>
-            <strong>{{ formatBytes(metrics.netInTotal + metrics.netOutTotal) }}</strong>
+            <span class="network-summary">
+                <span>
+                    <small>{{ local('TOTAL UP') }}</small>
+                    {{ formatBytes(metrics.netOutTotal) }}
+                </span>
+                <span>
+                    <small>{{ local('TOTAL DOWN') }}</small>
+                    {{ formatBytes(metrics.netInTotal) }}
+                </span>
+            </span>
         </header>
         <div class="network-list">
             <div v-for="item in visibleInterfaces" :key="item.name" class="network-row">
@@ -16,7 +25,8 @@
                 <div class="network-values">
                     <span><small>{{ local('UP') }}</small>{{ formatRate(item.txRate) }}</span>
                     <span><small>{{ local('DOWN') }}</small>{{ formatRate(item.rxRate) }}</span>
-                    <span><small>{{ local('TOTAL') }}</small>{{ formatBytes(item.txTotal + item.rxTotal) }}</span>
+                    <span><small>{{ local('TOTAL UP') }}</small>{{ formatBytes(item.txTotal) }}</span>
+                    <span><small>{{ local('TOTAL DOWN') }}</small>{{ formatBytes(item.rxTotal) }}</span>
                 </div>
                 <div class="network-ring" :style="ringStyle(item)">
                     <span></span>
@@ -85,6 +95,31 @@ export default {
 
     .panel-head {
         @include panel.head;
+
+        .network-summary {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+
+            > span {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 2px;
+                color: var(--servercat-text);
+                font-size: 13px;
+                font-weight: 700;
+                font-variant-numeric: tabular-nums;
+                white-space: nowrap;
+            }
+
+            small {
+                color: var(--servercat-muted);
+                font-size: 9px;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+            }
+        }
     }
 
     .network-list {
@@ -97,7 +132,7 @@ export default {
         padding: 10px 0;
         border-bottom: 1px solid var(--servercat-border);
         display: grid;
-        grid-template-columns: minmax(120px, 0.9fr) minmax(260px, 2fr) 42px;
+        grid-template-columns: minmax(120px, 0.9fr) minmax(320px, 2.4fr) 42px;
         align-items: center;
         gap: 12px;
     }
@@ -123,7 +158,7 @@ export default {
     .network-values {
         min-width: 0;
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 8px;
 
         span {

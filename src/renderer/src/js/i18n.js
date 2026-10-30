@@ -751,6 +751,14 @@ export default {
         "en": "DOWN",
         "cn": "下行"
     },
+    "TOTAL UP": {
+        "en": "TOTAL UP",
+        "cn": "累计上行"
+    },
+    "TOTAL DOWN": {
+        "en": "TOTAL DOWN",
+        "cn": "累计下行"
+    },
     "Virtual interfaces": {
         "en": "Virtual interfaces",
         "cn": "虚拟网卡"
