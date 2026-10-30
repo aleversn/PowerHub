@@ -332,6 +332,12 @@ export default {
         :deep(.fv-CheckBox) {
             width: 20px;
         }
+
+        :deep(.fv-TextBox),
+        :deep(.fv-DropDown) {
+            width: 100%;
+            min-width: 0;
+        }
     }
 
     .variables-empty {

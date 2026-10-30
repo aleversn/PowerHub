@@ -1076,5 +1076,49 @@ export default {
     "Store values for a collection and reuse them by name in requests and scripts.": {
         "en": "Store values for a collection and reuse them by name in requests and scripts.",
         "cn": "为集合保存变量，并在请求和脚本中按名称复用。"
+    },
+    "Emoji": {
+        "en": "Emoji",
+        "cn": "图标"
+    },
+    "Random": {
+        "en": "Random",
+        "cn": "随机"
+    },
+    "Change emoji": {
+        "en": "Change emoji",
+        "cn": "更换图标"
+    },
+    "People and Fantasy": {
+        "en": "People and Fantasy",
+        "cn": "人物与幻想"
+    },
+    "Animals & Nature": {
+        "en": "Animals & Nature",
+        "cn": "动物与自然"
+    },
+    "Food & Drink": {
+        "en": "Food & Drink",
+        "cn": "食物与饮品"
+    },
+    "Activity and Sports": {
+        "en": "Activity and Sports",
+        "cn": "活动与运动"
+    },
+    "Travel & Places": {
+        "en": "Travel & Places",
+        "cn": "旅行与地点"
+    },
+    "Objects": {
+        "en": "Objects",
+        "cn": "物品"
+    },
+    "Symbols": {
+        "en": "Symbols",
+        "cn": "符号"
+    },
+    "Flags": {
+        "en": "Flags",
+        "cn": "旗帜"
     }
 }

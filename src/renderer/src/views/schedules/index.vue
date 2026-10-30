@@ -388,6 +388,12 @@ export default {
                 color: var(--ph-text-secondary);
                 font-size: 12px;
             }
+
+            :deep(.fv-TextBox),
+            :deep(.fv-DropDown) {
+                width: 100%;
+                min-width: 0;
+            }
         }
     }
 

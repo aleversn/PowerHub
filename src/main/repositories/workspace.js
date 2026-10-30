@@ -83,6 +83,7 @@ const collectionRowToModel = (row) =>
         ? {
               ...row,
               name: row.name || DEFAULT_COLLECTION,
+              emoji: row.emoji || '',
               sortOrder: normalizeSortOrder(row.sortOrder)
           }
         : null;
@@ -110,6 +111,7 @@ function syncCollectionsFromEndpoints() {
             .values({
                 id: createId('collection'),
                 name,
+                emoji: '',
                 sortOrder,
                 createdAt: timestamp,
                 updatedAt: timestamp
@@ -139,6 +141,7 @@ export function createCollection(payload = {}) {
     const collection = {
         id: payload.id || createId('collection'),
         name,
+        emoji: String(payload.emoji || ''),
         sortOrder: normalizeSortOrder(payload.sortOrder, maxSort + 1),
         createdAt: timestamp,
         updatedAt: timestamp
@@ -155,10 +158,13 @@ export function updateCollection(id, patch = {}) {
         patch.name !== undefined
             ? String(patch.name).trim() || current.name
             : current.name;
+    const nextEmoji =
+        patch.emoji !== undefined ? String(patch.emoji) : current.emoji || '';
     getDatabase()
         .update(collections)
         .set({
             name: nextName,
+            emoji: nextEmoji,
             sortOrder:
                 patch.sortOrder !== undefined
                     ? normalizeSortOrder(patch.sortOrder, current.sortOrder)

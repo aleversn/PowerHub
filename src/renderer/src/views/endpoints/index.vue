@@ -44,6 +44,11 @@
             </div>
 
             <div v-if="showCollectionCreator" class="collection-creator">
+                <emoji-callout
+                    :model-value="newCollectionEmoji"
+                    :theme="resolvedTheme"
+                    @insert-emoji="newCollectionEmoji = $event"
+                ></emoji-callout>
                 <fv-text-box
                     v-model="newCollectionName"
                     :theme="resolvedTheme"
@@ -87,7 +92,6 @@
                     v-for="group in filteredGroups"
                     :key="group.id"
                     :theme="resolvedTheme"
-                    :icon="group.name === DEFAULT_COLLECTION ? 'Home' : 'Folder'"
                     :title="group.name"
                     :content="collectionSummary(group)"
                     :model-value="isGroupExpanded(group)"
@@ -100,6 +104,16 @@
                     class="collection-collapse"
                     @update:model-value="setGroupExpanded(group, $event)"
                 >
+                    <template #icon>
+                        <span class="collection-emoji-picker" @click.stop>
+                            <emoji-callout
+                                :model-value="collectionIconValue(group)"
+                                :theme="resolvedTheme"
+                                @insert-emoji="pickCollectionEmoji(group, $event)"
+                            ></emoji-callout>
+                        </span>
+                    </template>
+
                     <template #extension>
                         <div class="collection-extension" @click.stop>
                             <template v-if="renamingCollectionId === group.id">
@@ -132,30 +146,30 @@
                                 <fv-button
                                     :theme="resolvedTheme"
                                     border-radius="8"
-                                    icon="Add"
                                     style="height: 32px"
                                     @click="createEndpoint(group.name)"
                                 >
-                                    {{ local('New endpoint') }}
+                                    <i class="ms-Icon ms-Icon--Add"></i>
+                                    <span class="button-label">{{ local('New endpoint') }}</span>
                                 </fv-button>
                                 <fv-button
                                     :theme="resolvedTheme"
                                     border-radius="8"
-                                    icon="Edit"
                                     style="width: 34px; height: 32px"
                                     :title="local('Rename')"
                                     @click="beginRenameCollection(group)"
                                 >
+                                    <i class="ms-Icon ms-Icon--Edit"></i>
                                 </fv-button>
                                 <fv-button
                                     v-if="group.name !== DEFAULT_COLLECTION"
                                     :theme="resolvedTheme"
                                     border-radius="8"
-                                    icon="Delete"
                                     style="width: 34px; height: 32px"
                                     :title="local('Delete')"
                                     @click="deleteCollection(group)"
                                 >
+                                    <i class="ms-Icon ms-Icon--Delete"></i>
                                 </fv-button>
                             </template>
                         </div>
@@ -279,6 +293,7 @@ import { mapActions, mapState } from 'pinia';
 
 import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
+import emojiCallout from '@/components/general/callout/emojiCallout.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useWorkspaceStore } from '@/stores/workspace';
 
@@ -288,7 +303,8 @@ export default {
     name: 'EndpointsView',
     components: {
         sectionCard,
-        statusPill
+        statusPill,
+        emojiCallout
     },
     data() {
         return {
@@ -296,6 +312,7 @@ export default {
             keyword: '',
             showCollectionCreator: false,
             newCollectionName: '',
+            newCollectionEmoji: '',
             expandedGroups: {},
             renamingCollectionId: '',
             renamingCollectionName: '',
@@ -389,6 +406,19 @@ export default {
         collectionSummary(group) {
             return `${group.endpoints.length} ${this.local('Endpoints')}`;
         },
+        collectionEmoji(group) {
+            if (group.emoji) return group.emoji;
+            return group.name === DEFAULT_COLLECTION ? '🏠' : '📁';
+        },
+        // 左侧图标即选择器：无 emoji 时展示默认图标，但不要触发保存。
+        collectionIconValue(group) {
+            return this.collectionEmoji(group);
+        },
+        async pickCollectionEmoji(group, emoji) {
+            if (!emoji || emoji === this.collectionEmoji(group)) return;
+            const result = await this.updateCollection(group.id, { emoji });
+            if (!result.ok) this.errorMessage = result.message;
+        },
         isGroupExpanded(group) {
             return this.expandedGroups[group.id] !== false;
         },
@@ -478,16 +508,21 @@ export default {
         async createCollection() {
             const name = this.newCollectionName.trim();
             if (!name) return;
-            const result = await this.addCollection({ name });
+            const result = await this.addCollection({
+                name,
+                emoji: this.newCollectionEmoji
+            });
             if (!result.ok) {
                 this.errorMessage = result.message;
                 return;
             }
             this.newCollectionName = '';
+            this.newCollectionEmoji = '';
             this.showCollectionCreator = false;
         },
         cancelCreateCollection() {
             this.newCollectionName = '';
+            this.newCollectionEmoji = '';
             this.showCollectionCreator = false;
         },
         beginRenameCollection(group) {
@@ -586,6 +621,35 @@ export default {
     .collection-extension {
         justify-content: flex-end;
         flex-wrap: wrap;
+    }
+
+    .collection-emoji-picker {
+        display: inline-flex;
+
+        :deep(.ph-emoji-trigger) {
+            min-width: 30px;
+            height: 30px;
+            padding: 0 4px;
+            border: 0;
+            background: transparent;
+            font-size: 18px;
+        }
+
+        :deep(.ph-emoji-trigger:hover) {
+            background: var(--ph-surface-hover);
+        }
+    }
+
+    .button-label {
+        margin-left: 6px;
+    }
+
+    .collection-creator,
+    .collection-extension {
+        :deep(.fv-TextBox) {
+            flex: 1;
+            min-width: 0;
+        }
     }
 
     .endpoint-list {

@@ -52,6 +52,7 @@ const normalizeEndpoint = (endpoint = {}) => {
 const normalizeCollection = (collection = {}) => ({
     id: collection.id || createId('collection'),
     name: collection.name || DEFAULT_COLLECTION,
+    emoji: String(collection.emoji ?? ''),
     sortOrder: Number(collection.sortOrder) || 0,
     createdAt: collection.createdAt || now(),
     updatedAt: collection.updatedAt || now()
@@ -423,7 +424,10 @@ export const useWorkspaceStore = defineStore('workspace', {
             const previousName = current?.name;
             try {
                 const collection = normalizeCollection(
-                    await api.collections.update(id, toPlain({ name: patch.name }))
+                    await api.collections.update(
+                        id,
+                        toPlain({ name: patch.name, emoji: patch.emoji })
+                    )
                 );
                 const index = this.collections.findIndex(
                     (item) => item.id === id

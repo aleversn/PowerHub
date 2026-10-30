@@ -170,6 +170,11 @@ export default {
         :deep(.fv-CheckBox) {
             width: 20px;
         }
+
+        :deep(.fv-TextBox) {
+            width: 100%;
+            min-width: 0;
+        }
     }
 
     .key-value-footer {

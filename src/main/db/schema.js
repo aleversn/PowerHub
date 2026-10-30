@@ -6,6 +6,7 @@ export const collections = sqliteTable(
     {
         id: text('id').primaryKey(),
         name: text('name').notNull(),
+        emoji: text('emoji').notNull().default(''),
         sortOrder: integer('sort_order').notNull().default(0),
         createdAt: text('created_at').notNull(),
         updatedAt: text('updated_at').notNull()
