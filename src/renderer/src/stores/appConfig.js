@@ -119,6 +119,8 @@ export const useAppConfigStore = defineStore('appConfig', {
     getters: {
         appName: (state) => state.config.appName,
         resolvedTheme: (state) => state.config.theme,
+        appLanguage: (state) =>
+            state.config.language === 'cn' ? 'cn' : 'en',
         isDark: (state) => state.config.theme === 'dark',
         local: (state) => (text) => {
             const entry = state.i18n[text];

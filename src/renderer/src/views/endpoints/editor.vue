@@ -4,7 +4,9 @@
             <div v-if="!endpoint" class="editor-empty">
                 <i class="ms-Icon ms-Icon--Warning"></i>
                 <strong>{{ local('Endpoint not found') }}</strong>
-                <span>{{ local('The selected endpoint is no longer available.') }}</span>
+                <span>{{
+                    local('The selected endpoint is no longer available.')
+                }}</span>
             </div>
 
             <template v-else>
@@ -114,20 +116,36 @@
 
                 <div class="editor-tab-panel">
                     <div v-show="activeTabKey === 'docs'" class="docs-panel">
-                        <label class="field-block">
-                            <span>{{ local('Description') }}</span>
-                            <textarea
-                                v-model="draft.description"
-                                class="native-textarea"
+                        <div class="docs-editor">
+                            <power-editor
+                                ref="docsEditor"
+                                :model-value="''"
+                                :theme="resolvedTheme"
+                                :language="editorLanguage"
                                 :placeholder="local('Describe this endpoint')"
-                            ></textarea>
-                        </label>
+                                :show-save="false"
+                                :toolbar-height="75"
+                                :editable-padding-top="90"
+                                :editable-padding-bottom="40"
+                                :read-only-padding-top="20"
+                                :read-only-padding-bottom="40"
+                                :content-max-width="'min(900px, calc(100% - 40px))'"
+                                :show-drag-handler="true"
+                                :use-tab="true"
+                                style="width: 100%"
+                                @on-mounted="onDocsMounted"
+                                @change="onDocsChange"
+                            ></power-editor>
+                        </div>
                     </div>
 
                     <div v-show="activeTabKey === 'params'" class="kv-panel">
                         <div class="panel-heading">
                             <strong>{{ local('Query') }}</strong>
-                            <span>{{ enabledRowCount(draft.params) }} {{ local('Enabled') }}</span>
+                            <span
+                                >{{ enabledRowCount(draft.params) }}
+                                {{ local('Enabled') }}</span
+                            >
                         </div>
                         <keyValueEditor
                             v-model="draft.params"
@@ -136,7 +154,10 @@
                         ></keyValueEditor>
                     </div>
 
-                    <div v-show="activeTabKey === 'authorization'" class="auth-panel">
+                    <div
+                        v-show="activeTabKey === 'authorization'"
+                        class="auth-panel"
+                    >
                         <div class="auth-type-row">
                             <fv-drop-down
                                 :model-value="authTypeSelection"
@@ -148,13 +169,18 @@
                             ></fv-drop-down>
                         </div>
 
-                        <div v-if="draft.authType === 'bearer'" class="auth-fields">
+                        <div
+                            v-if="draft.authType === 'bearer'"
+                            class="auth-fields"
+                        >
                             <label class="field-block">
                                 <span>{{ local('Bearer token') }}</span>
                                 <fv-text-box
                                     v-model="draft.authData.token"
                                     :theme="resolvedTheme"
-                                    :type="revealAuth.token ? 'text' : 'password'"
+                                    :type="
+                                        revealAuth.token ? 'text' : 'password'
+                                    "
                                     :icon="revealAuth.token ? 'Hide' : 'View'"
                                     placeholder="Token"
                                     border-radius="8"
@@ -163,7 +189,10 @@
                             </label>
                         </div>
 
-                        <div v-else-if="draft.authType === 'basic'" class="auth-fields auth-grid">
+                        <div
+                            v-else-if="draft.authType === 'basic'"
+                            class="auth-fields auth-grid"
+                        >
                             <label class="field-block">
                                 <span>{{ local('Username') }}</span>
                                 <fv-text-box
@@ -185,7 +214,10 @@
                             </label>
                         </div>
 
-                        <div v-else-if="draft.authType === 'api-key'" class="auth-fields auth-grid">
+                        <div
+                            v-else-if="draft.authType === 'api-key'"
+                            class="auth-fields auth-grid"
+                        >
                             <label class="field-block">
                                 <span>{{ local('Key') }}</span>
                                 <fv-text-box
@@ -200,7 +232,9 @@
                                 <fv-text-box
                                     v-model="draft.authData.value"
                                     :theme="resolvedTheme"
-                                    :type="revealAuth.value ? 'text' : 'password'"
+                                    :type="
+                                        revealAuth.value ? 'text' : 'password'
+                                    "
                                     :icon="revealAuth.value ? 'Hide' : 'View'"
                                     placeholder="Value"
                                     border-radius="8"
@@ -227,7 +261,10 @@
                     <div v-show="activeTabKey === 'headers'" class="kv-panel">
                         <div class="panel-heading">
                             <strong>{{ local('Headers') }}</strong>
-                            <span>{{ enabledRowCount(draft.headersData) }} {{ local('Enabled') }}</span>
+                            <span
+                                >{{ enabledRowCount(draft.headersData) }}
+                                {{ local('Enabled') }}</span
+                            >
                         </div>
                         <keyValueEditor
                             v-model="draft.headersData"
@@ -270,10 +307,17 @@
                         </div>
                     </div>
 
-                    <div v-show="activeTabKey === 'scripts'" class="scripts-panel">
+                    <div
+                        v-show="activeTabKey === 'scripts'"
+                        class="scripts-panel"
+                    >
                         <div class="panel-heading">
                             <strong>{{ local('Scripts') }}</strong>
-                            <span>{{ local('Run JavaScript before and after the request.') }}</span>
+                            <span>{{
+                                local(
+                                    'Run JavaScript before and after the request.'
+                                )
+                            }}</span>
                         </div>
                         <div class="scripts-layout">
                             <div class="scripts-side">
@@ -295,11 +339,21 @@
                                     @update:model-value="onScriptTabChange"
                                 ></fv-pivot>
                                 <div class="scripts-hint">
-                                    <template v-if="activeScriptKey === 'preRequest'">
-                                        {{ local('Use pm.environment.set to prepare variables before the request is sent.') }}
+                                    <template
+                                        v-if="activeScriptKey === 'preRequest'"
+                                    >
+                                        {{
+                                            local(
+                                                'Use pm.environment.set to prepare variables before the request is sent.'
+                                            )
+                                        }}
                                     </template>
                                     <template v-else>
-                                        {{ local('Use pm.response and pm.test to inspect the response and save variables.') }}
+                                        {{
+                                            local(
+                                                'Use pm.response and pm.test to inspect the response and save variables.'
+                                            )
+                                        }}
                                     </template>
                                 </div>
                                 <div class="scripts-toolbar">
@@ -320,7 +374,11 @@
                                         :disabled="scriptRunning"
                                         @click="runCurrentScript"
                                     >
-                                        {{ scriptRunning ? local('Running') : local('Run script') }}
+                                        {{
+                                            scriptRunning
+                                                ? local('Running')
+                                                : local('Run script')
+                                        }}
                                     </fv-button>
                                 </div>
                             </div>
@@ -341,9 +399,14 @@
                                     :height="'320px'"
                                     :minimap="false"
                                 ></monacoEditor>
-                                <div v-if="scriptFeedback" class="scripts-feedback">
+                                <div
+                                    v-if="scriptFeedback"
+                                    class="scripts-feedback"
+                                >
                                     <div class="scripts-feedback-head">
-                                        <strong>{{ local('Script results') }}</strong>
+                                        <strong>{{
+                                            local('Script results')
+                                        }}</strong>
                                         <fv-button
                                             :theme="resolvedTheme"
                                             border-radius="8"
@@ -353,24 +416,49 @@
                                             {{ local('Clear') }}
                                         </fv-button>
                                     </div>
-                                    <div v-if="scriptFeedback.error" class="response-error">
+                                    <div
+                                        v-if="scriptFeedback.error"
+                                        class="response-error"
+                                    >
                                         {{ scriptFeedback.error }}
                                     </div>
-                                    <ul v-if="scriptFeedback.tests?.length" class="scripts-tests">
+                                    <ul
+                                        v-if="scriptFeedback.tests?.length"
+                                        class="scripts-tests"
+                                    >
                                         <li
-                                            v-for="(test, index) in scriptFeedback.tests"
+                                            v-for="(
+                                                test, index
+                                            ) in scriptFeedback.tests"
                                             :key="index"
-                                            :class="{ failed: test.passed === false }"
+                                            :class="{
+                                                failed: test.passed === false
+                                            }"
                                         >
                                             <i
                                                 class="ms-Icon"
-                                                :class="test.passed === false ? 'ms-Icon--ErrorBadge' : 'ms-Icon--CheckMark'"
+                                                :class="
+                                                    test.passed === false
+                                                        ? 'ms-Icon--ErrorBadge'
+                                                        : 'ms-Icon--CheckMark'
+                                                "
                                             ></i>
-                                            <span>{{ test.name || local('Unnamed test') }}</span>
-                                            <span v-if="test.error" class="scripts-test-error">{{ test.error }}</span>
+                                            <span>{{
+                                                test.name ||
+                                                local('Unnamed test')
+                                            }}</span>
+                                            <span
+                                                v-if="test.error"
+                                                class="scripts-test-error"
+                                                >{{ test.error }}</span
+                                            >
                                         </li>
                                     </ul>
-                                    <pre v-if="scriptFeedback.console?.length" class="scripts-console">{{ formattedScriptConsole }}</pre>
+                                    <pre
+                                        v-if="scriptFeedback.console?.length"
+                                        class="scripts-console"
+                                        >{{ formattedScriptConsole }}</pre
+                                    >
                                 </div>
                             </div>
                         </div>
@@ -384,14 +472,11 @@
                             <span v-if="response">
                                 {{ response.statusCode }}
                                 {{ response.statusText || '' }}
-                                · {{ response.duration }} ms
-                                · {{ formatSize(response.size) }}
+                                · {{ response.duration }} ms ·
+                                {{ formatSize(response.size) }}
                             </span>
                         </div>
-                        <statusPill
-                            v-if="response"
-                            :status="response.status"
-                        />
+                        <statusPill v-if="response" :status="response.status" />
                     </div>
 
                     <div v-if="response?.error" class="response-error">
@@ -433,7 +518,11 @@
                     <div v-else class="response-empty">
                         <i class="ms-Icon ms-Icon--Document"></i>
                         <strong>{{ local('No response yet') }}</strong>
-                        <span>{{ local('Send this request to inspect the live response.') }}</span>
+                        <span>{{
+                            local(
+                                'Send this request to inspect the live response.'
+                            )
+                        }}</span>
                     </div>
                 </div>
             </template>
@@ -466,7 +555,9 @@ const AUTH_TYPES = [
     { key: 'api-key', textKey: 'API key' }
 ];
 const createRow = (item = {}) => ({
-    id: item.id || `row-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+    id:
+        item.id ||
+        `row-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
     key: String(item.key ?? ''),
     value: String(item.value ?? ''),
     enabled: item.enabled !== false,
@@ -506,6 +597,7 @@ export default {
             scriptRunning: false,
             scriptFeedback: null,
             draft: {},
+            docsJSON: null,
             response: null,
             sending: false,
             saving: false,
@@ -517,7 +609,11 @@ export default {
         };
     },
     computed: {
-        ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
+        ...mapState(useAppConfigStore, [
+            'resolvedTheme',
+            'local',
+            'appLanguage'
+        ]),
         ...mapState(useWorkspaceStore, {
             workspaceEndpoints: 'endpoints',
             workspaceCollections: 'collections',
@@ -546,7 +642,9 @@ export default {
             ];
         },
         pivotValue() {
-            return this.pivotItems.find((item) => item.key === this.activeTabKey);
+            return this.pivotItems.find(
+                (item) => item.key === this.activeTabKey
+            );
         },
         scriptPivotItems() {
             return [
@@ -577,7 +675,9 @@ export default {
             return (this.scriptFeedback?.console || [])
                 .map((entry) => {
                     const parts = (entry?.args || []).map((arg) =>
-                        typeof arg === 'string' ? arg : this.stringifyConsoleArg(arg)
+                        typeof arg === 'string'
+                            ? arg
+                            : this.stringifyConsoleArg(arg)
                     );
                     return `[${entry?.level || 'log'}] ${parts.join(' ')}`;
                 })
@@ -587,7 +687,9 @@ export default {
             return METHODS.map((method) => ({ key: method, text: method }));
         },
         methodSelection() {
-            return this.methodOptions.filter((item) => item.key === this.draft.method);
+            return this.methodOptions.filter(
+                (item) => item.key === this.draft.method
+            );
         },
         bodyTypeOptions() {
             return BODY_TYPES.map((item) => ({
@@ -619,7 +721,9 @@ export default {
         },
         authLocationSelection() {
             const location = this.draft.authData?.in || 'header';
-            return this.authLocationOptions.filter((item) => item.key === location);
+            return this.authLocationOptions.filter(
+                (item) => item.key === location
+            );
         },
         collectionOptions() {
             return this.workspaceCollections.map((collection) => ({
@@ -672,6 +776,9 @@ export default {
         },
         monacoTheme() {
             return this.resolvedTheme === 'dark' ? 'vs-dark' : 'vs';
+        },
+        editorLanguage() {
+            return this.appLanguage === 'cn' ? 'cn' : 'en';
         }
     },
     watch: {
@@ -696,9 +803,71 @@ export default {
         syncDraft() {
             if (!this.endpoint) {
                 this.draft = {};
+                this.docsJSON = null;
                 return;
             }
             this.draft = cloneEndpoint(this.endpoint);
+            this.docsJSON = null;
+            this.$nextTick(() => {
+                this.loadDocsIntoEditor();
+            });
+        },
+        onDocsMounted() {
+            this.loadDocsIntoEditor();
+        },
+        loadDocsIntoEditor() {
+            const instance = this.$refs.docsEditor;
+            if (!instance || typeof instance.editor !== 'function') return;
+            const editor = instance.editor();
+            if (!editor) return;
+            const content = this.parseDocsContent(this.draft.description);
+            editor.commands.setContent(content || '');
+            this.docsJSON = editor.getJSON();
+        },
+        parseDocsContent(raw) {
+            const text = typeof raw === 'string' ? raw.trim() : '';
+            if (!text) return null;
+            try {
+                const parsed = JSON.parse(text);
+                if (parsed && typeof parsed === 'object' && parsed.type) {
+                    return parsed;
+                }
+            } catch {
+                // Not JSON: fall back to Markdown parsing below.
+            }
+            const instance = this.$refs.docsEditor;
+            if (instance && typeof instance.computeMarkdown === 'function') {
+                try {
+                    return instance.computeMarkdown(raw);
+                } catch {
+                    return null;
+                }
+            }
+            return null;
+        },
+        onDocsChange() {
+            const instance = this.$refs.docsEditor;
+            if (!instance || typeof instance.editor !== 'function') return;
+            const editor = instance.editor();
+            if (!editor) return;
+            this.docsJSON = editor.getJSON();
+        },
+        serializeDocsContent() {
+            const content = this.currentDocsContent();
+            if (!content) return '';
+            try {
+                return JSON.stringify(content);
+            } catch {
+                return '';
+            }
+        },
+        currentDocsContent() {
+            const instance = this.$refs.docsEditor;
+            if (instance && typeof instance.editor === 'function') {
+                const editor = instance.editor();
+                if (editor) return editor.getJSON();
+            }
+            return this.docsJSON;
         },
         onTabChange(value) {
             if (value?.key) this.activeTabKey = value.key;
@@ -720,8 +889,10 @@ export default {
                 this.draft.authData.token = '';
             }
             if (nextType === 'basic') {
-                this.draft.authData.username = this.draft.authData.username || '';
-                this.draft.authData.password = this.draft.authData.password || '';
+                this.draft.authData.username =
+                    this.draft.authData.username || '';
+                this.draft.authData.password =
+                    this.draft.authData.password || '';
             }
             if (nextType === 'api-key') {
                 this.draft.authData.key = this.draft.authData.key || '';
@@ -733,8 +904,7 @@ export default {
             this.draft.authData.in = options?.[0]?.key || 'header';
         },
         changeCollection(options) {
-            this.draft.collection =
-                options?.[0]?.key || DEFAULT_COLLECTION;
+            this.draft.collection = options?.[0]?.key || DEFAULT_COLLECTION;
         },
         setEnabled(value) {
             this.draft.enabled = Boolean(value);
@@ -743,7 +913,8 @@ export default {
             this.revealAuth[key] = !this.revealAuth[key];
         },
         enabledRowCount(rows) {
-            return (rows || []).filter((item) => item.enabled && item.key).length;
+            return (rows || []).filter((item) => item.enabled && item.key)
+                .length;
         },
         async saveEndpoint() {
             this.saving = true;
@@ -752,7 +923,7 @@ export default {
                 method: this.draft.method,
                 url: this.draft.url,
                 collection: this.draft.collection,
-                description: this.draft.description,
+                description: this.serializeDocsContent(),
                 params: this.draft.params,
                 headersData: this.draft.headersData,
                 authType: this.draft.authType,
@@ -769,6 +940,9 @@ export default {
                 return;
             }
             this.draft = cloneEndpoint(result.endpoint);
+            this.$nextTick(() => {
+                this.loadDocsIntoEditor();
+            });
         },
         async sendRequest() {
             this.errorMessage = '';
@@ -974,21 +1148,28 @@ export default {
     }
 
     .docs-panel {
-        max-width: 760px;
         display: flex;
         flex-direction: column;
-        gap: 16px;
     }
 
-    .native-textarea {
-        min-height: 150px;
-        padding: 10px 12px;
+    .docs-editor {
+        width: 100%;
+        height: 520px;
+        min-height: 360px;
         border: 1px solid var(--ph-border);
-        border-radius: 10px;
-        outline: none;
+        border-radius: 12px;
+        overflow: hidden;
         background: var(--ph-surface);
-        color: var(--ph-text);
-        resize: vertical;
+
+        :deep(.power-editor-container) {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        :deep(.tip-tap-editor-container) {
+            background: transparent;
+        }
     }
 
     .auth-panel,
