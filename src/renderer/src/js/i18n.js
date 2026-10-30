@@ -27,6 +27,22 @@ export default {
         "en": "Run history",
         "cn": "运行记录"
     },
+    "API Requests": {
+        "en": "API Requests",
+        "cn": "接口请求"
+    },
+    "Server Monitoring": {
+        "en": "Server Monitoring",
+        "cn": "服务器监控"
+    },
+    "Server Status": {
+        "en": "Server Status",
+        "cn": "服务器状态"
+    },
+    "Servers": {
+        "en": "Servers",
+        "cn": "服务器"
+    },
     "Settings": {
         "en": "Settings",
         "cn": "设置"
