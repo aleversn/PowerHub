@@ -20,7 +20,11 @@
         <div class="dashboard-grid">
             <sectionCard
                 :title="local('Recent runs')"
-                :description="local('Inspect recent request results, status codes, and duration.')"
+                :description="
+                    local(
+                        'Inspect recent request results, status codes, and duration.'
+                    )
+                "
             >
                 <div class="data-table">
                     <div class="data-table__head">
@@ -60,9 +64,7 @@
                             <span>{{ endpointName(schedule.endpointId) }}</span>
                         </div>
                         <div class="schedule-time">
-                            <strong>{{
-                                formatDate(schedule.nextRun)
-                            }}</strong>
+                            <strong>{{ formatDate(schedule.nextRun) }}</strong>
                             <span>{{ schedule.cron }}</span>
                         </div>
                     </div>

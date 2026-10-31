@@ -24,7 +24,6 @@
                 @click="toggleTheme"
             >
                 <i
-                :theme="theme"
                     class="ms-Icon"
                     :class="
                         isDark

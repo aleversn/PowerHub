@@ -240,7 +240,9 @@ export default {
             this.dirty = false;
         },
         updateRow(index, patch) {
-            this.rows.splice(index, 1, { ...this.rows[index], ...patch });
+            const row = this.rows[index];
+            if (!row || Object.entries(patch).every(([key, value]) => Object.is(row[key], value))) return;
+            this.rows.splice(index, 1, { ...row, ...patch });
             this.dirty = true;
         },
         addRow() {

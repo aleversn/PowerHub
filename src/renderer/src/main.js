@@ -8,7 +8,6 @@ import VueFluent from '@creatorsn/vfluent3';
 import PowerEditor from '@creatorsn/powereditor3';
 import '@creatorsn/vfluent3/style.css';
 import '@creatorsn/powereditor3/powereditor3.css';
-import '@/style/powerhub.scss';
 
 const app = createApp(App);
 

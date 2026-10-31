@@ -1,5 +1,4 @@
 // PowerHub 项目级全局样式。主题变量、页面骨架与通用工具类统一放在这里。
-// fabulous.scss / global.scss 保持与 Fab3 一致，仅提供 mixin 与全局 reset。
 
 $breakpoint-mobile: 640px;
 $breakpoint-tablet: 880px;
@@ -23,6 +22,24 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
     --ph-success: #107c10;
     --ph-warning: #9d5d00;
     --ph-danger: #c42b1c;
+    // Card backgrounds based on the reference: olive, terracotta, white, pink, mist and sunset.
+    --ph-card-gradient-olive:
+        radial-gradient(ellipse at 76% 92%, rgba(180, 213, 79, 0.95), transparent 58%),
+        radial-gradient(ellipse at 20% 20%, rgba(31, 54, 20, 0.95), transparent 60%),
+        linear-gradient(135deg, #354a23 0%, #6b823b 55%, #a3c25b 100%);
+    --ph-card-gradient-terracotta:
+        radial-gradient(ellipse at 20% 12%, rgba(201, 129, 137, 0.9), transparent 55%),
+        radial-gradient(ellipse at 75% 94%, rgba(217, 166, 112, 0.8), transparent 60%),
+        linear-gradient(135deg, #ae6f71 0%, #b77e76 52%, #8b7468 100%);
+    --ph-card-gradient-porcelain: linear-gradient(145deg, #ffffff 0%, #fdfcfb 55%, #f5f4f3 100%);
+    --ph-card-gradient-rose:
+        radial-gradient(ellipse at 50% 57%, #f33d76 0%, rgba(246, 90, 127, 0.9) 33%, transparent 73%),
+        linear-gradient(145deg, #f6d4d8 0%, #f6a9ba 62%, #f4c8cc 100%);
+    --ph-card-gradient-mist: linear-gradient(145deg, #f8f8f7 0%, #f1f1f0 60%, #e9e9e8 100%);
+    --ph-card-gradient-sunset:
+        radial-gradient(ellipse at 48% 55%, #ff7934 0%, rgba(255, 127, 61, 0.94) 30%, transparent 67%),
+        radial-gradient(ellipse at 82% 35%, rgba(235, 112, 118, 0.82), transparent 61%),
+        linear-gradient(130deg, #c5d1d0 0%, #f4b47a 52%, #c6b6c1 100%);
     --ph-background: #e9ebee;
     --ph-background-gradient:
         radial-gradient(ellipse at 54% 9%, rgba(240, 210, 192, 0.56), transparent 33%),
@@ -49,6 +66,8 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
     --ph-success: #6ccb5f;
     --ph-warning: #fce100;
     --ph-danger: #ff99a4;
+    --ph-card-gradient-porcelain: linear-gradient(145deg, #33363b 0%, #292b30 55%, #24262b 100%);
+    --ph-card-gradient-mist: linear-gradient(145deg, #303237 0%, #292b30 60%, #23252a 100%);
     --ph-background: #191a20;
     --ph-background-gradient:
         radial-gradient(ellipse at 54% 9%, rgba(111, 72, 64, 0.28), transparent 34%),
@@ -105,6 +124,13 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: $lines;
+}
+
+@font-face {
+    font-family: 'Segoe UI Emoji';
+    src: url('../assets/fonts/SEGUIEMJ.TTF') format('truetype');
+    font-weight: 400;
+    font-style: normal;
 }
 
 html {
