@@ -5,8 +5,7 @@
             class="section-header"
         >
             <div class="section-heading">
-                <h2 v-if="title">{{ title }}</h2>
-                <p v-if="description">{{ description }}</p>
+                <slot name="info"></slot>
             </div>
             <div v-if="$slots.actions" class="section-actions">
                 <slot name="actions"></slot>
@@ -36,11 +35,12 @@ export default {
 
 <style lang="scss" scoped>
 .section-card {
-    min-width: 0;
-    border: 1px solid var(--ph-border);
-    border-radius: 16px;
-    background: var(--ph-surface);
-    box-shadow: var(--ph-shadow-sm);
+    position: relative;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
 
     .section-header {
@@ -48,11 +48,12 @@ export default {
         align-items: flex-start;
         justify-content: space-between;
         gap: 18px;
-        padding: 20px 22px 0;
+        padding: 15px;
     }
 
     .section-heading {
         min-width: 0;
+        flex: 1;
 
         h2 {
             margin: 0;
@@ -75,8 +76,13 @@ export default {
     }
 
     .section-body {
-        min-width: 0;
-        padding: 18px 22px 22px;
+        position: relative;
+        width: 100%;
+        height: 10px;
+        flex: 1;
+        padding: 15px;
+        box-sizing: border-box;
+        overflow: overlay;
     }
 }
 </style>

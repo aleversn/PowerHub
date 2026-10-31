@@ -2,46 +2,53 @@
     <div class="page-stack endpoints-page">
         <sectionCard
             :title="local('API Requests')"
-            :description="local('Manage HTTP requests, default headers, and monitor health.')"
+            :description="
+                local(
+                    'Manage HTTP requests, default headers, and monitor health.'
+                )
+            "
         >
+            <template #info>
+                <div class="collection-toolbar">
+                    <fv-text-box
+                        v-model="keyword"
+                        :theme="resolvedTheme"
+                        :placeholder="local('Search')"
+                        icon="Search"
+                        border-radius="8"
+                        :reveal-border="true"
+                        :reveal-border-color="[color]"
+                        :reveal-background-color="['rgba(200, 200, 200, 0.1)']"
+                        style="width: min(340px, 100%)"
+                    ></fv-text-box>
+                    <span class="record-count">
+                        {{ filteredEndpointCount }} {{ local('Endpoints') }}
+                    </span>
+                </div>
+            </template>
             <template #actions>
                 <div class="toolbar-actions">
                     <fv-button
-                        :theme="resolvedTheme"
+                        :background="subColor"
                         border-radius="8"
-                        icon="Add"
-                        style="height: 34px"
+                        :title="local('New collection')"
+                        style="width: 32px; height: 34px"
                         @click="showCollectionCreator = !showCollectionCreator"
                     >
-                        {{ local('New collection') }}
+                        <i class="ms-Icon ms-Icon--OEM"></i>
                     </fv-button>
                     <fv-button
-                        :theme="resolvedTheme"
-                        background="#0078d4"
-                        foreground="#ffffff"
+                        theme="dark"
+                        :background="'linear-gradient(90deg, rgba(233, 155, 89, 1), rgba(255, 196, 0, 1))'"
                         border-radius="8"
-                        icon="Add"
-                        style="height: 34px"
+                        style="width: 32px; height: 34px"
+                        :title="local('New endpoint')"
                         @click="createEndpoint()"
                     >
-                        {{ local('New endpoint') }}
+                        <i class="ms-Icon ms-Icon--Add"></i>
                     </fv-button>
                 </div>
             </template>
-
-            <div class="collection-toolbar">
-                <fv-text-box
-                    v-model="keyword"
-                    :theme="resolvedTheme"
-                    :placeholder="local('Search')"
-                    icon="Search"
-                    border-radius="8"
-                    style="width: min(340px, 100%)"
-                ></fv-text-box>
-                <span class="record-count">
-                    {{ filteredEndpointCount }} {{ local('Endpoints') }}
-                </span>
-            </div>
 
             <div v-if="showCollectionCreator" class="collection-creator">
                 <emoji-callout
@@ -84,7 +91,9 @@
             <div v-if="!filteredGroups.length" class="empty-state">
                 <i class="ms-Icon ms-Icon--Inbox"></i>
                 <strong>{{ local('No endpoints yet') }}</strong>
-                <span>{{ local('Create an endpoint to start testing live requests.') }}</span>
+                <span>{{
+                    local('Create an endpoint to start testing live requests.')
+                }}</span>
             </div>
 
             <div v-else class="collection-list">
@@ -99,7 +108,7 @@
                     :hover-background="collapseHoverBackground"
                     :border-color="collapseBorderColor"
                     :default-height="76"
-                    :max-height="1600"
+                    :max-height="'auto'"
                     :visible-overflow="true"
                     class="collection-collapse"
                     @update:model-value="setGroupExpanded(group, $event)"
@@ -109,7 +118,9 @@
                             <emoji-callout
                                 :model-value="collectionIconValue(group)"
                                 :theme="resolvedTheme"
-                                @insert-emoji="pickCollectionEmoji(group, $event)"
+                                @insert-emoji="
+                                    pickCollectionEmoji(group, $event)
+                                "
                             ></emoji-callout>
                         </span>
                     </template>
@@ -144,13 +155,13 @@
                             </template>
                             <template v-else>
                                 <fv-button
-                                    :theme="resolvedTheme"
+                                    :background="subColor"
                                     border-radius="8"
-                                    style="height: 32px"
+                                    style="width: 32px; height: 32px"
+                                    :title="local('Add endpoint')"
                                     @click="createEndpoint(group.name)"
                                 >
                                     <i class="ms-Icon ms-Icon--Add"></i>
-                                    <span class="button-label">{{ local('New endpoint') }}</span>
                                 </fv-button>
                                 <fv-button
                                     :theme="resolvedTheme"
@@ -163,7 +174,8 @@
                                 </fv-button>
                                 <fv-button
                                     v-if="group.name !== DEFAULT_COLLECTION"
-                                    :theme="resolvedTheme"
+                                    theme="dark"
+                                    background="rgba(200, 38, 45, 1)"
                                     border-radius="8"
                                     style="width: 34px; height: 32px"
                                     :title="local('Delete')"
@@ -194,19 +206,27 @@
 
                             <div class="endpoint-main">
                                 <strong>{{ endpoint.name }}</strong>
-                                <span>{{ endpoint.url || local('No URL yet') }}</span>
+                                <span>{{
+                                    endpoint.url || local('No URL yet')
+                                }}</span>
                             </div>
 
-                            <statusPill :status="endpoint.health" />
+                            <statusPill
+                                :status="endpoint.health"
+                                style="width: 60px"
+                            />
 
                             <fv-toggle-switch
                                 :model-value="endpoint.enabled"
                                 :theme="resolvedTheme"
-                                :width="38"
+                                :width="90"
                                 :height="20"
-                                switch-on-background="#0078d4"
+                                :switch-on-background="subColor"
+                                :inside-content="true"
                                 @click.stop
-                                @update:model-value="toggleEndpoint(endpoint.id)"
+                                @update:model-value="
+                                    toggleEndpoint(endpoint.id)
+                                "
                             ></fv-toggle-switch>
 
                             <div class="endpoint-actions" @click.stop>
@@ -215,8 +235,20 @@
                                     border-radius="8"
                                     style="width: 32px; height: 32px"
                                     :title="local('Move up')"
-                                    :disabled="!canMoveWithinCollection(group, endpoint, -1)"
-                                    @click="moveWithinCollection(group, endpoint, -1)"
+                                    :disabled="
+                                        !canMoveWithinCollection(
+                                            group,
+                                            endpoint,
+                                            -1
+                                        )
+                                    "
+                                    @click="
+                                        moveWithinCollection(
+                                            group,
+                                            endpoint,
+                                            -1
+                                        )
+                                    "
                                 >
                                     <i class="ms-Icon ms-Icon--Up"></i>
                                 </fv-button>
@@ -225,17 +257,27 @@
                                     border-radius="8"
                                     style="width: 32px; height: 32px"
                                     :title="local('Move down')"
-                                    :disabled="!canMoveWithinCollection(group, endpoint, 1)"
-                                    @click="moveWithinCollection(group, endpoint, 1)"
+                                    :disabled="
+                                        !canMoveWithinCollection(
+                                            group,
+                                            endpoint,
+                                            1
+                                        )
+                                    "
+                                    @click="
+                                        moveWithinCollection(group, endpoint, 1)
+                                    "
                                 >
                                     <i class="ms-Icon ms-Icon--Down"></i>
                                 </fv-button>
                                 <fv-button
-                                    :theme="resolvedTheme"
+                                    :background="subColor"
                                     border-radius="8"
                                     style="width: 32px; height: 32px"
                                     :title="local('Send')"
-                                    :disabled="sendingEndpointId === endpoint.id"
+                                    :disabled="
+                                        sendingEndpointId === endpoint.id
+                                    "
                                     @click="sendEndpoint(endpoint)"
                                 >
                                     <i
@@ -248,13 +290,13 @@
                                     ></i>
                                 </fv-button>
                                 <fv-button
-                                    :theme="resolvedTheme"
+                                    :background="subColor"
                                     border-radius="8"
                                     style="width: 32px; height: 32px"
                                     :title="local('Duplicate')"
                                     @click="duplicateEndpoint(endpoint.id)"
                                 >
-                                    <i class="ms-Icon ms-Icon--Copy"></i>
+                                    <i class="ms-Icon ms-Icon--Set"></i>
                                 </fv-button>
                                 <fv-drop-down
                                     :model-value="collectionSelection(endpoint)"
@@ -262,12 +304,16 @@
                                     :theme="resolvedTheme"
                                     border-radius="8"
                                     input-height="32px"
-                                    input-font-size="12px"
+                                    input-font-size="10px"
+                                    :drop-down-font-size="10"
                                     style="width: 150px"
-                                    @update:model-value="moveToCollection(endpoint, $event)"
+                                    @update:model-value="
+                                        moveToCollection(endpoint, $event)
+                                    "
                                 ></fv-drop-down>
                                 <fv-button
-                                    :theme="resolvedTheme"
+                                    theme="dark"
+                                    :background="'rgba(200, 38, 45, 1)'"
                                     border-radius="8"
                                     style="width: 32px; height: 32px"
                                     :title="local('Delete')"
@@ -278,7 +324,10 @@
                             </div>
                         </div>
 
-                        <div v-if="!group.endpoints.length" class="collection-empty">
+                        <div
+                            v-if="!group.endpoints.length"
+                            class="collection-empty"
+                        >
                             {{ local('No endpoints yet') }}
                         </div>
                     </div>
@@ -296,6 +345,7 @@ import statusPill from '@/components/common/statusPill.vue';
 import emojiCallout from '@/components/general/callout/emojiCallout.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useWorkspaceStore } from '@/stores/workspace';
+import { useThemeStore } from '@/stores/theme';
 
 const DEFAULT_COLLECTION = 'Default collection';
 
@@ -322,6 +372,7 @@ export default {
     },
     computed: {
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
+        ...mapState(useThemeStore, ['color', 'subColor', 'gradient']),
         ...mapState(useWorkspaceStore, {
             workspaceEndpointGroups: 'collectionGroups',
             collections: 'collections'
@@ -334,7 +385,7 @@ export default {
         collapseHoverBackground() {
             return this.resolvedTheme === 'dark'
                 ? 'rgba(19, 24, 35, 1)'
-                : 'rgba(247, 249, 253, 0.96)';
+                : 'rgba(255, 255, 255, 0.96)';
         },
         collapseBorderColor() {
             return this.resolvedTheme === 'dark'
@@ -354,12 +405,14 @@ export default {
                     ...group,
                     endpoints: [...group.endpoints].sort(
                         (left, right) =>
-                            Number(left.sortOrder || 0) - Number(right.sortOrder || 0)
+                            Number(left.sortOrder || 0) -
+                            Number(right.sortOrder || 0)
                     )
                 }))
                 .sort(
                     (left, right) =>
-                        Number(left.sortOrder || 0) - Number(right.sortOrder || 0)
+                        Number(left.sortOrder || 0) -
+                        Number(right.sortOrder || 0)
                 );
             if (!search) return groups;
             return groups
@@ -455,13 +508,19 @@ export default {
         },
         async sendEndpoint(endpoint) {
             this.sendingEndpointId = endpoint.id;
-            const result = await this.runEndpoint(endpoint.id, {}, null, 'manual');
+            const result = await this.runEndpoint(
+                endpoint.id,
+                {},
+                null,
+                'manual'
+            );
             this.sendingEndpointId = '';
             if (!result.ok) this.errorMessage = result.message;
         },
         async moveToCollection(endpoint, value) {
             const nextCollection = value?.[0]?.key;
-            if (!nextCollection || nextCollection === endpoint.collection) return;
+            if (!nextCollection || nextCollection === endpoint.collection)
+                return;
             const result = await this.moveEndpoint(endpoint.id, nextCollection);
             if (!result.ok) this.errorMessage = result.message;
         },
@@ -480,7 +539,10 @@ export default {
             const currentIndex = endpoints.findIndex(
                 (item) => item.id === endpoint.id
             );
-            return currentIndex >= 0 && Boolean(endpoints[currentIndex + direction]);
+            return (
+                currentIndex >= 0 &&
+                Boolean(endpoints[currentIndex + direction])
+            );
         },
         async moveWithinCollection(group, endpoint, direction) {
             const endpoints = [...this.completeGroup(group).endpoints].sort(
@@ -491,7 +553,11 @@ export default {
                 (item) => item.id === endpoint.id
             );
             const targetIndex = currentIndex + direction;
-            if (currentIndex < 0 || targetIndex < 0 || targetIndex >= endpoints.length) {
+            if (
+                currentIndex < 0 ||
+                targetIndex < 0 ||
+                targetIndex >= endpoints.length
+            ) {
                 return;
             }
             const reordered = [...endpoints];
@@ -569,6 +635,12 @@ export default {
 
 <style lang="scss" scoped>
 .endpoints-page {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     .toolbar-actions,
     .collection-toolbar,
     .collection-creator,
@@ -576,7 +648,7 @@ export default {
     .endpoint-actions {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 3px;
     }
 
     .collection-toolbar {
@@ -703,8 +775,8 @@ export default {
     }
 
     .method-badge {
-        width: fit-content;
-        min-width: 52px;
+        width: auto;
+        min-width: max-content;
         padding: 4px 7px;
         border-radius: 6px;
         background: rgba(16, 124, 16, 0.1);
@@ -712,6 +784,8 @@ export default {
         font-size: 10px;
         font-weight: 700;
         text-align: center;
+        display: flex;
+        justify-content: center;
 
         &.post,
         &.put,

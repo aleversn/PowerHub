@@ -2,51 +2,59 @@
     <div class="page-stack variables-page">
         <sectionCard
             :title="local('Collection variables')"
-            :description="local('Store values for a collection and reuse them by name in requests and scripts.')"
+            :description="
+                local(
+                    'Store values for a collection and reuse them by name in requests and scripts.'
+                )
+            "
         >
             <template #actions>
                 <div class="toolbar-actions">
                     <fv-button
-                        :theme="resolvedTheme"
+                        :background="subColor"
                         border-radius="8"
-                        icon="Add"
-                        style="height: 34px"
+                        style="width: 32px; height: 34px"
                         :disabled="saving || deleting"
+                        :title="local('Add variable')"
                         @click="addRow"
                     >
-                        {{ local('New variable') }}
+                        <i class="ms-Icon ms-Icon--Add"></i>
                     </fv-button>
                     <fv-button
-                        :theme="resolvedTheme"
-                        background="#0078d4"
+                        theme="dark"
+                        :background="color"
                         foreground="#ffffff"
                         border-radius="8"
-                        icon="Save"
-                        style="height: 34px"
+                        style="width: 32px; height: 34px"
                         :disabled="saving || deleting || !dirty"
+                        :title="
+                            saving ? local('Saving') : local('Save variables')
+                        "
                         @click="saveAll"
                     >
-                        {{ saving ? local('Saving') : local('Save variables') }}
+                        <i class="ms-Icon ms-Icon--Save"></i>
                     </fv-button>
                 </div>
             </template>
 
-            <div class="variables-toolbar">
-                <span>{{ local('Collection') }}</span>
-                <fv-drop-down
-                    :model-value="collectionSelection"
-                    :options="collectionOptions"
-                    :theme="resolvedTheme"
-                    :disabled="saving || deleting"
-                    border-radius="8"
-                    input-height="36px"
-                    style="width: min(280px, 100%)"
-                    @update:model-value="changeCollection"
-                ></fv-drop-down>
-                <span class="record-count">
-                    {{ rows.length }} {{ local('Variables') }}
-                </span>
-            </div>
+            <template #info>
+                <div class="variables-toolbar">
+                    <span>{{ local('Collection') }}</span>
+                    <fv-drop-down
+                        :model-value="collectionSelection"
+                        :options="collectionOptions"
+                        :theme="resolvedTheme"
+                        :disabled="saving || deleting"
+                        border-radius="8"
+                        input-height="36px"
+                        style="width: min(280px, 100%)"
+                        @update:model-value="changeCollection"
+                    ></fv-drop-down>
+                    <span class="record-count">
+                        {{ rows.length }} {{ local('Variables') }}
+                    </span>
+                </div>
+            </template>
 
             <div v-if="errorMessage" class="variables-alert">
                 {{ errorMessage }}
@@ -69,8 +77,11 @@
                 >
                     <fv-check-box
                         :model-value="item.enabled"
-                        :theme="resolvedTheme"
-                        @update:model-value="updateRow(index, { enabled: $event })"
+                        theme="dark"
+                        :background="subColor"
+                        @update:model-value="
+                            updateRow(index, { enabled: $event })
+                        "
                     ></fv-check-box>
                     <fv-text-box
                         :model-value="item.key"
@@ -87,7 +98,9 @@
                         :placeholder="local('Value')"
                         border-radius="8"
                         @icon-click="updateRow(index, { hidden: !item.hidden })"
-                        @update:model-value="updateRow(index, { value: $event })"
+                        @update:model-value="
+                            updateRow(index, { value: $event })
+                        "
                     ></fv-text-box>
                     <fv-drop-down
                         :model-value="typeSelection(item)"
@@ -102,7 +115,9 @@
                         :theme="resolvedTheme"
                         :placeholder="local('Description')"
                         border-radius="8"
-                        @update:model-value="updateRow(index, { description: $event })"
+                        @update:model-value="
+                            updateRow(index, { description: $event })
+                        "
                     ></fv-text-box>
                     <fv-button
                         :theme="resolvedTheme"
@@ -120,7 +135,9 @@
                     <i class="ms-Icon ms-Icon--Inbox"></i>
                     <strong>{{ local('No variables yet') }}</strong>
                     <span>{{
-                        local('Add a variable to reuse a value across this collection.')
+                        local(
+                            'Add a variable to reuse a value across this collection.'
+                        )
                     }}</span>
                 </div>
             </div>
@@ -134,6 +151,7 @@ import { mapActions, mapState } from 'pinia';
 import sectionCard from '@/components/common/sectionCard.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useWorkspaceStore } from '@/stores/workspace';
+import { useThemeStore } from '@/stores/theme';
 
 const DEFAULT_COLLECTION = 'Default collection';
 const createVariable = () => ({
@@ -163,6 +181,7 @@ export default {
     },
     computed: {
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
+        ...mapState(useThemeStore, ['color', 'subColor', 'gradient']),
         ...mapState(useWorkspaceStore, {
             workspaceCollections: 'collections',
             variablesByCollection: 'variablesByCollection'
@@ -218,7 +237,9 @@ export default {
             removeVariable: 'removeVariable'
         }),
         typeSelection(item) {
-            return this.typeOptions.filter((option) => option.key === item.type);
+            return this.typeOptions.filter(
+                (option) => option.key === item.type
+            );
         },
         changeCollection(value) {
             this.activeCollection = value?.[0]?.key || DEFAULT_COLLECTION;
@@ -227,7 +248,8 @@ export default {
             this.updateRow(index, { type: value?.[0]?.key || 'text' });
         },
         syncRows() {
-            const items = this.variablesByCollection[this.activeCollection] || [];
+            const items =
+                this.variablesByCollection[this.activeCollection] || [];
             this.rows = items.map((item) => ({
                 id: item.id,
                 key: item.key,
@@ -241,7 +263,13 @@ export default {
         },
         updateRow(index, patch) {
             const row = this.rows[index];
-            if (!row || Object.entries(patch).every(([key, value]) => Object.is(row[key], value))) return;
+            if (
+                !row ||
+                Object.entries(patch).every(([key, value]) =>
+                    Object.is(row[key], value)
+                )
+            )
+                return;
             this.rows.splice(index, 1, { ...row, ...patch });
             this.dirty = true;
         },
@@ -262,8 +290,9 @@ export default {
                     this.deleting = true;
                     this.errorMessage = '';
                     try {
-                        const persisted = (this.variablesByCollection[collection] || [])
-                            .some((variable) => variable.id === item.id);
+                        const persisted = (
+                            this.variablesByCollection[collection] || []
+                        ).some((variable) => variable.id === item.id);
                         if (persisted) {
                             const result = await this.removeVariable(item.id);
                             if (!result.ok) {
@@ -272,7 +301,9 @@ export default {
                             }
                         }
                         if (this.activeCollection === collection) {
-                            const index = this.rows.findIndex((row) => row.id === item.id);
+                            const index = this.rows.findIndex(
+                                (row) => row.id === item.id
+                            );
                             if (index !== -1) this.rows.splice(index, 1);
                         }
                     } finally {

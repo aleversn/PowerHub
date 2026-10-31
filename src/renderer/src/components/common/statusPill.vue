@@ -1,7 +1,7 @@
 <template>
     <span class="status-pill" :class="`is-${normalizedStatus}`">
         <span class="status-dot"></span>
-        <span>{{ displayLabel }}</span>
+        <span class="status-label">{{ displayLabel }}</span>
     </span>
 </template>
 
@@ -63,17 +63,20 @@ export default {
 
 <style lang="scss" scoped>
 .status-pill {
-    display: inline-flex;
-    align-items: center;
+    position: relative;
+    width: auto;
+    min-width: max-content;
     gap: 7px;
     min-height: 24px;
     padding: 0 9px;
+    background: var(--ph-surface-soft);
     border: 1px solid var(--ph-border);
     border-radius: 999px;
-    background: var(--ph-surface-soft);
     color: var(--ph-text-secondary);
     font-size: 12px;
     line-height: 1;
+    display: inline-flex;
+    align-items: center;
     white-space: nowrap;
 
     &.is-success,
@@ -112,6 +115,13 @@ export default {
         border-radius: 50%;
         background: currentColor;
         box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 15%, transparent);
+    }
+
+    .status-label {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }
 </style>

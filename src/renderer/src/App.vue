@@ -59,6 +59,8 @@ body,
         width: 100%;
         min-height: 0;
         flex: 1;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
     }
 }

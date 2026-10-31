@@ -43,15 +43,17 @@ export default {
         flex: 1;
         display: flex;
         flex-direction: column;
-    }
+        overflow: hidden;
 
-    .app-content {
-        position: relative;
-        min-width: 0;
-        min-height: 0;
-        flex: 1;
-        padding: 18px 22px 28px;
-        overflow: auto;
+        .app-content {
+            position: relative;
+            width: 100%;
+            height: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
     }
 
     .page-fade-enter-active,
