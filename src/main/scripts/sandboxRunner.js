@@ -1,4 +1,5 @@
 import Sandbox from 'postman-sandbox';
+import PostmanCollection from 'postman-collection';
 
 const DEFAULT_TIMEOUT = 5000;
 
@@ -85,7 +86,7 @@ const requestToModel = (request = {}) => {
         typeof rawUrl === 'string'
             ? rawUrl
             : rawUrl && typeof rawUrl === 'object'
-              ? rawUrl.toString()
+              ? new PostmanCollection.Url(rawUrl).toString()
               : '';
     const body = request.body
         ? typeof request.body === 'string'

@@ -11,7 +11,7 @@
                         border-radius="8"
                         icon="Add"
                         style="height: 34px"
-                        :disabled="saving"
+                        :disabled="saving || deleting"
                         @click="addRow"
                     >
                         {{ local('New variable') }}
@@ -23,7 +23,7 @@
                         border-radius="8"
                         icon="Save"
                         style="height: 34px"
-                        :disabled="saving || !dirty"
+                        :disabled="saving || deleting || !dirty"
                         @click="saveAll"
                     >
                         {{ saving ? local('Saving') : local('Save variables') }}
@@ -37,6 +37,7 @@
                     :model-value="collectionSelection"
                     :options="collectionOptions"
                     :theme="resolvedTheme"
+                    :disabled="saving || deleting"
                     border-radius="8"
                     input-height="36px"
                     style="width: min(280px, 100%)"
@@ -108,7 +109,8 @@
                         border-radius="8"
                         style="width: 34px; height: 34px"
                         :title="local('Delete')"
-                        @click="removeRow(index)"
+                        :disabled="saving || deleting"
+                        @click="confirmRemoveRow(item)"
                     >
                         <i class="ms-Icon ms-Icon--Delete"></i>
                     </fv-button>
@@ -154,6 +156,7 @@ export default {
             activeCollection: DEFAULT_COLLECTION,
             rows: [],
             saving: false,
+            deleting: false,
             dirty: false,
             errorMessage: ''
         };
@@ -211,7 +214,8 @@ export default {
     methods: {
         ...mapActions(useWorkspaceStore, {
             workspaceInitialize: 'initialize',
-            saveVariables: 'saveVariables'
+            saveVariables: 'saveVariables',
+            removeVariable: 'removeVariable'
         }),
         typeSelection(item) {
             return this.typeOptions.filter((option) => option.key === item.type);
@@ -243,9 +247,37 @@ export default {
             this.rows.push(createVariable());
             this.dirty = true;
         },
-        removeRow(index) {
-            this.rows.splice(index, 1);
-            this.dirty = true;
+        confirmRemoveRow(item) {
+            const collection = this.activeCollection;
+            this.$infoBox(this.local('Delete this collection variable?'), {
+                title: this.local('Delete variable'),
+                status: 'warning',
+                theme: this.resolvedTheme,
+                confirmTitle: this.local('Delete'),
+                cancelTitle: this.local('Cancel'),
+                confirm: async () => {
+                    if (this.saving || this.deleting) return;
+                    this.deleting = true;
+                    this.errorMessage = '';
+                    try {
+                        const persisted = (this.variablesByCollection[collection] || [])
+                            .some((variable) => variable.id === item.id);
+                        if (persisted) {
+                            const result = await this.removeVariable(item.id);
+                            if (!result.ok) {
+                                this.errorMessage = result.message;
+                                return;
+                            }
+                        }
+                        if (this.activeCollection === collection) {
+                            const index = this.rows.findIndex((row) => row.id === item.id);
+                            if (index !== -1) this.rows.splice(index, 1);
+                        }
+                    } finally {
+                        this.deleting = false;
+                    }
+                }
+            });
         },
         async saveAll() {
             this.saving = true;

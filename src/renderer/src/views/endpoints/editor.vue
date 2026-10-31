@@ -149,6 +149,7 @@
                         </div>
                         <keyValueEditor
                             v-model="draft.params"
+                            :variables="collectionVariableRows"
                             key-placeholder="Key"
                             value-placeholder="Value"
                         ></keyValueEditor>
@@ -175,17 +176,12 @@
                         >
                             <label class="field-block">
                                 <span>{{ local('Bearer token') }}</span>
-                                <fv-text-box
+                                <variableInput
                                     v-model="draft.authData.token"
-                                    :theme="resolvedTheme"
-                                    :type="
-                                        revealAuth.token ? 'text' : 'password'
-                                    "
-                                    :icon="revealAuth.token ? 'Hide' : 'View'"
-                                    placeholder="Token"
-                                    border-radius="8"
-                                    @icon-click="toggleReveal('token')"
-                                ></fv-text-box>
+                                    :variables="collectionVariableRows"
+                                    :placeholder="local('Bearer token')"
+                                    :secret="true"
+                                ></variableInput>
                             </label>
                         </div>
 
@@ -195,22 +191,21 @@
                         >
                             <label class="field-block">
                                 <span>{{ local('Username') }}</span>
-                                <fv-text-box
+                                <variableInput
                                     v-model="draft.authData.username"
-                                    :theme="resolvedTheme"
-                                    placeholder="Username"
-                                    border-radius="8"
-                                ></fv-text-box>
+                                    :variables="collectionVariableRows"
+                                    :placeholder="local('Username')"
+
+                                ></variableInput>
                             </label>
                             <label class="field-block">
                                 <span>{{ local('Password') }}</span>
-                                <fv-text-box
+                                <variableInput
                                     v-model="draft.authData.password"
-                                    :theme="resolvedTheme"
-                                    type="password"
-                                    placeholder="Password"
-                                    border-radius="8"
-                                ></fv-text-box>
+                                    :variables="collectionVariableRows"
+                                    :placeholder="local('Password')"
+                                    :secret="true"
+                                ></variableInput>
                             </label>
                         </div>
 
@@ -220,26 +215,21 @@
                         >
                             <label class="field-block">
                                 <span>{{ local('Key') }}</span>
-                                <fv-text-box
+                                <variableInput
                                     v-model="draft.authData.key"
-                                    :theme="resolvedTheme"
-                                    placeholder="X-API-Key"
-                                    border-radius="8"
-                                ></fv-text-box>
+                                    :variables="collectionVariableRows"
+                                    :placeholder="local('Key')"
+
+                                ></variableInput>
                             </label>
                             <label class="field-block">
                                 <span>{{ local('Value') }}</span>
-                                <fv-text-box
+                                <variableInput
                                     v-model="draft.authData.value"
-                                    :theme="resolvedTheme"
-                                    :type="
-                                        revealAuth.value ? 'text' : 'password'
-                                    "
-                                    :icon="revealAuth.value ? 'Hide' : 'View'"
-                                    placeholder="Value"
-                                    border-radius="8"
-                                    @icon-click="toggleReveal('value')"
-                                ></fv-text-box>
+                                    :variables="collectionVariableRows"
+                                    :placeholder="local('Value')"
+                                    :secret="true"
+                                ></variableInput>
                             </label>
                             <label class="field-block">
                                 <span>{{ local('Add to') }}</span>
@@ -268,6 +258,7 @@
                         </div>
                         <keyValueEditor
                             v-model="draft.headersData"
+                            :variables="collectionVariableRows"
                             key-placeholder="Header"
                             value-placeholder="Value"
                         ></keyValueEditor>
@@ -289,6 +280,7 @@
                         <keyValueEditor
                             v-if="draft.bodyType === 'form'"
                             v-model="formRows"
+                            :variables="collectionVariableRows"
                             key-placeholder="Field"
                             value-placeholder="Value"
                         ></keyValueEditor>
@@ -498,6 +490,24 @@
                                 <code>{{ formatSize(response.size) }}</code>
                             </span>
                         </div>
+                        <div v-if="responseScriptPhases.length" class="response-scripts">
+                            <strong>{{ local('Script results') }}</strong>
+                            <div
+                                v-for="phase in responseScriptPhases"
+                                :key="phase.key"
+                                class="response-script-phase"
+                            >
+                                <span>{{ local(phase.label) }}</span>
+                                <div v-if="phase.result.error" class="response-error">{{ phase.result.error }}</div>
+                                <ul v-if="phase.result.tests?.length" class="scripts-tests">
+                                    <li v-for="(test, index) in phase.result.tests" :key="index" :class="{ failed: test.passed === false }">
+                                        {{ test.passed === false ? '✗' : '✓' }} {{ test.name }}
+                                        <span v-if="test.error" class="scripts-test-error">{{ test.error }}</span>
+                                    </li>
+                                </ul>
+                                <pre v-if="phase.result.console?.length" class="scripts-console">{{ formatScriptConsole(phase.result.console) }}</pre>
+                            </div>
+                        </div>
                         <details class="response-headers">
                             <summary>{{ local('Headers') }}</summary>
                             <pre>{{ formattedResponseHeaders }}</pre>
@@ -537,6 +547,7 @@ import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
 import keyValueEditor from '@/components/common/keyValueEditor/index.vue';
 import monacoEditor from '@/components/common/monacoEditor.vue';
+import variableInput from '@/components/common/variableInput.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useWorkspaceStore } from '@/stores/workspace';
 
@@ -588,6 +599,7 @@ export default {
         sectionCard,
         statusPill,
         keyValueEditor,
+        variableInput,
         monacoEditor
     },
     data() {
@@ -672,16 +684,13 @@ export default {
             return this.variablesByCollection[collection] || [];
         },
         formattedScriptConsole() {
-            return (this.scriptFeedback?.console || [])
-                .map((entry) => {
-                    const parts = (entry?.args || []).map((arg) =>
-                        typeof arg === 'string'
-                            ? arg
-                            : this.stringifyConsoleArg(arg)
-                    );
-                    return `[${entry?.level || 'log'}] ${parts.join(' ')}`;
-                })
-                .join('\n');
+            return this.formatScriptConsole(this.scriptFeedback?.console || []);
+        },
+        responseScriptPhases() {
+            return [
+                { key: 'preRequest', label: 'Pre-request', result: this.response?.script?.preRequest },
+                { key: 'postResponse', label: 'Post-response', result: this.response?.script?.postResponse }
+            ].filter(({ result }) => result && (result.error || result.tests?.length || result.console?.length));
         },
         methodOptions() {
             return METHODS.map((method) => ({ key: method, text: method }));
@@ -943,6 +952,14 @@ export default {
             this.$nextTick(() => {
                 this.loadDocsIntoEditor();
             });
+        },
+        formatScriptConsole(entries) {
+            return entries.map((entry) => {
+                const parts = (entry?.args || []).map((arg) =>
+                    typeof arg === 'string' ? arg : this.stringifyConsoleArg(arg)
+                );
+                return `[${entry?.level || 'log'}] ${parts.join(' ')}`;
+            }).join('\n');
         },
         async sendRequest() {
             this.errorMessage = '';
@@ -1333,6 +1350,18 @@ export default {
             color: var(--ph-text);
             font-family: var(--ph-code-font);
         }
+    }
+
+    .response-scripts {
+        margin-top: 16px;
+        min-width: 0;
+        color: var(--ph-text-secondary);
+        font-size: 12px;
+    }
+
+    .response-script-phase {
+        margin-top: 10px;
+        min-width: 0;
     }
 
     .response-headers {

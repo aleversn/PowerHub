@@ -130,7 +130,7 @@ const mergeVariableResult = (base, runResult) => {
         if (!values || typeof values !== 'object') continue;
         for (const [key, value] of Object.entries(values)) {
             if (!key) continue;
-            merged[key] = value;
+            if (!Object.hasOwn(base, key) || value !== base[key]) merged[key] = value;
         }
     }
     return merged;
@@ -253,6 +253,11 @@ export async function sendEndpointRequest(payload = {}) {
         if (!['http:', 'https:'].includes(finalTarget.protocol)) {
             throw new Error('Only HTTP and HTTPS URLs are supported.');
         }
+        const query = [...finalTarget.searchParams.entries()];
+        finalTarget.search = '';
+        for (const [key, value] of query) {
+            finalTarget.searchParams.append(key, substituteVariables(value, variables));
+        }
     } catch (error) {
         return {
             ok: false,
@@ -271,8 +276,26 @@ export async function sendEndpointRequest(payload = {}) {
         headers[String(item.key)] = substituteVariables(String(item.value ?? ''), variables);
     }
 
+    // Basic credentials must be resolved before base64 encoding.
+    if (String(payload.authType || '').toLowerCase() === 'basic') {
+        const headerKey = resolveHeaderKey(headers, 'authorization');
+        const original = normalizeAuth(payload.authType, payload.authData).Authorization;
+        if (headerKey && headers[headerKey] === original) {
+            const data = payload.authData || {};
+            headers[headerKey] = normalizeAuth('basic', {
+                username: substituteVariables(String(data.username ?? ''), variables),
+                password: substituteVariables(String(data.password ?? ''), variables)
+            }).Authorization;
+        }
+    }
     const resolvedMethod = String(currentRequest.method || method).toUpperCase();
-    const resolvedBody = substituteVariables(currentRequest.body ?? '', variables);
+    let resolvedBody = substituteVariables(currentRequest.body ?? '', variables);
+    if (currentRequest.contentType === 'application/x-www-form-urlencoded') {
+        const fields = new URLSearchParams(resolvedBody);
+        const resolvedFields = new URLSearchParams();
+        for (const [key, value] of fields) resolvedFields.append(key, substituteVariables(value, variables));
+        resolvedBody = resolvedFields.toString();
+    }
     const hasBody = Boolean(resolvedBody) && !['GET', 'HEAD'].includes(resolvedMethod);
     if (hasBody) {
         headers['Content-Length'] = Buffer.byteLength(resolvedBody);

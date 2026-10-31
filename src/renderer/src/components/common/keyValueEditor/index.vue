@@ -24,16 +24,14 @@
                 border-radius="8"
                 @update:model-value="updateRow(index, { key: $event })"
             ></fv-text-box>
-            <fv-text-box
+            <variableInput
                 :model-value="item.value"
-                :theme="resolvedTheme"
-                :type="item.hide ? 'password' : 'text'"
-                :icon="item.hide ? 'View' : 'Hide'"
+                :secret="true"
+                :initially-hidden="item.hide"
+                :variables="variables"
                 :placeholder="valuePlaceholder"
-                border-radius="8"
-                @icon-click="toggleHide(index)"
                 @update:model-value="updateRow(index, { value: $event })"
-            ></fv-text-box>
+            ></variableInput>
             <fv-button
                 :theme="resolvedTheme"
                 border-radius="8"
@@ -62,6 +60,7 @@
 <script>
 import { mapState } from 'pinia';
 
+import variableInput from '@/components/common/variableInput.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 
 const createRow = (item = {}) => ({
@@ -74,7 +73,9 @@ const createRow = (item = {}) => ({
 
 export default {
     name: 'KeyValueEditor',
+    components: { variableInput },
     props: {
+        variables: { type: Array, default: () => [] },
         modelValue: {
             type: Array,
             default: () => []

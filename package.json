@@ -18,15 +18,20 @@
         "build:linux": "npm run build && electron-builder --linux"
     },
     "dependencies": {
+        "@codemirror/autocomplete": "^6.20.4",
+        "@codemirror/state": "^6.7.6",
+        "@codemirror/view": "^6.43.15",
         "@creatorsn/powereditor3": "0.5.9",
         "@creatorsn/vfluent3": "^0.3.105",
         "@electron-toolkit/preload": "^3.0.2",
         "@electron-toolkit/utils": "^4.0.0",
         "better-sqlite3": "^13.0.3",
+        "codemirror": "^6.0.2",
         "drizzle-orm": "^0.45.4",
         "echarts": "^6.1.0",
         "monaco-editor": "0.55.1",
         "pinia": "^2.1.7",
+        "postman-collection": "^5.3.1",
         "postman-sandbox": "^6.9.0",
         "ssh2": "^1.17.0",
         "vue-router": "^4.5.1"

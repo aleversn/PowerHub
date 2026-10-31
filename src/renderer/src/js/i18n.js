@@ -55,6 +55,14 @@ export default {
         "en": "Edit",
         "cn": "编辑"
     },
+    "Delete this collection variable?": {
+        "en": "Delete this collection variable?",
+        "cn": "确定删除此集合变量吗？"
+    },
+    "Delete variable": {
+        "en": "Delete variable",
+        "cn": "删除变量"
+    },
     "Delete": {
         "en": "Delete",
         "cn": "删除"
