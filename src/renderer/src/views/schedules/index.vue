@@ -2,7 +2,7 @@
     <div class="page-stack schedules-page">
         <sectionCard
             :title="local('Schedules')"
-            :description="local('Run HTTP requests on a Cron or interval plan. Demo data is local.')"
+            :description="local('Schedules run while PowerHub is open.')"
         >
             <template #actions>
                 <fv-button
@@ -12,12 +12,13 @@
                     border-radius="8"
                     icon="Add"
                     style="height: 34px"
-                    @click="editorOpen = true"
+                    @click="$router.push({ name: 'schedule-editor', params: { id: 'new' } })"
                 >
                     {{ local('New schedule') }}
                 </fv-button>
             </template>
 
+            <div v-if="errorMessage" class="schedule-error">{{ errorMessage }}</div>
             <div class="schedule-grid">
                 <article
                     v-for="schedule in schedules"
@@ -31,7 +32,7 @@
                             </span>
                             <div>
                                 <h3>{{ schedule.name }}</h3>
-                                <p>{{ endpointName(schedule.endpointId) }}</p>
+                                <p>{{ schedule.taskType === 'collection' ? schedule.collection : endpointName(schedule.endpointId) }}</p>
                             </div>
                         </div>
                         <statusPill :status="schedule.lastStatus" />
@@ -39,27 +40,22 @@
 
                     <div class="cron-strip">
                         <code>{{ schedule.cron }}</code>
+                        <span v-if="schedule.taskType === 'legacy'">{{ local('Edit and save this older task to enable scheduling.') }}</span>
                     </div>
 
                     <dl class="schedule-meta">
                         <div>
                             <dt>{{ local('Next run') }}</dt>
                             <dd>
-                                {{
-                                    schedule.nextRun
-                                        ? formatDate(schedule.nextRun)
-                                        : local('Not scheduled')
-                                }}
+                                <time-rounder v-if="schedule.taskType !== 'legacy' && schedule.nextRun" :model-value="schedule.nextRun" />
+                                <template v-else>{{ local('Not scheduled') }}</template>
                             </dd>
                         </div>
                         <div>
                             <dt>{{ local('Last run') }}</dt>
                             <dd>
-                                {{
-                                    schedule.lastRun
-                                        ? formatDate(schedule.lastRun)
-                                        : '-'
-                                }}
+                                <time-rounder v-if="schedule.lastRun" :model-value="schedule.lastRun" />
+                                <template v-else>-</template>
                             </dd>
                         </div>
                     </dl>
@@ -67,7 +63,7 @@
                     <footer class="schedule-card__footer">
                         <div class="schedule-status">
                             <fv-toggle-switch
-                                :model-value="schedule.enabled"
+                                :model-value="schedule.taskType !== 'legacy' && schedule.enabled"
                                 :theme="resolvedTheme"
                                 :width="38"
                                 :height="20"
@@ -78,100 +74,30 @@
                             ></fv-toggle-switch>
                             <span>
                                 {{
-                                    schedule.enabled
+                                    schedule.taskType !== 'legacy' && schedule.enabled
                                         ? local('Enabled')
                                         : local('Disabled')
                                 }}
                             </span>
                         </div>
+                        <fv-button :theme="resolvedTheme" border-radius="8" style="height: 32px" icon="Edit" @click="$router.push({ name: 'schedule-editor', params: { id: schedule.id } })">
+                            {{ local('Edit') }}
+                        </fv-button>
                         <fv-button
                             :theme="resolvedTheme"
                             border-radius="8"
                             style="height: 32px"
                             icon="Play"
+                            :disabled="runningId === schedule.id || schedule.lastStatus === 'running'"
                             @click="runSchedule(schedule)"
                         >
-                            {{ local('Run now') }}
+                            {{ local(runningId === schedule.id || schedule.lastStatus === 'running' ? 'Running' : 'Run now') }}
                         </fv-button>
                     </footer>
                 </article>
             </div>
         </sectionCard>
 
-        <fv-panel
-            v-model="editorOpen"
-            :title="local('Schedule editor')"
-            :theme="resolvedTheme"
-            width="460px"
-            :is-footer="true"
-            :is-central-side="true"
-            :is-light-dismiss="true"
-        >
-            <template #container>
-                <div class="editor-form">
-                    <label>
-                        <span>{{ local('Name') }}</span>
-                        <fv-text-box
-                            v-model="newSchedule.name"
-                            :theme="resolvedTheme"
-                            :placeholder="local('Example: Production health check')"
-                            border-radius="8"
-                        ></fv-text-box>
-                    </label>
-                    <label>
-                        <span>{{ local('Endpoint') }}</span>
-                        <fv-drop-down
-                            :model-value="selectedEndpoint"
-                            :options="endpointOptions"
-                            :theme="resolvedTheme"
-                            border-radius="8"
-                            @update:model-value="changeEndpoint"
-                        ></fv-drop-down>
-                    </label>
-                    <label>
-                        <span>{{ local('Cron expression') }}</span>
-                        <fv-text-box
-                            v-model="newSchedule.cron"
-                            :theme="resolvedTheme"
-                            :placeholder="local('*/15 * * * *')"
-                            border-radius="8"
-                        ></fv-text-box>
-                    </label>
-                    <div class="switch-row">
-                        <span>{{ local('Enable this schedule immediately') }}</span>
-                        <fv-toggle-switch
-                            v-model="newSchedule.enabled"
-                            :theme="resolvedTheme"
-                            :width="38"
-                            :height="20"
-                            switch-on-background="#0078d4"
-                        ></fv-toggle-switch>
-                    </div>
-                </div>
-            </template>
-            <template #footer>
-                <div class="panel-actions">
-                    <fv-button
-                        :theme="resolvedTheme"
-                        border-radius="8"
-                        style="height: 34px"
-                        @click="editorOpen = false"
-                    >
-                        {{ local('Cancel') }}
-                    </fv-button>
-                    <fv-button
-                        :theme="resolvedTheme"
-                        background="#0078d4"
-                        foreground="#ffffff"
-                        border-radius="8"
-                        style="height: 34px"
-                        @click="createSchedule"
-                    >
-                        {{ local('Create') }}
-                    </fv-button>
-                </div>
-            </template>
-        </fv-panel>
     </div>
 </template>
 
@@ -180,6 +106,7 @@ import { mapActions, mapState } from 'pinia';
 
 import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
+import timeRounder from '@/components/general/timeRounder.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useWorkspaceStore } from '@/stores/workspace';
 
@@ -187,62 +114,47 @@ export default {
     name: 'SchedulesView',
     components: {
         sectionCard,
-        statusPill
+        statusPill,
+        timeRounder
     },
-    data() {
-        return {
-            editorOpen: false,
-            newSchedule: {
-                name: '',
-                endpointId: '',
-                cron: '*/15 * * * *',
-                enabled: true
-            }
-        };
-    },
+    data() { return { runningId: '', errorMessage: '', refreshTimer: null }; },
     computed: {
-        ...mapState(useAppConfigStore, ['resolvedTheme', 'local', 'formatDate']),
+        ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
         ...mapState(useWorkspaceStore, ['endpointById', 'endpoints', 'schedules']),
-        endpointOptions() {
-            return this.endpoints.map((endpoint) => ({
-                key: endpoint.id,
-                text: endpoint.name
-            }));
-        },
-        selectedEndpoint() {
-            return this.endpointOptions.filter(
-                (option) => option.key === this.newSchedule.endpointId
-            );
-        }
     },
     async mounted() {
-        await this.workspaceInitialize();
+        const initialized = await this.workspaceInitialize();
+        if (!initialized.ok) { this.errorMessage = initialized.message; return; }
+        const refreshed = await this.refreshSchedules();
+        if (!refreshed.ok) { this.errorMessage = refreshed.message; return; }
+        this.refreshTimer = setInterval(() => this.refreshSchedules(), 10000);
     },
+    beforeUnmount() { clearInterval(this.refreshTimer); },
     methods: {
         ...mapActions(useWorkspaceStore, {
-            workspaceInitialize: 'initialize',
-            addSchedule: 'addSchedule',
-            runEndpoint: 'runEndpoint',
-            toggleSchedule: 'toggleSchedule'
+            workspaceInitialize: 'loadWorkspace',
+            refreshSchedules: 'refreshSchedules',
+            executeSchedule: 'runSchedule',
+            toggleScheduleAction: 'toggleSchedule'
         }),
-        endpointName(id) {
-            return this.endpointById[id]?.name || '-';
+        endpointName(id) { return this.endpointById[id]?.name || '-'; },
+        scheduleError(message) {
+            const keys = ['Edit and save this legacy schedule before enabling it.', 'Edit and save this legacy schedule before running it.', 'This schedule is already running.', 'Select an enabled endpoint.', 'Connect at least one enabled endpoint to Start.'];
+            const key = keys.find(item => String(message || '').includes(item));
+            return key ? this.local(key) : message;
         },
-        changeEndpoint(options) {
-            this.newSchedule.endpointId = options?.[0]?.key || '';
+        async toggleSchedule(id) {
+            this.errorMessage = '';
+            const result = await this.toggleScheduleAction(id);
+            if (!result.ok) this.errorMessage = this.scheduleError(result.message);
         },
-        createSchedule() {
-            this.addSchedule({ ...this.newSchedule });
-            Object.assign(this.newSchedule, {
-                name: '',
-                endpointId: '',
-                cron: '*/15 * * * *',
-                enabled: true
-            });
-            this.editorOpen = false;
-        },
-        runSchedule(schedule) {
-            this.runEndpoint(schedule.endpointId, {}, schedule.id, 'schedule');
+        async runSchedule(schedule) {
+            this.errorMessage = '';
+            this.runningId = schedule.id;
+            const result = await this.executeSchedule(schedule.id);
+            this.runningId = '';
+            if (!result.ok) this.errorMessage = this.scheduleError(result.message);
+
         }
     }
 };
@@ -250,6 +162,7 @@ export default {
 
 <style lang="scss" scoped>
 .schedules-page {
+    .schedule-error { margin-bottom: 12px; color: var(--ph-danger); }
     .schedule-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

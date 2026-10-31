@@ -58,6 +58,9 @@ export const schedules = sqliteTable(
         endpointId: text('endpoint_id').references(() => endpoints.id, {
             onDelete: 'cascade'
         }),
+        taskType: text('task_type').notNull().default('legacy'),
+        collection: text('collection').notNull().default(''),
+        flow: text('flow').notNull().default('{}'),
         cron: text('cron').notNull(),
         enabled: integer('enabled', { mode: 'boolean' })
             .notNull()
@@ -94,7 +97,9 @@ export const runs = sqliteTable(
         requestUrl: text('request_url'),
         response: text('response'),
         responseHeaders: text('response_headers').notNull().default('{}'),
-        error: text('error')
+        error: text('error'),
+        nodeResults: text('node_results').notNull().default('[]'),
+        flowSnapshot: text('flow_snapshot').notNull().default('{}')
     },
     (table) => [
         index('runs_endpoint_idx').on(table.endpointId),

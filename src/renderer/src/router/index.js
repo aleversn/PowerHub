@@ -64,8 +64,14 @@ const router = createRouter({
                     ),
                     meta: {
                         title: 'Schedules',
-                        description: 'Run HTTP requests on a Cron or interval plan. Demo data is local.'
+                        description: 'Schedules run while PowerHub is open.'
                     }
+                },
+                {
+                    path: 'schedules/:id',
+                    name: 'schedule-editor',
+                    component: AsyncLoad(() => import('@/views/schedules/editor.vue')),
+                    meta: { title: 'Schedule editor' }
                 },
                 {
                     path: 'runs',

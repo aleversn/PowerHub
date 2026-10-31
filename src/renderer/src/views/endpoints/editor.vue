@@ -174,7 +174,7 @@
                             v-if="draft.authType === 'bearer'"
                             class="auth-fields"
                         >
-                            <label class="field-block">
+                            <div class="field-block">
                                 <span>{{ local('Bearer token') }}</span>
                                 <variableInput
                                     v-model="draft.authData.token"
@@ -182,14 +182,14 @@
                                     :placeholder="local('Bearer token')"
                                     :secret="true"
                                 ></variableInput>
-                            </label>
+                            </div>
                         </div>
 
                         <div
                             v-else-if="draft.authType === 'basic'"
                             class="auth-fields auth-grid"
                         >
-                            <label class="field-block">
+                            <div class="field-block">
                                 <span>{{ local('Username') }}</span>
                                 <variableInput
                                     v-model="draft.authData.username"
@@ -197,8 +197,8 @@
                                     :placeholder="local('Username')"
 
                                 ></variableInput>
-                            </label>
-                            <label class="field-block">
+                            </div>
+                            <div class="field-block">
                                 <span>{{ local('Password') }}</span>
                                 <variableInput
                                     v-model="draft.authData.password"
@@ -206,14 +206,14 @@
                                     :placeholder="local('Password')"
                                     :secret="true"
                                 ></variableInput>
-                            </label>
+                            </div>
                         </div>
 
                         <div
                             v-else-if="draft.authType === 'api-key'"
                             class="auth-fields auth-grid"
                         >
-                            <label class="field-block">
+                            <div class="field-block">
                                 <span>{{ local('Key') }}</span>
                                 <variableInput
                                     v-model="draft.authData.key"
@@ -221,8 +221,8 @@
                                     :placeholder="local('Key')"
 
                                 ></variableInput>
-                            </label>
-                            <label class="field-block">
+                            </div>
+                            <div class="field-block">
                                 <span>{{ local('Value') }}</span>
                                 <variableInput
                                     v-model="draft.authData.value"
@@ -230,8 +230,8 @@
                                     :placeholder="local('Value')"
                                     :secret="true"
                                 ></variableInput>
-                            </label>
-                            <label class="field-block">
+                            </div>
+                            <div class="field-block">
                                 <span>{{ local('Add to') }}</span>
                                 <fv-drop-down
                                     :model-value="authLocationSelection"
@@ -240,7 +240,7 @@
                                     border-radius="8"
                                     @update:model-value="changeAuthLocation"
                                 ></fv-drop-down>
-                            </label>
+                            </div>
                         </div>
 
                         <div v-else class="auth-empty">
@@ -512,7 +512,7 @@
                             <summary>{{ local('Headers') }}</summary>
                             <pre>{{ formattedResponseHeaders }}</pre>
                         </details>
-                        <label class="field-block">
+                        <div class="field-block">
                             <span>{{ local('Response body') }}</span>
                             <monacoEditor
                                 :model-value="response.response || ''"
@@ -522,7 +522,7 @@
                                 :height="'300px'"
                                 :minimap="false"
                             ></monacoEditor>
-                        </label>
+                        </div>
                     </template>
 
                     <div v-else class="response-empty">

@@ -1,8 +1,9 @@
-import { ipcMain } from 'electron';
+import { ipcMain, BrowserWindow } from 'electron';
 
 import { workspaceRepository as repo } from '../repositories/workspace.js';
 import { sendEndpointRequest } from '../http/endpointClient.js';
 import { runSandbox } from '../scripts/sandboxRunner.js';
+import { prepareSchedule, runSchedule, nextRunFor, setRunProgressNotifier } from '../schedules/scheduler.js';
 import {
     collectServerMetrics,
     testServerConnection
@@ -33,8 +34,11 @@ export const workspaceChannels = {
     schedulesUpdate: 'workspace:schedules:update',
     schedulesToggle: 'workspace:schedules:toggle',
     schedulesRemove: 'workspace:schedules:remove',
+    schedulesRun: 'workspace:schedules:run',
     runsList: 'workspace:runs:list',
     runsCreate: 'workspace:runs:create',
+    runsRemove: 'workspace:runs:remove',
+    runsClear: 'workspace:runs:clear',
     runsPrune: 'workspace:runs:prune',
     settingsGet: 'workspace:settings:get',
     settingsSet: 'workspace:settings:set',
@@ -46,6 +50,11 @@ export const workspaceChannels = {
 };
 
 export function registerWorkspaceIpc() {
+    setRunProgressNotifier(run => {
+        for (const window of BrowserWindow.getAllWindows()) {
+            if (!window.isDestroyed()) window.webContents.send('workspace:runs:progress', run);
+        }
+    });
     const handler = (channel, fn) => {
         ipcMain.handle(channel, (_event, ...args) => fn(...args));
     };
@@ -92,13 +101,23 @@ export function registerWorkspaceIpc() {
     );
 
     handler(workspaceChannels.schedulesList, () => repo.listSchedules());
-    handler(workspaceChannels.schedulesCreate, (payload) => repo.createSchedule(payload));
-    handler(workspaceChannels.schedulesUpdate, (id, patch) => repo.updateSchedule(id, patch));
-    handler(workspaceChannels.schedulesToggle, (id) => repo.toggleSchedule(id));
+    handler(workspaceChannels.schedulesCreate, (payload) => repo.createSchedule(prepareSchedule(payload)));
+    handler(workspaceChannels.schedulesUpdate, (id, patch) => repo.updateSchedule(id, prepareSchedule(patch)));
+    handler(workspaceChannels.schedulesToggle, (id) => {
+        const schedule = repo.listSchedules().find(item => item.id === id);
+        if (!schedule) throw new Error('Schedule not found.');
+        if (schedule.taskType === 'legacy') throw new Error('Edit and save this legacy schedule before enabling it.');
+        const enabled = !schedule.enabled;
+        if (enabled) prepareSchedule({ ...schedule, enabled });
+        return repo.updateSchedule(id, { enabled, nextRun: enabled ? nextRunFor(schedule.cron) : null });
+    });
+    handler(workspaceChannels.schedulesRun, (id) => runSchedule(id));
     handler(workspaceChannels.schedulesRemove, (id) => repo.removeSchedule(id));
 
     handler(workspaceChannels.runsList, (query) => repo.listRuns(query));
     handler(workspaceChannels.runsCreate, (payload) => repo.createRun(payload));
+    handler(workspaceChannels.runsRemove, (id) => repo.removeRun(id));
+    handler(workspaceChannels.runsClear, () => repo.clearRuns());
     handler(workspaceChannels.runsPrune, (days) => repo.pruneRuns(days));
 
     handler(workspaceChannels.settingsGet, (key, fallback) => repo.getSetting(key, fallback));

@@ -30,6 +30,9 @@
 
 ## Vue Conventions
 
+- 页面和组件中禁止使用原生 `<label>`、`<form>`、`<fieldset>`、`<legend>` 等表单容器标签；使用 `div` 和项目已有表单组件组织布局，避免原生表单的隐式点击与提交行为。
+- 使用 `div` 布局时，控件仍需通过组件支持的无障碍属性提供可访问名称。
+
 - 组件必须使用 Options API：`export default { name, components, props, data, computed, methods, ... }`。
 - 不要使用 `<script setup>`，不要在新组件里改用 Composition API。
 - 组件名使用 PascalCase 文件语义或现有 kebab-case 引用方式；模板中组件名保持项目既有 kebab-case 风格。

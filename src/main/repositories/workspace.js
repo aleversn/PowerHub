@@ -1,4 +1,4 @@
-import { desc, eq, lt } from 'drizzle-orm';
+import { and, desc, eq, lt, ne } from 'drizzle-orm';
 
 import { getDatabase } from '../db/index.js';
 import {
@@ -74,7 +74,9 @@ const runRowToModel = (row) => {
     if (!row) return null;
     return {
         ...row,
-        responseHeaders: safeJsonParse(row.responseHeaders, {})
+        responseHeaders: safeJsonParse(row.responseHeaders, {}),
+        nodeResults: safeJsonParse(row.nodeResults, []),
+        flowSnapshot: safeJsonParse(row.flowSnapshot, {})
     };
 };
 
@@ -312,8 +314,10 @@ export function removeEndpoint(id) {
 
 /* ----------------------------- schedules ----------------------------- */
 
+const scheduleRowToModel = (row) => row ? { ...row, flow: safeJsonParse(row.flow, {}) } : null;
+
 export function listSchedules() {
-    return getDatabase().select().from(schedules).orderBy(desc(schedules.updatedAt)).all();
+    return getDatabase().select().from(schedules).orderBy(desc(schedules.updatedAt)).all().map(scheduleRowToModel);
 }
 
 export function createSchedule(payload = {}) {
@@ -322,6 +326,9 @@ export function createSchedule(payload = {}) {
         id: payload.id || createId('schedule'),
         name: payload.name || 'Untitled schedule',
         endpointId: payload.endpointId || null,
+        taskType: payload.taskType || 'single',
+        collection: payload.collection || '',
+        flow: serializeJson(payload.flow || {}, '{}'),
         cron: payload.cron || '*/15 * * * *',
         enabled: payload.enabled !== false,
         nextRun: payload.nextRun || null,
@@ -331,17 +338,17 @@ export function createSchedule(payload = {}) {
         updatedAt: timestamp
     };
     getDatabase().insert(schedules).values(schedule).run();
-    return schedule;
+    return scheduleRowToModel(schedule);
 }
 
 export function updateSchedule(id, patch = {}) {
     const timestamp = now();
     getDatabase()
         .update(schedules)
-        .set({ ...patch, updatedAt: timestamp })
+        .set({ ...patch, ...(patch.flow !== undefined ? { flow: serializeJson(patch.flow, '{}') } : {}), updatedAt: timestamp })
         .where(eq(schedules.id, id))
         .run();
-    return getDatabase().select().from(schedules).where(eq(schedules.id, id)).get();
+    return scheduleRowToModel(getDatabase().select().from(schedules).where(eq(schedules.id, id)).get());
 }
 
 export function toggleSchedule(id) {
@@ -381,10 +388,12 @@ export function createRun(payload = {}) {
         requestUrl: payload.requestUrl || payload.url || null,
         response: payload.response ?? null,
         responseHeaders: serializeJson(payload.responseHeaders || {}, '{}'),
-        error: payload.error ?? null
+        error: payload.error ?? null,
+        nodeResults: serializeJson(payload.nodeResults || [], '[]'),
+        flowSnapshot: serializeJson(payload.flowSnapshot || {}, '{}')
     };
     getDatabase().insert(runs).values(run).run();
-    if (run.endpointId) {
+    if (run.endpointId && run.status !== 'running') {
         getDatabase()
             .update(endpoints)
             .set({
@@ -410,12 +419,49 @@ export function createRun(payload = {}) {
     return runRowToModel(run);
 }
 
+export function updateRun(id, patch = {}) {
+    const db = getDatabase();
+    const current = db.select().from(runs).where(eq(runs.id, id)).get();
+    if (!current) return null;
+    const fields = { ...patch };
+    if (fields.nodeResults !== undefined) fields.nodeResults = serializeJson(fields.nodeResults, '[]');
+    if (fields.flowSnapshot !== undefined) fields.flowSnapshot = serializeJson(fields.flowSnapshot, '{}');
+    db.update(runs).set(fields).where(eq(runs.id, id)).run();
+    const run = db.select().from(runs).where(eq(runs.id, id)).get();
+    if (run.scheduleId) db.update(schedules).set({ lastRun: run.startedAt, lastStatus: run.status, updatedAt: now() }).where(eq(schedules.id, run.scheduleId)).run();
+    if (run.endpointId && run.status !== 'running') db.update(endpoints).set({ health: run.status === 'success' ? 'healthy' : 'offline', latency: run.duration, updatedAt: now() }).where(eq(endpoints.id, run.endpointId)).run();
+    return runRowToModel(run);
+}
+
+export function interruptRunningRuns() {
+    const rows = getDatabase().select().from(runs).where(eq(runs.status, 'running')).all();
+    for (const run of rows) {
+        const error = 'Execution interrupted when PowerHub closed.';
+        const nodeResults = safeJsonParse(run.nodeResults, []).map(node =>
+            node.status === 'running' ? { ...node, status: 'failed', error }
+                : ['pending', 'waiting'].includes(node.status) ? { ...node, status: 'skipped' } : node
+        );
+        updateRun(run.id, { status: 'failed', error, nodeResults });
+    }
+}
+
+export function removeRun(id) {
+    const run = getDatabase().select().from(runs).where(eq(runs.id, id)).get();
+    if (run?.status === 'running') throw new Error('Cannot delete a running record.');
+    return getDatabase().delete(runs).where(eq(runs.id, id)).run().changes > 0;
+}
+
+export function clearRuns() {
+    if (getDatabase().select().from(runs).where(eq(runs.status, 'running')).get()) throw new Error('Cannot clear history while a task is running.');
+    return getDatabase().delete(runs).run().changes;
+}
+
 // 按保留天数清理历史运行记录。
 export function pruneRuns(retentionDays) {
     const days = Number(retentionDays);
     if (!Number.isFinite(days) || days <= 0) return 0;
     const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
-    const result = getDatabase().delete(runs).where(lt(runs.startedAt, cutoff)).run();
+    const result = getDatabase().delete(runs).where(and(lt(runs.startedAt, cutoff), ne(runs.status, 'running'))).run();
     return result.changes || 0;
 }
 
@@ -645,6 +691,10 @@ export const workspaceRepository = {
     removeSchedule,
     listRuns,
     createRun,
+    updateRun,
+    interruptRunningRuns,
+    removeRun,
+    clearRuns,
     pruneRuns,
     listCollectionVariables,
     createCollectionVariable,

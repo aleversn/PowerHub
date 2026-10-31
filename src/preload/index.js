@@ -32,11 +32,19 @@ const workspace = {
         create: (payload) => ipcRenderer.invoke('workspace:schedules:create', payload),
         update: (id, patch) => ipcRenderer.invoke('workspace:schedules:update', id, patch),
         toggle: (id) => ipcRenderer.invoke('workspace:schedules:toggle', id),
-        remove: (id) => ipcRenderer.invoke('workspace:schedules:remove', id)
+        remove: (id) => ipcRenderer.invoke('workspace:schedules:remove', id),
+        run: (id) => ipcRenderer.invoke('workspace:schedules:run', id)
     },
     runs: {
+        onProgress: (callback) => {
+            const listener = (_event, run) => callback(run);
+            ipcRenderer.on('workspace:runs:progress', listener);
+            return () => ipcRenderer.removeListener('workspace:runs:progress', listener);
+        },
         list: (query) => ipcRenderer.invoke('workspace:runs:list', query),
         create: (payload) => ipcRenderer.invoke('workspace:runs:create', payload),
+        remove: (id) => ipcRenderer.invoke('workspace:runs:remove', id),
+        clear: () => ipcRenderer.invoke('workspace:runs:clear'),
         prune: (days) => ipcRenderer.invoke('workspace:runs:prune', days)
     },
     settings: {

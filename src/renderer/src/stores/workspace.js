@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia';
 
 const DEFAULT_COLLECTION = 'Default collection';
+let progressSubscribed = false;
+let progressVersion = 0;
+const progressUpdates = new Map();
 const now = () => new Date().toISOString();
 
 const createId = (prefix) =>
@@ -132,12 +135,16 @@ const resolveWorkspaceApi = () => {
                 toggle: (id) =>
                     ipcRenderer.invoke('workspace:schedules:toggle', id),
                 remove: (id) =>
-                    ipcRenderer.invoke('workspace:schedules:remove', id)
+                    ipcRenderer.invoke('workspace:schedules:remove', id),
+                run: (id) => ipcRenderer.invoke('workspace:schedules:run', id)
             },
             runs: {
+                onProgress: (callback) => ipcRenderer.on('workspace:runs:progress', (_event, run) => callback(run)),
                 list: (query) => ipcRenderer.invoke('workspace:runs:list', query),
                 create: (payload) =>
                     ipcRenderer.invoke('workspace:runs:create', payload),
+                remove: (id) => ipcRenderer.invoke('workspace:runs:remove', id),
+                clear: () => ipcRenderer.invoke('workspace:runs:clear'),
                 prune: (days) => ipcRenderer.invoke('workspace:runs:prune', days)
             },
             variables: {
@@ -260,6 +267,15 @@ export const useWorkspaceStore = defineStore('workspace', {
                 return workspaceApiUnavailable();
             }
 
+            if (!progressSubscribed && api.runs.onProgress) {
+                api.runs.onProgress(run => {
+                    progressUpdates.set(run.id, { version: ++progressVersion, run });
+                    if (progressUpdates.size > 400) progressUpdates.delete(progressUpdates.keys().next().value);
+                    this.applyRunProgress(run);
+                });
+                progressSubscribed = true;
+            }
+            const version = progressVersion;
             this.loading = true;
             this.error = '';
             try {
@@ -277,6 +293,7 @@ export const useWorkspaceStore = defineStore('workspace', {
                 this.endpoints = (endpoints || []).map(normalizeEndpoint);
                 this.schedules = schedules || [];
                 this.runs = (runs || []).map(normalizeRun);
+                for (const update of progressUpdates.values()) if (update.version > version) this.applyRunProgress(update.run);
                 this.collectionVariables = (variables || []).map(normalizeVariable);
                 this.loaded = true;
                 return { ok: true };
@@ -290,6 +307,13 @@ export const useWorkspaceStore = defineStore('workspace', {
             } finally {
                 this.loading = false;
             }
+        },
+        applyRunProgress(run) {
+            const index = this.runs.findIndex(item => item.id === run.id);
+            if (index < 0) this.runs.unshift(normalizeRun(run));
+            else this.runs.splice(index, 1, normalizeRun(run));
+            const schedule = this.schedules.find(item => item.id === run.scheduleId);
+            if (schedule) { schedule.lastRun = run.startedAt; schedule.lastStatus = run.status; }
         },
         async addEndpoint(payload = {}) {
             const api = resolveWorkspaceApi();
@@ -544,6 +568,37 @@ export const useWorkspaceStore = defineStore('workspace', {
                 };
             }
         },
+        async updateSchedule(id, payload) {
+            const api = resolveWorkspaceApi();
+            if (!api) return workspaceApiUnavailable();
+            try {
+                const schedule = await api.schedules.update(id, toPlain(payload));
+                const index = this.schedules.findIndex(item => item.id === id);
+                if (index >= 0) this.schedules.splice(index, 1, schedule);
+                return { ok: true, schedule };
+            } catch (error) { return { ok: false, message: error?.message || String(error) }; }
+        },
+        async refreshSchedules() {
+            const api = resolveWorkspaceApi();
+            if (!api) return workspaceApiUnavailable();
+            try {
+                const version = progressVersion;
+                this.schedules = await api.schedules.list();
+                for (const update of progressUpdates.values()) if (update.version > version) this.applyRunProgress(update.run);
+                return { ok: true };
+            }
+            catch (error) { return { ok: false, message: error?.message || String(error) }; }
+        },
+        async runSchedule(id) {
+            const api = resolveWorkspaceApi();
+            if (!api) return workspaceApiUnavailable();
+            try {
+                const run = await api.schedules.run(id);
+                this.applyRunProgress(run);
+                await Promise.all([this.refreshSchedules(), this.refreshVariables()]);
+                return { ok: true, run };
+            } catch (error) { return { ok: false, message: error?.message || String(error) }; }
+        },
         async toggleSchedule(id) {
             const api = resolveWorkspaceApi();
             if (!api) return workspaceApiUnavailable();
@@ -562,11 +617,30 @@ export const useWorkspaceStore = defineStore('workspace', {
                 };
             }
         },
+        async removeRun(id) {
+            const api = resolveWorkspaceApi();
+            if (!api?.runs?.remove) return workspaceApiUnavailable();
+            try {
+                await api.runs.remove(id);
+                this.runs = this.runs.filter(run => run.id !== id);
+                return { ok: true };
+            } catch (error) { return { ok: false, message: error?.message || String(error) }; }
+        },
+        async clearRuns() {
+            const api = resolveWorkspaceApi();
+            if (!api?.runs?.clear) return workspaceApiUnavailable();
+            try {
+                await api.runs.clear();
+                return await this.refreshRuns();
+            } catch (error) { return { ok: false, message: error?.message || String(error) }; }
+        },
         async refreshRuns(query = { limit: 200 }) {
             const api = resolveWorkspaceApi();
             if (!api) return workspaceApiUnavailable();
             try {
+                const version = progressVersion;
                 this.runs = (await api.runs.list(query)).map(normalizeRun);
+                for (const update of progressUpdates.values()) if (update.version > version) this.applyRunProgress(update.run);
                 return { ok: true };
             } catch (error) {
                 return {

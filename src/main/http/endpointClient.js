@@ -413,16 +413,17 @@ const persistVariables = (collection, before, after) => {
             Object.keys(before).some((key) => !Object.hasOwn(after, key));
         if (!changed) return;
         const existing = listCollectionVariables(collection);
+        const modified = (key) => Object.hasOwn(after, key) && (!Object.hasOwn(before, key) || before[key] !== after[key]);
         const existingKeys = new Set(existing.map((item) => item.key));
         const variables = [];
         for (const item of existing) {
             variables.push({
                 ...item,
-                value: Object.hasOwn(after, item.key) ? String(after[item.key]) : item.value
+                value: modified(item.key) ? String(after[item.key] ?? '') : item.value
             });
         }
         for (const [key, value] of Object.entries(after)) {
-            if (!key || existingKeys.has(key)) continue;
+            if (!key || existingKeys.has(key) || !modified(key)) continue;
             variables.push({
                 collection,
                 key,

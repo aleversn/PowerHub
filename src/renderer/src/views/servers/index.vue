@@ -158,7 +158,7 @@
                         </div>
 
                         <div class="form-grid">
-                            <label class="full-span">
+                            <div class="field full-span">
                                 <span>{{ local('Name') }}</span>
                                 <fv-text-box
                                     v-model="editorForm.name"
@@ -166,8 +166,8 @@
                                     :placeholder="local('Example: Production API')"
                                     border-radius="8"
                                 ></fv-text-box>
-                            </label>
-                            <label>
+                            </div>
+                            <div class="field">
                                 <span>{{ local('Address') }}</span>
                                 <fv-text-box
                                     v-model="editorForm.address"
@@ -175,8 +175,8 @@
                                     :placeholder="local('IP or hostname')"
                                     border-radius="8"
                                 ></fv-text-box>
-                            </label>
-                            <label>
+                            </div>
+                            <div class="field">
                                 <span>{{ local('SSH port') }}</span>
                                 <fv-text-box
                                     v-model="editorForm.port"
@@ -184,7 +184,7 @@
                                     type="number"
                                     border-radius="8"
                                 ></fv-text-box>
-                            </label>
+                            </div>
                         </div>
                     </section>
 
@@ -198,15 +198,15 @@
                         </div>
 
                         <div class="form-grid">
-                            <label>
+                            <div class="field">
                                 <span>{{ local('Username') }}</span>
                                 <fv-text-box
                                     v-model="editorForm.username"
                                     :theme="resolvedTheme"
                                     border-radius="8"
                                 ></fv-text-box>
-                            </label>
-                            <label>
+                            </div>
+                            <div class="field">
                                 <span>{{ local('Password') }}</span>
                                 <fv-text-box
                                     v-model="editorForm.password"
@@ -214,7 +214,7 @@
                                     type="password"
                                     border-radius="8"
                                 ></fv-text-box>
-                            </label>
+                            </div>
                         </div>
                     </section>
 
@@ -739,7 +739,7 @@ export default {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 14px;
 
-        label {
+        .field {
             min-width: 0;
             display: flex;
             flex-direction: column;

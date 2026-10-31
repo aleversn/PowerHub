@@ -1,0 +1,1 @@
+ALTER TABLE `runs` ADD `flow_snapshot` text DEFAULT '{}' NOT NULL;
