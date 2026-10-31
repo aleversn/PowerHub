@@ -8,7 +8,9 @@
                 <div>
                     <span>{{ local('Enabled servers') }}</span>
                     <strong>{{ enabledServers }}</strong>
-                    <small>{{ servers.length }} {{ local('configured') }}</small>
+                    <small
+                        >{{ servers.length }} {{ local('configured') }}</small
+                    >
                 </div>
             </article>
             <article class="summary-card">
@@ -33,19 +35,32 @@
             </article>
             <article class="summary-card">
                 <span class="summary-icon violet">
-                    <i class="ms-Icon ms-Icon--Thermometer"></i>
+                    <i class="ms-Icon ms-Icon--Frigid"></i>
                 </span>
                 <div>
                     <span>{{ local('Average temperature') }}</span>
-                    <strong>{{ averageTemperature !== null ? averageTemperature + '°C' : '--' }}</strong>
-                    <small>{{ averageTemperature !== null ? local('Updated recently') : local('No temperature sensor') }}</small>
+                    <strong>{{
+                        averageTemperature !== null
+                            ? averageTemperature + '°C'
+                            : '--'
+                    }}</strong>
+                    <small>{{
+                        averageTemperature !== null
+                            ? local('Updated recently')
+                            : local('No temperature sensor')
+                    }}</small>
                 </div>
             </article>
         </section>
 
         <sectionCard
+            :fill="false"
             :title="local('Status board')"
-            :description="local('Monitor load, memory, disk, and network activity across your servers.')"
+            :description="
+                local(
+                    'Monitor load, memory, disk, and network activity across your servers.'
+                )
+            "
         >
             <template #actions>
                 <div class="board-actions">
@@ -53,7 +68,11 @@
                         type="button"
                         class="live-chip"
                         :class="{ 'is-paused': !autoRefresh }"
-                        :title="autoRefresh ? local('Pause auto refresh') : local('Resume auto refresh')"
+                        :title="
+                            autoRefresh
+                                ? local('Pause auto refresh')
+                                : local('Resume auto refresh')
+                        "
                         @click="setAutoRefresh(!autoRefresh)"
                     >
                         <span></span>
@@ -88,13 +107,24 @@
                             <span class="server-state"></span>
                             <div>
                                 <strong>{{ server.name }}</strong>
-                                <span>{{ server.username }}@{{ server.address }}:{{ server.port }}</span>
+                                <span
+                                    >{{ server.username }}@{{
+                                        server.address
+                                    }}:{{ server.port }}</span
+                                >
                             </div>
                         </div>
                         <div class="server-card-status">
-                            <span class="temperature-chip" :title="local('Temp')">
+                            <span
+                                class="temperature-chip"
+                                :title="local('Temp')"
+                            >
                                 <i class="ms-Icon ms-Icon--Thermometer"></i>
-                                {{ formatTemperature(server.metrics.temperature) }}
+                                {{
+                                    formatTemperature(
+                                        server.metrics.temperature
+                                    )
+                                }}
                             </span>
                             <statusPill :status="server.status" />
                         </div>
@@ -146,30 +176,72 @@
                         <button
                             type="button"
                             class="traffic-flip"
-                            :class="{ 'is-flipped': isFlipped(server.id, 'net') }"
+                            :class="{
+                                'is-flipped': isFlipped(server.id, 'net')
+                            }"
                             @click="toggleFlip(server.id, 'net')"
                         >
                             <span class="flip-inner">
                                 <span class="flip-face flip-front">
                                     <span class="flip-head">
-                                        <i class="ms-Icon ms-Icon--SortUpDown"></i>
+                                        <i
+                                            class="ms-Icon ms-Icon--SortUpDown"
+                                        ></i>
                                         <span>{{ local('Net') }}</span>
                                         <small>/s</small>
                                     </span>
                                     <span class="flip-lines">
-                                        <span><i class="ms-Icon ms-Icon--Download"></i>{{ formatRate(server.metrics.netInRate) }}</span>
-                                        <span><i class="ms-Icon ms-Icon--Upload"></i>{{ formatRate(server.metrics.netOutRate) }}</span>
+                                        <span
+                                            ><i
+                                                class="ms-Icon ms-Icon--Download"
+                                            ></i
+                                            >{{
+                                                formatRate(
+                                                    server.metrics.netInRate
+                                                )
+                                            }}</span
+                                        >
+                                        <span
+                                            ><i
+                                                class="ms-Icon ms-Icon--Upload"
+                                            ></i
+                                            >{{
+                                                formatRate(
+                                                    server.metrics.netOutRate
+                                                )
+                                            }}</span
+                                        >
                                     </span>
                                 </span>
                                 <span class="flip-face flip-back">
                                     <span class="flip-head">
-                                        <i class="ms-Icon ms-Icon--SortUpDown"></i>
+                                        <i
+                                            class="ms-Icon ms-Icon--SortUpDown"
+                                        ></i>
                                         <span>{{ local('Net') }}</span>
                                         <small>{{ local('Total') }}</small>
                                     </span>
                                     <span class="flip-lines">
-                                        <span><i class="ms-Icon ms-Icon--Download"></i>{{ formatBytes(server.metrics.netInTotal) }}</span>
-                                        <span><i class="ms-Icon ms-Icon--Upload"></i>{{ formatBytes(server.metrics.netOutTotal) }}</span>
+                                        <span
+                                            ><i
+                                                class="ms-Icon ms-Icon--Download"
+                                            ></i
+                                            >{{
+                                                formatBytes(
+                                                    server.metrics.netInTotal
+                                                )
+                                            }}</span
+                                        >
+                                        <span
+                                            ><i
+                                                class="ms-Icon ms-Icon--Upload"
+                                            ></i
+                                            >{{
+                                                formatBytes(
+                                                    server.metrics.netOutTotal
+                                                )
+                                            }}</span
+                                        >
                                     </span>
                                 </span>
                             </span>
@@ -177,30 +249,73 @@
                         <button
                             type="button"
                             class="traffic-flip"
-                            :class="{ 'is-flipped': isFlipped(server.id, 'disk') }"
+                            :class="{
+                                'is-flipped': isFlipped(server.id, 'disk')
+                            }"
                             @click="toggleFlip(server.id, 'disk')"
                         >
                             <span class="flip-inner">
                                 <span class="flip-face flip-front">
                                     <span class="flip-head">
-                                        <i class="ms-Icon ms-Icon--SortUpDown"></i>
+                                        <i
+                                            class="ms-Icon ms-Icon--SortUpDown"
+                                        ></i>
                                         <span>{{ local('Disk') }}</span>
                                         <small>/s</small>
                                     </span>
                                     <span class="flip-lines">
-                                        <span><i class="ms-Icon ms-Icon--Read"></i>{{ formatRate(server.metrics.diskReadRate) }}</span>
-                                        <span><i class="ms-Icon ms-Icon--Edit"></i>{{ formatRate(server.metrics.diskWriteRate) }}</span>
+                                        <span
+                                            ><i
+                                                class="ms-Icon ms-Icon--Read"
+                                            ></i
+                                            >{{
+                                                formatRate(
+                                                    server.metrics.diskReadRate
+                                                )
+                                            }}</span
+                                        >
+                                        <span
+                                            ><i
+                                                class="ms-Icon ms-Icon--Edit"
+                                            ></i
+                                            >{{
+                                                formatRate(
+                                                    server.metrics.diskWriteRate
+                                                )
+                                            }}</span
+                                        >
                                     </span>
                                 </span>
                                 <span class="flip-face flip-back">
                                     <span class="flip-head">
-                                        <i class="ms-Icon ms-Icon--SortUpDown"></i>
+                                        <i
+                                            class="ms-Icon ms-Icon--SortUpDown"
+                                        ></i>
                                         <span>{{ local('Disk') }}</span>
                                         <small>{{ local('Total') }}</small>
                                     </span>
                                     <span class="flip-lines">
-                                        <span><i class="ms-Icon ms-Icon--Read"></i>{{ formatBytes(server.metrics.diskReadTotal) }}</span>
-                                        <span><i class="ms-Icon ms-Icon--Edit"></i>{{ formatBytes(server.metrics.diskWriteTotal) }}</span>
+                                        <span
+                                            ><i
+                                                class="ms-Icon ms-Icon--Read"
+                                            ></i
+                                            >{{
+                                                formatBytes(
+                                                    server.metrics.diskReadTotal
+                                                )
+                                            }}</span
+                                        >
+                                        <span
+                                            ><i
+                                                class="ms-Icon ms-Icon--Edit"
+                                            ></i
+                                            >{{
+                                                formatBytes(
+                                                    server.metrics
+                                                        .diskWriteTotal
+                                                )
+                                            }}</span
+                                        >
                                     </span>
                                 </span>
                             </span>
@@ -223,11 +338,18 @@
                     <footer class="server-card-footer">
                         <div>
                             <span>{{ local('Uptime') }}</span>
-                            <strong>{{ server.uptimeDays }} {{ local('days') }}</strong>
+                            <strong
+                                >{{ server.uptimeDays }}
+                                {{ local('days') }}</strong
+                            >
                         </div>
                         <div>
                             <span>{{ local('Last seen') }}</span>
-                            <strong>{{ server.lastSeen ? formatDate(server.lastSeen) : local('Never') }}</strong>
+                            <strong>{{
+                                server.lastSeen
+                                    ? formatDate(server.lastSeen)
+                                    : local('Never')
+                            }}</strong>
                         </div>
                         <fv-button
                             :theme="resolvedTheme"
@@ -244,7 +366,11 @@
                 <div v-if="!enabledServerList.length" class="empty-state">
                     <i class="ms-Icon ms-Icon--Server"></i>
                     <strong>{{ local('No monitored servers') }}</strong>
-                    <span>{{ local('Enable a server from the Servers page to show it here.') }}</span>
+                    <span>{{
+                        local(
+                            'Enable a server from the Servers page to show it here.'
+                        )
+                    }}</span>
                 </div>
             </div>
         </sectionCard>
@@ -265,7 +391,10 @@ const UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 const formatBytes = (value) => {
     const bytes = Number(value) || 0;
     if (bytes <= 0) return '0 B';
-    const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), UNITS.length - 1);
+    const index = Math.min(
+        Math.floor(Math.log(bytes) / Math.log(1024)),
+        UNITS.length - 1
+    );
     const scaled = bytes / Math.pow(1024, index);
     const digits = scaled >= 100 || index === 0 ? 0 : scaled >= 10 ? 1 : 2;
     return scaled.toFixed(digits) + ' ' + UNITS[index];
@@ -284,7 +413,11 @@ export default {
         };
     },
     computed: {
-        ...mapState(useAppConfigStore, ['resolvedTheme', 'local', 'formatDate']),
+        ...mapState(useAppConfigStore, [
+            'resolvedTheme',
+            'local',
+            'formatDate'
+        ]),
         ...mapState(useServerStore, [
             'servers',
             'enabledServers',
@@ -307,13 +440,22 @@ export default {
         this.stopAutoRefresh();
     },
     methods: {
-        ...mapActions(useServerStore, ['refreshServer', 'refreshAll', 'startAutoRefresh', 'stopAutoRefresh', 'setAutoRefresh']),
+        ...mapActions(useServerStore, [
+            'refreshServer',
+            'refreshAll',
+            'startAutoRefresh',
+            'stopAutoRefresh',
+            'setAutoRefresh'
+        ]),
         refreshVisibleServers() {
             this.refreshAll();
         },
         openServer(server) {
             if (!server?.id) return;
-            this.$router.push({ name: 'server-detail', params: { id: server.id } });
+            this.$router.push({
+                name: 'server-detail',
+                params: { id: server.id }
+            });
         },
         loadRingValues(server) {
             const metrics = server.metrics || {};
@@ -349,9 +491,14 @@ export default {
 
 <style lang="scss" scoped>
 .server-status-page {
+    min-height: 0;
+    flex: 1;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: auto;
+
     padding: 18px;
     border-radius: 18px;
-    background: #f6f8fb;
     --servercat-panel: rgba(255, 255, 255, 0.9);
     --servercat-card: rgba(255, 255, 255, 0.94);
     --servercat-card-soft: rgba(242, 245, 249, 0.96);
@@ -380,12 +527,33 @@ export default {
         min-width: 0;
         padding: 18px;
         border: 1px solid var(--servercat-border);
-        border-radius: 16px;
-        background: var(--servercat-panel);
+        border-radius: 26px;
+        background: var(--ph-card-gradient-porcelain);
         box-shadow: var(--ph-shadow-sm);
         display: flex;
         align-items: center;
         gap: 14px;
+
+        &:nth-child(2) {
+            background: var(--ph-card-gradient-rose);
+        }
+
+        &:nth-child(3) {
+            background: var(--ph-card-gradient-mist);
+        }
+
+        &:nth-child(4) {
+            background: var(--ph-card-gradient-sunset);
+        }
+
+        &:nth-child(2),
+        &:nth-child(4) {
+            > div span,
+            > div small,
+            > div strong {
+                color: #202124;
+            }
+        }
 
         > div {
             min-width: 0;
@@ -420,7 +588,9 @@ export default {
         width: 42px;
         height: 42px;
         flex: 0 0 42px;
-        border-radius: 12px;
+        border-radius: 50%;
+        background: var(--ph-surface);
+        color: var(--ph-text);
         display: grid;
         place-items: center;
 
@@ -429,23 +599,21 @@ export default {
         }
 
         &.accent {
-            background: rgba(216, 59, 48, 0.14);
-            color: #ff6b60;
+            color: var(--ph-accent);
         }
 
         &.success {
-            background: rgba(16, 185, 129, 0.14);
-            color: #34d399;
+            background: rgba(255, 239, 244, 0.9);
+            color: #b52555;
         }
 
         &.warning {
-            background: rgba(245, 158, 11, 0.14);
-            color: #fbbf24;
+            color: var(--ph-text-secondary);
         }
 
         &.violet {
-            background: rgba(139, 92, 246, 0.16);
-            color: #a78bfa;
+            background: rgba(255, 239, 225, 0.9);
+            color: #a54320;
         }
     }
 
@@ -504,7 +672,7 @@ export default {
 
     .server-card-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr));
         gap: 14px;
     }
 
@@ -512,8 +680,9 @@ export default {
         min-width: 0;
         padding: 16px;
         border: 1px solid var(--servercat-border);
-        border-radius: 16px;
-        background: var(--servercat-card);
+        border-radius: 26px;
+        background: var(--ph-card-gradient-porcelain);
+        box-shadow: var(--ph-shadow-sm);
         display: flex;
         flex-direction: column;
         gap: 14px;

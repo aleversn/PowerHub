@@ -6,9 +6,7 @@
         >
             <template #actions>
                 <fv-button
-                    :theme="resolvedTheme"
-                    background="#0078d4"
-                    foreground="#ffffff"
+                    :background="subColor"
                     border-radius="8"
                     icon="Add"
                     style="height: 34px"
@@ -67,7 +65,7 @@
                                 :theme="resolvedTheme"
                                 :width="38"
                                 :height="20"
-                                switch-on-background="#0078d4"
+                                :switch-on-background="subColor"
                                 @update:model-value="
                                     toggleSchedule(schedule.id)
                                 "
@@ -108,6 +106,7 @@ import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
 import timeRounder from '@/components/general/timeRounder.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
+import { useThemeStore } from '@/stores/theme';
 import { useWorkspaceStore } from '@/stores/workspace';
 
 export default {
@@ -119,6 +118,7 @@ export default {
     },
     data() { return { runningId: '', errorMessage: '', refreshTimer: null }; },
     computed: {
+        ...mapState(useThemeStore, ['subColor']),
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
         ...mapState(useWorkspaceStore, ['endpointById', 'endpoints', 'schedules']),
     },
@@ -162,19 +162,24 @@ export default {
 
 <style lang="scss" scoped>
 .schedules-page {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+
     .schedule-error { margin-bottom: 12px; color: var(--ph-danger); }
     .schedule-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
         gap: 14px;
     }
 
     .schedule-card {
         min-width: 0;
-        padding: 16px;
-        border: 1px solid var(--ph-border);
-        border-radius: 14px;
-        background: var(--ph-surface-soft);
+        padding: 20px;
+        border: 1px solid var(--ph-border-subtle);
+        border-radius: 26px;
+        background: var(--ph-card-gradient-porcelain);
+        box-shadow: var(--ph-shadow-sm);
         display: flex;
         flex-direction: column;
         gap: 14px;

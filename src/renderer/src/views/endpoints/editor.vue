@@ -42,14 +42,12 @@
                         :theme="resolvedTheme"
                         :width="38"
                         :height="20"
-                        switch-on-background="#0078d4"
+                        :switch-on-background="subColor"
                         @update:model-value="setEnabled"
                     ></fv-toggle-switch>
                     <div class="topbar-spacer"></div>
                     <fv-button
-                        :theme="resolvedTheme"
-                        background="#0078d4"
-                        foreground="#ffffff"
+                        :background="subColor"
                         border-radius="8"
                         icon="Save"
                         style="height: 38px; flex-shrink: 0"
@@ -79,9 +77,7 @@
                         @keyup.enter="sendRequest"
                     ></fv-text-box>
                     <fv-button
-                        :theme="resolvedTheme"
-                        background="#0078d4"
-                        foreground="#ffffff"
+                        :background="subColor"
                         border-radius="8"
                         icon="Play"
                         style="height: 38px"
@@ -549,6 +545,7 @@ import keyValueEditor from '@/components/common/keyValueEditor/index.vue';
 import monacoEditor from '@/components/common/monacoEditor.vue';
 import variableInput from '@/components/common/variableInput.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
+import { useThemeStore } from '@/stores/theme';
 import { useWorkspaceStore } from '@/stores/workspace';
 
 const DEFAULT_COLLECTION = 'Default collection';
@@ -621,6 +618,7 @@ export default {
         };
     },
     computed: {
+        ...mapState(useThemeStore, ['subColor']),
         ...mapState(useAppConfigStore, [
             'resolvedTheme',
             'local',
@@ -1075,6 +1073,10 @@ export default {
 
 <style lang="scss" scoped>
 .endpoint-editor-page {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+
     .editor-topbar {
         margin-bottom: 12px;
         display: flex;

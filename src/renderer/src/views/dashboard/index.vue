@@ -25,6 +25,7 @@
 
         <div class="dashboard-grid">
             <sectionCard
+                :fill="false"
                 class="dashboard-section"
                 :title="local('Recent runs')"
                 :description="
@@ -56,7 +57,7 @@
                 </div>
             </sectionCard>
 
-            <sectionCard class="dashboard-section" :title="local('Upcoming')">
+            <sectionCard :fill="false" class="dashboard-section" :title="local('Upcoming')">
                 <div class="schedule-list">
                     <div
                         v-for="schedule in upcomingSchedules"
@@ -176,6 +177,12 @@ export default {
 
 <style lang="scss" scoped>
 .dashboard-page {
+    min-height: 0;
+    flex: 1;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: auto;
+
     .metrics-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));

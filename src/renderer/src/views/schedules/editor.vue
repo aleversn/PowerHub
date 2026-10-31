@@ -4,7 +4,7 @@
             <template #actions>
                 <div class="actions">
                     <fv-button :theme="resolvedTheme" @click="$router.push({ name: 'schedules' })">{{ local('Cancel') }}</fv-button>
-                    <fv-button :theme="resolvedTheme" background="#0078d4" foreground="#fff" :disabled="saving" @click="save">{{ local('Save') }}</fv-button>
+                    <fv-button :background="subColor" border-radius="8" :disabled="saving" @click="save">{{ local('Save') }}</fv-button>
                 </div>
             </template>
             <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
@@ -15,7 +15,7 @@
                 <div class="field" v-if="draft.taskType === 'single'"><span>{{ local('Endpoint') }}</span><fv-drop-down :model-value="endpointOptions.filter(x => x.key === draft.endpointId)" :options="endpointOptions" :theme="resolvedTheme" :placeholder="local('Select an endpoint')" @update:model-value="draft.endpointId = $event?.[0]?.key || ''" /></div>
                 <div class="field" v-else><span>{{ local('Collection') }}</span><fv-drop-down :model-value="collectionOptions.filter(x => x.key === draft.collection)" :options="collectionOptions" :theme="resolvedTheme" :placeholder="local('Select a collection')" @update:model-value="changeCollection" /></div>
             </div>
-            <div class="switch-row"><fv-toggle-switch v-model="draft.enabled" :theme="resolvedTheme" :width="38" :height="20" switch-on-background="#0078d4" /><span>{{ local('Enabled') }}</span></div>
+            <div class="switch-row"><fv-toggle-switch v-model="draft.enabled" :theme="resolvedTheme" :width="38" :height="20" :switch-on-background="subColor" /><span>{{ local('Enabled') }}</span></div>
             <template v-if="draft.taskType === 'collection'">
                 <p class="hint">{{ local('Connect enabled endpoints from Start in execution order. Unconnected endpoints will not run.') }}</p>
                 <p class="hint">{{ local('Connect the same nodes again to remove a connection. Branches run in parallel; failed branches stop.') }}</p>
@@ -45,6 +45,7 @@ import flowNode from './flowNode.vue';
 import flowEdge from './flowEdge.vue';
 import sectionCard from '@/components/common/sectionCard.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
+import { useThemeStore } from '@/stores/theme';
 import { useWorkspaceStore } from '@/stores/workspace';
 
 export default {
@@ -52,6 +53,7 @@ export default {
     components: { VueFlow, Background, Controls, cronBuilder, flowNode, flowEdge, sectionCard },
     data() { return { draft: { name: '', cron: '*/15 * * * *', enabled: false, taskType: 'single', endpointId: '', collection: '' }, nodes: [], edges: [], flowVersion: 0, cronBuilderOpen: false, saving: false, errorMessage: '' }; },
     computed: {
+        ...mapState(useThemeStore, ['subColor']),
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
         ...mapState(useWorkspaceStore, ['endpoints', 'collections', 'scheduleById']),
         typeOptions() { return [{ key: 'single', text: this.local('Single endpoint') }, { key: 'collection', text: this.local('Collection') }]; },
@@ -144,6 +146,10 @@ export default {
 </script>
 <style lang="scss" scoped>
 .schedule-editor {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+
     :deep(.section-card) { overflow: visible; }
     .actions { display: flex; gap: 8px; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }

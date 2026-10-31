@@ -73,10 +73,5 @@ export default {
         transform: translateY(-3px);
     }
 
-    @media (max-width: 640px) {
-        .app-content {
-            padding: 14px 12px 22px;
-        }
-    }
 }
 </style>

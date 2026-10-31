@@ -124,6 +124,10 @@ export default {
 
 <style lang="scss" scoped>
 .server-detail-page {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+
     padding: 18px;
     border-radius: 18px;
     background: #f6f8fb;

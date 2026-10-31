@@ -1,6 +1,6 @@
 <template>
     <div class="page-stack settings-page">
-        <sectionCard
+        <sectionCard :fill="false"
             :title="local('Appearance')"
             :description="local('Configure theme, language, and scheduler defaults.')"
         >
@@ -60,7 +60,7 @@
             </div>
         </sectionCard>
 
-        <sectionCard :title="local('Request defaults')">
+        <sectionCard :fill="false" :title="local('Request defaults')">
             <div class="setting-list">
 
                 <div class="setting-row">
@@ -90,7 +90,7 @@
                         :theme="resolvedTheme"
                         :width="42"
                         :height="22"
-                        switch-on-background="#0078d4"
+                        :switch-on-background="subColor"
                         @update:model-value="
                             (value) =>
                                 updateConfig({
@@ -110,7 +110,7 @@
                         :theme="resolvedTheme"
                         :width="42"
                         :height="22"
-                        switch-on-background="#0078d4"
+                        :switch-on-background="subColor"
                         @update:model-value="
                             (value) =>
                                 updateConfig({ verifySSL: value })
@@ -120,7 +120,7 @@
             </div>
         </sectionCard>
 
-        <sectionCard :title="local('History and notifications')">
+        <sectionCard :fill="false" :title="local('History and notifications')">
             <div class="setting-list">
                 <div class="setting-row">
                     <div class="setting-copy">
@@ -132,7 +132,7 @@
                         :theme="resolvedTheme"
                         :width="42"
                         :height="22"
-                        switch-on-background="#0078d4"
+                        :switch-on-background="subColor"
                         @update:model-value="
                             (value) =>
                                 updateConfig({
@@ -171,7 +171,7 @@
                         :theme="resolvedTheme"
                         :width="42"
                         :height="22"
-                        switch-on-background="#0078d4"
+                        :switch-on-background="subColor"
                         @update:model-value="
                             (value) =>
                                 updateConfig({
@@ -202,6 +202,7 @@ import { mapActions, mapState } from 'pinia';
 
 import sectionCard from '@/components/common/sectionCard.vue';
 import { useAppConfigStore, defaultAppConfig } from '@/stores/appConfig';
+import { useThemeStore } from '@/stores/theme';
 
 export default {
     name: 'SettingsView',
@@ -232,6 +233,7 @@ export default {
         };
     },
     computed: {
+        ...mapState(useThemeStore, ['subColor']),
         ...mapState(useAppConfigStore, ['config', 'resolvedTheme', 'local']),
         densityOptions() {
             return [
@@ -283,7 +285,20 @@ export default {
 
 <style lang="scss" scoped>
 .settings-page {
+    min-height: 0;
+    flex: 1;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: auto;
+
     max-width: 1120px;
+
+    .section-card {
+        border: 1px solid var(--ph-border-subtle);
+        border-radius: 26px;
+        background: var(--ph-card-gradient-porcelain);
+        box-shadow: var(--ph-shadow-sm);
+    }
 
     .setting-list {
         display: flex;

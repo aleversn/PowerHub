@@ -167,6 +167,10 @@ export default {
 
 <style lang="scss" scoped>
 .runs-page {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+
     .run-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .response-detail { min-width: 0; max-width: 100%; flex-basis: 100%; }
     .response-detail pre { max-height: 260px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 10px; border-radius: 6px; background: var(--ph-surface-soft); color: var(--ph-text-secondary); }
@@ -178,10 +182,12 @@ export default {
         min-width: 0;
         display: flex;
         flex-direction: column;
+        overflow-x: auto;
     }
 
     .runs-table__head,
     .runs-table__row {
+        min-width: 830px;
         display: grid;
         grid-template-columns: minmax(230px, 1.6fr) 106px 82px 86px 96px 118px 34px;
         align-items: center;

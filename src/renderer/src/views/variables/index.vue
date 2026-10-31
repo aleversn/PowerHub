@@ -332,6 +332,10 @@ export default {
 
 <style lang="scss" scoped>
 .variables-page {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+
     .toolbar-actions {
         display: flex;
         gap: 8px;

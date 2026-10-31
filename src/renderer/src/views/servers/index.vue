@@ -4,20 +4,7 @@
             :title="local('Servers')"
             :description="local('Add and manage the servers PowerHub should monitor.')"
         >
-            <template #actions>
-                <fv-button
-                    :theme="resolvedTheme"
-                    background="#d83b30"
-                    foreground="#ffffff"
-                    border-radius="8"
-                    icon="Add"
-                    style="height: 34px"
-                    @click="openCreateWindow"
-                >
-                    {{ local('Add server') }}
-                </fv-button>
-            </template>
-
+            <template #info>
             <div class="server-toolbar">
                 <fv-text-box
                     v-model="keyword"
@@ -32,6 +19,20 @@
                     <span>{{ filteredServers.length }} {{ local('servers') }}</span>
                 </div>
             </div>
+            </template>
+            <template #actions>
+                <fv-button
+                    :background="subColor"
+                    border-radius="8"
+                    icon="Add"
+                    style="height: 34px"
+                    @click="openCreateWindow"
+                >
+                    {{ local('Add server') }}
+                </fv-button>
+            </template>
+
+
 
             <div class="server-list">
                 <article
@@ -79,7 +80,7 @@
                                 :theme="resolvedTheme"
                                 :width="38"
                                 :height="20"
-                                switch-on-background="#d83b30"
+                                :switch-on-background="subColor"
                                 @update:model-value="toggleServer(server.id)"
                             ></fv-toggle-switch>
                         </div>
@@ -228,7 +229,7 @@
                             :theme="resolvedTheme"
                             :width="42"
                             :height="22"
-                            switch-on-background="#d83b30"
+                            :switch-on-background="subColor"
                         ></fv-toggle-switch>
                     </div>
                 </div>
@@ -269,6 +270,7 @@ import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
 import floatWindowBase from '@/components/window/floatWindowBase.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
+import { useThemeStore } from '@/stores/theme';
 import { useServerStore } from '@/stores/servers';
 
 const emptyServer = () => ({
@@ -299,6 +301,7 @@ export default {
         };
     },
     computed: {
+        ...mapState(useThemeStore, ['subColor']),
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local', 'formatDate']),
         ...mapState(useServerStore, [
             'servers',
@@ -386,9 +389,13 @@ export default {
 
 <style lang="scss" scoped>
 .servers-page {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+    box-sizing: border-box;
+
     padding: 18px;
     border-radius: 18px;
-    background: #f6f8fb;
     --servercat-panel: rgba(255, 255, 255, 0.9);
     --servercat-card: rgba(255, 255, 255, 0.94);
     --servercat-card-soft: rgba(242, 245, 249, 0.96);
@@ -430,7 +437,6 @@ export default {
     }
 
     .server-toolbar {
-        margin-bottom: 14px;
         display: flex;
         align-items: center;
         justify-content: space-between;
