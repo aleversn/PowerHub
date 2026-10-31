@@ -1,6 +1,10 @@
 <template>
-    <div id="app">
-        <titleBar :theme="resolvedTheme"></titleBar>
+    <div class="main-app">
+        <titleBar
+            :theme="resolvedTheme"
+            background="transparent"
+            style="position: absolute; z-index: 2"
+        ></titleBar>
         <div class="global-container">
             <router-view></router-view>
         </div>
@@ -39,15 +43,13 @@ body,
     width: 100%;
     height: 100%;
     margin: 0;
+    background: transparent;
     overflow: hidden;
 }
 
-html {
-    background: var(--ph-background);
-}
-
-#app {
-    background: var(--ph-background);
+.main-app {
+    width: 100%;
+    height: 100%;
     color: var(--ph-text);
     display: flex;
     flex-direction: column;

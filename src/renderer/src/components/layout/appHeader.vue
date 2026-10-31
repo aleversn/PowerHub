@@ -24,6 +24,7 @@
                 @click="toggleTheme"
             >
                 <i
+                :theme="theme"
                     class="ms-Icon"
                     :class="
                         isDark
@@ -66,8 +67,6 @@ export default {
 .app-header {
     min-height: 80px;
     padding: 14px 22px;
-    border-bottom: 1px solid var(--ph-border);
-    background: var(--ph-header);
     backdrop-filter: blur(18px);
     display: flex;
     align-items: center;
@@ -104,7 +103,7 @@ export default {
             margin: 0;
             color: var(--ph-text);
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 500;
             line-height: 1.25;
         }
 

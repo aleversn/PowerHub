@@ -23,7 +23,12 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
     --ph-success: #107c10;
     --ph-warning: #9d5d00;
     --ph-danger: #c42b1c;
-    --ph-background: #f3f6fb;
+    --ph-background: #e9ebee;
+    --ph-background-gradient:
+        radial-gradient(ellipse at 54% 9%, rgba(240, 210, 192, 0.56), transparent 33%),
+        radial-gradient(ellipse at 75% 48%, rgba(226, 193, 181, 0.46), transparent 37%),
+        radial-gradient(ellipse at 20% 75%, rgba(203, 209, 226, 0.42), transparent 47%),
+        linear-gradient(135deg, #eff1f4 0%, #e9e9ec 54%, #e4e6eb 100%);
     --ph-surface: rgba(255, 255, 255, 0.92);
     --ph-surface-soft: rgba(247, 249, 253, 0.92);
     --ph-surface-hover: rgba(0, 0, 0, 0.045);
@@ -44,7 +49,12 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
     --ph-success: #6ccb5f;
     --ph-warning: #fce100;
     --ph-danger: #ff99a4;
-    --ph-background: #14161a;
+    --ph-background: #191a20;
+    --ph-background-gradient:
+        radial-gradient(ellipse at 54% 9%, rgba(111, 72, 64, 0.28), transparent 34%),
+        radial-gradient(ellipse at 75% 48%, rgba(91, 65, 78, 0.31), transparent 38%),
+        radial-gradient(ellipse at 20% 75%, rgba(55, 66, 92, 0.32), transparent 48%),
+        linear-gradient(135deg, #22252d 0%, #1d1d24 54%, #171b23 100%);
     --ph-surface: rgba(31, 34, 39, 0.94);
     --ph-surface-soft: rgba(36, 39, 45, 0.92);
     --ph-surface-hover: rgba(255, 255, 255, 0.065);
@@ -104,11 +114,6 @@ html {
     font-size: 14px;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-}
-
-body {
-    background: var(--ph-background);
-    color: var(--ph-text);
 }
 
 button,
