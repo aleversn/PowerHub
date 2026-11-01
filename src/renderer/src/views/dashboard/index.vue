@@ -387,8 +387,8 @@ export default {
         height: 34px;
         flex: 0 0 34px;
         border-radius: 10px;
-        background: var(--ph-accent-soft);
-        color: var(--ph-accent);
+        background: var(--ph-card-gradient-terracotta);
+        color: whitesmoke;
         display: grid;
         place-items: center;
     }

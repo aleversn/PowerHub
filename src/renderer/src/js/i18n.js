@@ -1,4 +1,9 @@
 export default {
+    "Zoom in": {"en": "Zoom in", "cn": "放大"},
+    "Zoom out": {"en": "Zoom out", "cn": "缩小"},
+    "Fit view": {"en": "Fit view", "cn": "适应画布"},
+    "Lock flow": {"en": "Lock flow", "cn": "锁定画布"},
+    "Unlock flow": {"en": "Unlock flow", "cn": "解锁画布"},
     "Clear all": {"en": "Clear all", "cn": "全部清空"},
     "Clear run history": {"en": "Clear run history", "cn": "清空运行记录"},
     "Delete all run records?": {"en": "Delete all run records?", "cn": "确定清空所有运行记录吗？此操作无法撤销。"},

@@ -8,15 +8,22 @@
                 <fv-button
                     :background="subColor"
                     border-radius="8"
-                    icon="Add"
-                    style="height: 34px"
-                    @click="$router.push({ name: 'schedule-editor', params: { id: 'new' } })"
+                    style="width: 32px; height: 34px"
+                    :title="local('New schedule')"
+                    @click="
+                        $router.push({
+                            name: 'schedule-editor',
+                            params: { id: 'new' }
+                        })
+                    "
                 >
-                    {{ local('New schedule') }}
+                    <i class="ms-Icon ms-Icon--Add"></i>
                 </fv-button>
             </template>
 
-            <div v-if="errorMessage" class="schedule-error">{{ errorMessage }}</div>
+            <div v-if="errorMessage" class="schedule-error">
+                {{ errorMessage }}
+            </div>
             <div class="schedule-grid">
                 <article
                     v-for="schedule in schedules"
@@ -30,7 +37,13 @@
                             </span>
                             <div>
                                 <h3>{{ schedule.name }}</h3>
-                                <p>{{ schedule.taskType === 'collection' ? schedule.collection : endpointName(schedule.endpointId) }}</p>
+                                <p>
+                                    {{
+                                        schedule.taskType === 'collection'
+                                            ? schedule.collection
+                                            : endpointName(schedule.endpointId)
+                                    }}
+                                </p>
                             </div>
                         </div>
                         <statusPill :status="schedule.lastStatus" />
@@ -38,21 +51,38 @@
 
                     <div class="cron-strip">
                         <code>{{ schedule.cron }}</code>
-                        <span v-if="schedule.taskType === 'legacy'">{{ local('Edit and save this older task to enable scheduling.') }}</span>
+                        <span v-if="schedule.taskType === 'legacy'">{{
+                            local(
+                                'Edit and save this older task to enable scheduling.'
+                            )
+                        }}</span>
                     </div>
 
                     <dl class="schedule-meta">
                         <div>
                             <dt>{{ local('Next run') }}</dt>
                             <dd>
-                                <time-rounder v-if="schedule.taskType !== 'legacy' && schedule.nextRun" :model-value="schedule.nextRun" />
-                                <template v-else>{{ local('Not scheduled') }}</template>
+                                <time-rounder
+                                    v-if="
+                                        schedule.taskType !== 'legacy' &&
+                                        schedule.nextRun
+                                    "
+                                    :model-value="schedule.nextRun"
+                                    style="width: auto; font-weight: bold"
+                                />
+                                <template v-else>{{
+                                    local('Not scheduled')
+                                }}</template>
                             </dd>
                         </div>
                         <div>
                             <dt>{{ local('Last run') }}</dt>
                             <dd>
-                                <time-rounder v-if="schedule.lastRun" :model-value="schedule.lastRun" />
+                                <time-rounder
+                                    v-if="schedule.lastRun"
+                                    :model-value="schedule.lastRun"
+                                    style="width: auto; font-weight: bold"
+                                />
                                 <template v-else>-</template>
                             </dd>
                         </div>
@@ -61,41 +91,70 @@
                     <footer class="schedule-card__footer">
                         <div class="schedule-status">
                             <fv-toggle-switch
-                                :model-value="schedule.taskType !== 'legacy' && schedule.enabled"
+                                :model-value="
+                                    schedule.taskType !== 'legacy' &&
+                                    schedule.enabled
+                                "
                                 :theme="resolvedTheme"
-                                :width="38"
-                                :height="20"
+                                :width="60"
+                                :height="25"
                                 :switch-on-background="subColor"
+                                :inside-content="true"
                                 @update:model-value="
                                     toggleSchedule(schedule.id)
                                 "
                             ></fv-toggle-switch>
                             <span>
                                 {{
-                                    schedule.taskType !== 'legacy' && schedule.enabled
+                                    schedule.taskType !== 'legacy' &&
+                                    schedule.enabled
                                         ? local('Enabled')
                                         : local('Disabled')
                                 }}
                             </span>
                         </div>
-                        <fv-button :theme="resolvedTheme" border-radius="8" style="height: 32px" icon="Edit" @click="$router.push({ name: 'schedule-editor', params: { id: schedule.id } })">
-                            {{ local('Edit') }}
-                        </fv-button>
-                        <fv-button
-                            :theme="resolvedTheme"
-                            border-radius="8"
-                            style="height: 32px"
-                            icon="Play"
-                            :disabled="runningId === schedule.id || schedule.lastStatus === 'running'"
-                            @click="runSchedule(schedule)"
-                        >
-                            {{ local(runningId === schedule.id || schedule.lastStatus === 'running' ? 'Running' : 'Run now') }}
-                        </fv-button>
+                        <div style="display: flex; gap: 5px">
+                            <fv-button
+                                :background="subColor"
+                                :foreground="'black'"
+                                border-radius="8"
+                                style="width: 32px; height: 32px"
+                                :title="local('Edit')"
+                                @click="
+                                    $router.push({
+                                        name: 'schedule-editor',
+                                        params: { id: schedule.id }
+                                    })
+                                "
+                            >
+                                <i class="ms-Icon ms-Icon--Edit"></i>
+                            </fv-button>
+                            <fv-button
+                                :theme="resolvedTheme"
+                                icon="Play"
+                                border-radius="8"
+                                style="width: 80px; height: 32px"
+                                :title="local('Play')"
+                                :disabled="
+                                    runningId === schedule.id ||
+                                    schedule.lastStatus === 'running'
+                                "
+                                @click="runSchedule(schedule)"
+                            >
+                                {{
+                                    local(
+                                        runningId === schedule.id ||
+                                            schedule.lastStatus === 'running'
+                                            ? 'Running'
+                                            : 'Run now'
+                                    )
+                                }}
+                            </fv-button>
+                        </div>
                     </footer>
                 </article>
             </div>
         </sectionCard>
-
     </div>
 </template>
 
@@ -116,20 +175,34 @@ export default {
         statusPill,
         timeRounder
     },
-    data() { return { runningId: '', errorMessage: '', refreshTimer: null }; },
+    data() {
+        return { runningId: '', errorMessage: '', refreshTimer: null };
+    },
     computed: {
-        ...mapState(useThemeStore, ['subColor']),
+        ...mapState(useThemeStore, ['subColor', 'gradient']),
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
-        ...mapState(useWorkspaceStore, ['endpointById', 'endpoints', 'schedules']),
+        ...mapState(useWorkspaceStore, [
+            'endpointById',
+            'endpoints',
+            'schedules'
+        ])
     },
     async mounted() {
         const initialized = await this.workspaceInitialize();
-        if (!initialized.ok) { this.errorMessage = initialized.message; return; }
+        if (!initialized.ok) {
+            this.errorMessage = initialized.message;
+            return;
+        }
         const refreshed = await this.refreshSchedules();
-        if (!refreshed.ok) { this.errorMessage = refreshed.message; return; }
+        if (!refreshed.ok) {
+            this.errorMessage = refreshed.message;
+            return;
+        }
         this.refreshTimer = setInterval(() => this.refreshSchedules(), 10000);
     },
-    beforeUnmount() { clearInterval(this.refreshTimer); },
+    beforeUnmount() {
+        clearInterval(this.refreshTimer);
+    },
     methods: {
         ...mapActions(useWorkspaceStore, {
             workspaceInitialize: 'loadWorkspace',
@@ -137,24 +210,35 @@ export default {
             executeSchedule: 'runSchedule',
             toggleScheduleAction: 'toggleSchedule'
         }),
-        endpointName(id) { return this.endpointById[id]?.name || '-'; },
+        endpointName(id) {
+            return this.endpointById[id]?.name || '-';
+        },
         scheduleError(message) {
-            const keys = ['Edit and save this legacy schedule before enabling it.', 'Edit and save this legacy schedule before running it.', 'This schedule is already running.', 'Select an enabled endpoint.', 'Connect at least one enabled endpoint to Start.'];
-            const key = keys.find(item => String(message || '').includes(item));
+            const keys = [
+                'Edit and save this legacy schedule before enabling it.',
+                'Edit and save this legacy schedule before running it.',
+                'This schedule is already running.',
+                'Select an enabled endpoint.',
+                'Connect at least one enabled endpoint to Start.'
+            ];
+            const key = keys.find((item) =>
+                String(message || '').includes(item)
+            );
             return key ? this.local(key) : message;
         },
         async toggleSchedule(id) {
             this.errorMessage = '';
             const result = await this.toggleScheduleAction(id);
-            if (!result.ok) this.errorMessage = this.scheduleError(result.message);
+            if (!result.ok)
+                this.errorMessage = this.scheduleError(result.message);
         },
         async runSchedule(schedule) {
             this.errorMessage = '';
             this.runningId = schedule.id;
             const result = await this.executeSchedule(schedule.id);
             this.runningId = '';
-            if (!result.ok) this.errorMessage = this.scheduleError(result.message);
-
+            if (!result.ok)
+                this.errorMessage = this.scheduleError(result.message);
         }
     }
 };
@@ -166,7 +250,10 @@ export default {
     flex: 1;
     overflow: hidden;
 
-    .schedule-error { margin-bottom: 12px; color: var(--ph-danger); }
+    .schedule-error {
+        margin-bottom: 12px;
+        color: var(--ph-danger);
+    }
     .schedule-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
@@ -178,7 +265,7 @@ export default {
         padding: 20px;
         border: 1px solid var(--ph-border-subtle);
         border-radius: 26px;
-        background: var(--ph-card-gradient-porcelain);
+        background: var(--ph-card-gradient-mist);
         box-shadow: var(--ph-shadow-sm);
         display: flex;
         flex-direction: column;
@@ -223,8 +310,8 @@ export default {
         height: 38px;
         flex: 0 0 38px;
         border-radius: 11px;
-        background: var(--ph-accent-soft);
-        color: var(--ph-accent);
+        background: var(--ph-card-gradient-olive);
+        color: whitesmoke;
         display: grid;
         place-items: center;
     }

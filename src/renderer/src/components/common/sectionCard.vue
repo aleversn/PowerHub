@@ -81,14 +81,14 @@ export default {
             margin: 0;
             color: var(--ph-text);
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 500;
             line-height: 1.4;
         }
 
         p {
             margin: 6px 0 0;
             color: var(--ph-text-secondary);
-            font-size: 13px;
+            font-size: 12px;
             line-height: 1.6;
         }
     }

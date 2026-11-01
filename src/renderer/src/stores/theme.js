@@ -5,7 +5,7 @@ import { useAppConfigStore } from './appConfig';
 
 export const useThemeStore = defineStore('theme', {
     state: () => ({
-        themeColor: 'rgba(155, 115, 103, 1)',
+        themeColor: 'rgba(237, 221, 103, 1)',
         subThemeColor: 'rgba(220, 249, 96, 1)'
     }),
     getters: {
