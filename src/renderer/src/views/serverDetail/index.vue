@@ -2,24 +2,35 @@
     <div class="page-stack server-detail-page">
         <sectionCard
             :title="local('Server Detail')"
-            :description="local('Inspect CPU, memory, GPU, network, and disk details for one server.')"
+            :description="
+                local(
+                    'Inspect CPU, memory, GPU, network, and disk details for one server.'
+                )
+            "
         >
+            <template #info>
+                <fv-button
+                    :theme="resolvedTheme"
+                    background="transparent"
+                    border-radius="8"
+                    style="width: 32px; height: 34px"
+                    :title="local('Back')"
+                    @click="goBack"
+                >
+                    <i class="ms-Icon ms-Icon--BackToWindow"></i>
+                </fv-button>
+            </template>
             <template #actions>
                 <div class="detail-actions">
-                    <fv-button
-                        :theme="resolvedTheme"
-                        border-radius="8"
-                        icon="BackToWindow"
-                        style="height: 34px"
-                        @click="goBack"
-                    >
-                        {{ local('Back') }}
-                    </fv-button>
                     <button
                         type="button"
                         class="live-chip"
                         :class="{ 'is-paused': !autoRefresh }"
-                        :title="autoRefresh ? local('Pause auto refresh') : local('Resume auto refresh')"
+                        :title="
+                            autoRefresh
+                                ? local('Pause auto refresh')
+                                : local('Resume auto refresh')
+                        "
                         @click="setAutoRefresh(!autoRefresh)"
                     >
                         <span></span>
@@ -27,13 +38,14 @@
                     </button>
                     <fv-button
                         :theme="resolvedTheme"
+                        :background="subColor"
                         border-radius="8"
-                        icon="Refresh"
-                        style="height: 34px"
+                        style="width: 32px; height: 34px"
                         :disabled="isServerLoading(serverId)"
+                        :title="local('Refresh')"
                         @click="refreshServer(serverId)"
                     >
-                        {{ local('Refresh') }}
+                        <i class="ms-Icon ms-Icon--Refresh"></i>
                     </fv-button>
                 </div>
             </template>
@@ -53,7 +65,9 @@
             <div v-else class="empty-state">
                 <i class="ms-Icon ms-Icon--Server"></i>
                 <strong>{{ local('Server not found') }}</strong>
-                <span>{{ local('The selected server is no longer available.') }}</span>
+                <span>{{
+                    local('The selected server is no longer available.')
+                }}</span>
             </div>
         </sectionCard>
     </div>
@@ -65,6 +79,7 @@ import { mapActions, mapState } from 'pinia';
 import sectionCard from '@/components/common/sectionCard.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useServerStore } from '@/stores/servers';
+import { useThemeStore } from '@/stores/theme';
 
 import serverCpuPanel from './components/serverCpuPanel.vue';
 import serverDiskPanel from './components/serverDiskPanel.vue';
@@ -87,6 +102,7 @@ export default {
     computed: {
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
         ...mapState(useServerStore, ['serverById', 'autoRefresh']),
+        ...mapState(useThemeStore, ['subColor']),
         serverId() {
             return String(this.$route.params.id || '');
         },
@@ -130,24 +146,13 @@ export default {
 
     padding: 18px;
     border-radius: 18px;
-    background: #f6f8fb;
-    --servercat-panel: rgba(255, 255, 255, 0.9);
-    --servercat-card: rgba(255, 255, 255, 0.94);
-    --servercat-card-soft: rgba(242, 245, 249, 0.96);
-    --servercat-border: rgba(31, 41, 55, 0.1);
-    --servercat-text: #1f2937;
-    --servercat-muted: #667085;
-    --servercat-red: #d83b30;
-
-    :global(:root[data-theme='dark']) & {
-        background: #101216;
-        --servercat-panel: #15171c;
-        --servercat-card: #1c1f26;
-        --servercat-card-soft: #22262e;
-        --servercat-border: rgba(255, 255, 255, 0.095);
-        --servercat-text: #f4f6f8;
-        --servercat-muted: #8c95a3;
-    }
+    --servercat-panel: var(--ph-surface);
+    --servercat-card: var(--ph-surface);
+    --servercat-card-soft: var(--ph-surface-soft);
+    --servercat-border: var(--ph-border);
+    --servercat-text: var(--ph-text);
+    --servercat-muted: var(--ph-text-muted);
+    --servercat-red: var(--ph-danger);
 
     .detail-actions {
         display: flex;

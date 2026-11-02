@@ -125,8 +125,8 @@ export default {
     }
 
     .disk-row {
-        padding: 12px;
-        border: 1px solid var(--servercat-border);
+        padding: 15px;
+        border: 0px solid var(--servercat-border);
         border-radius: 12px;
         background: var(--servercat-card-soft);
         display: grid;

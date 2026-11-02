@@ -36,7 +36,7 @@
                         style="width: 32px; height: 34px"
                         @click="showCollectionCreator = true"
                     >
-                        <i class="ms-Icon ms-Icon--OEM"></i>
+                        <i class="ms-Icon ms-Icon--WindowSnipping"></i>
                     </fv-button>
                     <fv-button
                         :background="subColor"

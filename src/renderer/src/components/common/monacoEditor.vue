@@ -32,7 +32,7 @@ export default {
         },
         height: {
             type: String,
-            default: '220px'
+            default: '120px'
         },
         minimap: {
             type: Boolean,

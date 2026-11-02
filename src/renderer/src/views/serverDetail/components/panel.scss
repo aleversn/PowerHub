@@ -4,11 +4,11 @@
 
 @mixin card {
     min-width: 0;
-    padding: 14px;
-    border: 1px solid var(--servercat-border);
-    border-radius: 14px;
-    background: var(--servercat-card);
+    padding: 15px;
+    border-radius: 18px;
+    background: var(--ph-card-gradient-mist);
     box-shadow: var(--ph-shadow-sm);
+    user-select: none;
 }
 
 @mixin head {

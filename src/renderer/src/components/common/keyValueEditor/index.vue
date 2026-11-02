@@ -15,6 +15,7 @@
             <fv-check-box
                 :model-value="item.enabled"
                 :theme="resolvedTheme"
+                :background="subColor"
                 @update:model-value="updateRow(index, { enabled: $event })"
             ></fv-check-box>
             <fv-text-box
@@ -22,6 +23,7 @@
                 :theme="resolvedTheme"
                 :placeholder="keyPlaceholder"
                 border-radius="8"
+                style="height: 34px"
                 @update:model-value="updateRow(index, { key: $event })"
             ></fv-text-box>
             <variableInput
@@ -30,10 +32,12 @@
                 :initially-hidden="item.hide"
                 :variables="variables"
                 :placeholder="valuePlaceholder"
+                style="height: 34px"
                 @update:model-value="updateRow(index, { value: $event })"
             ></variableInput>
             <fv-button
-                :theme="resolvedTheme"
+                theme="dark"
+                background="rgba(200, 38, 45, 1)"
                 border-radius="8"
                 style="width: 34px; height: 34px"
                 :title="local('Delete')"
@@ -45,10 +49,11 @@
 
         <div class="key-value-footer">
             <fv-button
-                :theme="resolvedTheme"
+                :background="subColor"
                 border-radius="8"
                 icon="Add"
-                style="height: 34px"
+                :font-size="12"
+                style="width: 150px; height: 30px"
                 @click="addRow"
             >
                 {{ local('Add row') }}
@@ -62,9 +67,12 @@ import { mapState } from 'pinia';
 
 import variableInput from '@/components/common/variableInput.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
+import { useThemeStore } from '@/stores/theme';
 
 const createRow = (item = {}) => ({
-    id: item.id || `row-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+    id:
+        item.id ||
+        `row-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
     key: String(item.key ?? ''),
     value: String(item.value ?? ''),
     enabled: item.enabled !== false,
@@ -96,6 +104,8 @@ export default {
     },
     computed: {
         ...mapState(useAppConfigStore, ['local', 'resolvedTheme']),
+        ...mapState(useThemeStore, ['subColor']),
+
         rows() {
             return Array.isArray(this.modelValue) ? this.modelValue : [];
         },
@@ -131,10 +141,15 @@ export default {
         },
         confirmRemoveRow(item) {
             this.$infoBox(this.local('Delete this row?'), {
-                title: this.local('Delete'), status: 'warning', theme: this.resolvedTheme,
-                confirmTitle: this.local('Delete'), cancelTitle: this.local('Cancel'),
+                title: this.local('Delete'),
+                status: 'warning',
+                theme: this.resolvedTheme,
+                confirmTitle: this.local('Delete'),
+                cancelTitle: this.local('Cancel'),
                 confirm: () => {
-                    const rows = this.displayRows.filter((row) => row.id !== item.id);
+                    const rows = this.displayRows.filter(
+                        (row) => row.id !== item.id
+                    );
                     this.emitRows(rows);
                 }
             });
@@ -152,7 +167,9 @@ export default {
     .key-value-head,
     .key-value-row {
         display: grid;
-        grid-template-columns: 34px minmax(120px, 0.9fr) minmax(180px, 1.5fr) 38px;
+        grid-template-columns:
+            34px minmax(120px, 0.9fr) minmax(180px, 1.5fr)
+            38px;
         align-items: center;
         gap: 10px;
     }
@@ -188,7 +205,9 @@ export default {
     @media (max-width: 760px) {
         .key-value-head,
         .key-value-row {
-            grid-template-columns: 28px minmax(80px, 0.8fr) minmax(110px, 1.2fr) 34px;
+            grid-template-columns:
+                28px minmax(80px, 0.8fr) minmax(110px, 1.2fr)
+                34px;
             gap: 6px;
         }
     }

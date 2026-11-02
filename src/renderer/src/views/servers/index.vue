@@ -2,37 +2,46 @@
     <div class="page-stack servers-page">
         <sectionCard
             :title="local('Servers')"
-            :description="local('Add and manage the servers PowerHub should monitor.')"
+            :description="
+                local('Add and manage the servers PowerHub should monitor.')
+            "
         >
             <template #info>
-            <div class="server-toolbar">
-                <fv-text-box
-                    v-model="keyword"
-                    :theme="resolvedTheme"
-                    :placeholder="local('Search servers')"
-                    icon="Search"
-                    border-radius="8"
-                    style="width: min(340px, 100%)"
-                ></fv-text-box>
-                <div class="toolbar-summary">
-                    <span>{{ connectedServers }}/{{ enabledServers }} {{ local('connected') }}</span>
-                    <span>{{ filteredServers.length }} {{ local('servers') }}</span>
+                <div class="server-toolbar-block">
+                    <fv-text-box
+                        v-model="keyword"
+                        :theme="resolvedTheme"
+                        :placeholder="local('Search servers')"
+                        icon="Search"
+                        border-radius="8"
+                        :reveal-border="true"
+                        :reveal-border-color="[color]"
+                        :reveal-background-color="['rgba(200, 200, 200, 0.1)']"
+                        style="width: min(340px, 50%)"
+                    ></fv-text-box>
+                    <div class="toolbar-summary">
+                        <span
+                            >{{ connectedServers }}/{{ enabledServers }}
+                            {{ local('connected') }}</span
+                        >
+                        <span
+                            >{{ filteredServers.length }}
+                            {{ local('servers') }}</span
+                        >
+                    </div>
                 </div>
-            </div>
             </template>
             <template #actions>
                 <fv-button
                     :background="subColor"
                     border-radius="8"
                     icon="Add"
-                    style="height: 34px"
+                    style="width: 120px; height: 34px"
                     @click="openCreateWindow"
                 >
                     {{ local('Add server') }}
                 </fv-button>
             </template>
-
-
 
             <div class="server-list">
                 <article
@@ -45,11 +54,18 @@
                         <div class="server-identity">
                             <span class="server-state"></span>
                             <span class="server-icon">
-                                <i class="ms-Icon ms-Icon--Server"></i>
+                                <i class="ms-Icon ms-Icon--MapDrive"></i>
                             </span>
                             <div>
                                 <strong>{{ server.name }}</strong>
-                                <span>{{ server.address }}{{ server.port === 22 ? '' : ':' + server.port }}</span>
+                                <span
+                                    >{{ server.address
+                                    }}{{
+                                        server.port === 22
+                                            ? ''
+                                            : ':' + server.port
+                                    }}</span
+                                >
                             </div>
                         </div>
                         <statusPill :status="server.status" />
@@ -62,15 +78,24 @@
                         </div>
                         <div>
                             <span>{{ local('Uptime') }}</span>
-                            <strong>{{ server.uptimeDays }} {{ local('days') }}</strong>
+                            <strong
+                                >{{ server.uptimeDays }}
+                                {{ local('days') }}</strong
+                            >
                         </div>
                         <div>
                             <span>{{ local('Last seen') }}</span>
-                            <strong>{{ server.lastSeen ? formatDate(server.lastSeen) : local('Never') }}</strong>
+                            <strong>{{
+                                server.lastSeen
+                                    ? formatDate(server.lastSeen)
+                                    : local('Never')
+                            }}</strong>
                         </div>
                     </div>
 
-                    <p v-if="server.error" class="server-error">{{ server.error }}</p>
+                    <p v-if="server.error" class="server-error">
+                        {{ server.error }}
+                    </p>
 
                     <footer class="server-card-footer">
                         <div class="monitor-toggle">
@@ -86,7 +111,7 @@
                         </div>
                         <div class="row-actions">
                             <fv-button
-                                :theme="resolvedTheme"
+                                :background="subColor"
                                 border-radius="8"
                                 style="width: 34px; height: 34px"
                                 :title="local('Refresh')"
@@ -97,6 +122,7 @@
                             </fv-button>
                             <fv-button
                                 :theme="resolvedTheme"
+                                :background="'transparent'"
                                 border-radius="8"
                                 style="width: 34px; height: 34px"
                                 :title="local('Edit')"
@@ -105,7 +131,8 @@
                                 <i class="ms-Icon ms-Icon--Edit"></i>
                             </fv-button>
                             <fv-button
-                                :theme="resolvedTheme"
+                                theme="dark"
+                                background="rgba(200, 38, 45, 1)"
                                 border-radius="8"
                                 style="width: 34px; height: 34px"
                                 :title="local('Remove')"
@@ -120,7 +147,9 @@
                 <div v-if="!filteredServers.length" class="empty-state">
                     <i class="ms-Icon ms-Icon--Server"></i>
                     <strong>{{ local('No servers found') }}</strong>
-                    <span>{{ local('Add a server or clear the current search.') }}</span>
+                    <span>{{
+                        local('Add a server or clear the current search.')
+                    }}</span>
                 </div>
             </div>
         </sectionCard>
@@ -136,11 +165,15 @@
                 <div class="server-editor">
                     <section class="editor-hero">
                         <span class="hero-icon">
-                            <i class="ms-Icon ms-Icon--Server"></i>
+                            <i class="ms-Icon ms-Icon--MapDrive"></i>
                         </span>
                         <div>
                             <strong>{{ local('Server') }}</strong>
-                            <span>{{ local('A display name and the address PowerHub should connect to.') }}</span>
+                            <span>{{
+                                local(
+                                    'A display name and the address PowerHub should connect to.'
+                                )
+                            }}</span>
                         </div>
                     </section>
 
@@ -154,7 +187,11 @@
                             <i class="ms-Icon ms-Icon--Network"></i>
                             <div>
                                 <strong>{{ local('Server') }}</strong>
-                                <span>{{ local('A display name and the address PowerHub should connect to.') }}</span>
+                                <span>{{
+                                    local(
+                                        'A display name and the address PowerHub should connect to.'
+                                    )
+                                }}</span>
                             </div>
                         </div>
 
@@ -164,7 +201,9 @@
                                 <fv-text-box
                                     v-model="editorForm.name"
                                     :theme="resolvedTheme"
-                                    :placeholder="local('Example: Production API')"
+                                    :placeholder="
+                                        local('Example: Production API')
+                                    "
                                     border-radius="8"
                                 ></fv-text-box>
                             </div>
@@ -194,7 +233,9 @@
                             <i class="ms-Icon ms-Icon--Permissions"></i>
                             <div>
                                 <strong>{{ local('SSH credentials') }}</strong>
-                                <span>{{ local('Used by the monitor collector.') }}</span>
+                                <span>{{
+                                    local('Used by the monitor collector.')
+                                }}</span>
                             </div>
                         </div>
 
@@ -222,7 +263,11 @@
                     <div class="toggle-row">
                         <div>
                             <strong>{{ local('Monitor immediately') }}</strong>
-                            <span>{{ local('Start showing this server on the status board.') }}</span>
+                            <span>{{
+                                local(
+                                    'Start showing this server on the status board.'
+                                )
+                            }}</span>
                         </div>
                         <fv-toggle-switch
                             v-model="editorForm.enabled"
@@ -255,7 +300,13 @@
                         :disabled="submitting"
                         @click="submitServer"
                     >
-                        {{ submitting ? local('Testing connection') : editorMode === 'edit' ? local('Save') : local('Create') }}
+                        {{
+                            submitting
+                                ? local('Testing connection')
+                                : editorMode === 'edit'
+                                  ? local('Save')
+                                  : local('Create')
+                        }}
                     </fv-button>
                 </div>
             </template>
@@ -301,8 +352,12 @@ export default {
         };
     },
     computed: {
-        ...mapState(useThemeStore, ['subColor']),
-        ...mapState(useAppConfigStore, ['resolvedTheme', 'local', 'formatDate']),
+        ...mapState(useThemeStore, ['color', 'subColor']),
+        ...mapState(useAppConfigStore, [
+            'resolvedTheme',
+            'local',
+            'formatDate'
+        ]),
         ...mapState(useServerStore, [
             'servers',
             'connectedServers',
@@ -363,7 +418,9 @@ export default {
             try {
                 const payload = {
                     ...this.editorForm,
-                    name: this.editorForm.name.trim() || this.editorForm.address.trim(),
+                    name:
+                        this.editorForm.name.trim() ||
+                        this.editorForm.address.trim(),
                     address: this.editorForm.address.trim(),
                     port: Number(this.editorForm.port) || 22,
                     username: this.editorForm.username.trim(),
@@ -396,29 +453,15 @@ export default {
 
     padding: 18px;
     border-radius: 18px;
-    --servercat-panel: rgba(255, 255, 255, 0.9);
-    --servercat-card: rgba(255, 255, 255, 0.94);
-    --servercat-card-soft: rgba(242, 245, 249, 0.96);
-    --servercat-border: rgba(31, 41, 55, 0.1);
-    --servercat-text: #1f2937;
-    --servercat-muted: #667085;
-    --servercat-red: #d83b30;
-
-    :global(:root[data-theme='dark']) & {
-        background: #101216;
-        --servercat-panel: #15171c;
-        --servercat-card: #1c1f26;
-        --servercat-card-soft: #22262e;
-        --servercat-border: rgba(255, 255, 255, 0.095);
-        --servercat-text: #f4f6f8;
-        --servercat-muted: #8c95a3;
-    }
+    --servercat-panel: var(--ph-surface);
+    --servercat-card: var(--ph-surface);
+    --servercat-card-soft: var(--ph-surface-soft);
+    --servercat-border: var(--ph-border);
+    --servercat-text: var(--ph-text);
+    --servercat-muted: var(--ph-text-secondary);
+    --servercat-red: var(--ph-danger);
 
     :deep(.section-card) {
-        border-color: var(--servercat-border);
-        background: var(--servercat-panel);
-        box-shadow: none;
-
         .section-header {
             padding: 18px 20px 0;
         }
@@ -436,14 +479,17 @@ export default {
         }
     }
 
-    .server-toolbar {
+    .server-toolbar-block {
+        position: relative;
+        width: 100%;
         display: flex;
+        flex-direction: row;
         align-items: center;
-        justify-content: space-between;
         gap: 14px;
     }
 
     .toolbar-summary {
+        flex: 1;
         display: flex;
         align-items: center;
         gap: 14px;
@@ -462,7 +508,7 @@ export default {
         padding: 16px;
         border: 1px solid var(--servercat-border);
         border-radius: 16px;
-        background: var(--servercat-card);
+        background: var(--ph-background-gradient);
         box-shadow: none;
         display: flex;
         flex-direction: column;
@@ -520,13 +566,14 @@ export default {
         height: 36px;
         flex: 0 0 36px;
         border-radius: 11px;
-        background: rgba(216, 59, 48, 0.13);
-        color: var(--servercat-red);
+        background: var(--ph-card-gradient-terracotta);
+        color: whitesmoke;
         display: grid;
         place-items: center;
 
         .ms-Icon {
             font-size: 16px;
+            color: whitesmoke;
         }
     }
 
@@ -557,9 +604,8 @@ export default {
         > div {
             min-width: 0;
             padding: 10px;
-            border: 1px solid var(--servercat-border);
-            border-radius: 10px;
-            background: var(--servercat-card-soft);
+            border-radius: 18px;
+            background: var(--ph-flow-card);
             display: flex;
             flex-direction: column;
         }
@@ -585,7 +631,7 @@ export default {
         border: 1px solid rgba(216, 59, 48, 0.24);
         border-radius: 9px;
         background: rgba(216, 59, 48, 0.08);
-        color: #b42318;
+        color: var(--ph-danger);
         font-size: 10px;
         line-height: 1.5;
     }
@@ -647,7 +693,7 @@ export default {
         padding: 16px;
         border: 1px solid var(--servercat-border);
         border-radius: 14px;
-        background: linear-gradient(135deg, rgba(216, 59, 48, 0.18), rgba(216, 59, 48, 0.04));
+        background: var(--ph-background-gradient);
         display: flex;
         align-items: center;
         gap: 12px;
@@ -657,8 +703,8 @@ export default {
             height: 40px;
             flex: 0 0 40px;
             border-radius: 12px;
-            background: rgba(216, 59, 48, 0.18);
-            color: #ff8a80;
+            background: var(--ph-card-gradient-terracotta);
+            color: whitesmoke;
             display: grid;
             place-items: center;
         }
@@ -686,7 +732,7 @@ export default {
         border: 1px solid rgba(216, 59, 48, 0.32);
         border-radius: 10px;
         background: rgba(216, 59, 48, 0.1);
-        color: #b42318;
+        color: var(--ph-danger);
         display: flex;
         align-items: flex-start;
         gap: 8px;
@@ -716,7 +762,7 @@ export default {
             flex: 0 0 32px;
             border-radius: 10px;
             background: rgba(216, 59, 48, 0.11);
-            color: #d83b30;
+            color: var(--ph-danger);
             display: grid;
             place-items: center;
             font-size: 14px;
@@ -725,7 +771,6 @@ export default {
         > div {
             min-width: 0;
             display: flex;
-            flex-direction: column;
 
             strong {
                 color: var(--servercat-text);
@@ -802,7 +847,7 @@ export default {
             grid-template-columns: 1fr;
         }
 
-        .server-toolbar {
+        .server-toolbar-block {
             align-items: flex-start;
             flex-direction: column;
         }

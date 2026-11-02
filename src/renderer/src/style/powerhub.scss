@@ -52,8 +52,9 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
         radial-gradient(ellipse at 75% 48%, rgba(226, 193, 181, 0.46), transparent 37%),
         radial-gradient(ellipse at 20% 75%, rgba(203, 209, 226, 0.42), transparent 47%),
         linear-gradient(135deg, #eff1f4 0%, #e9e9ec 54%, #e4e6eb 100%);
+    --ph-status-block: rgba(255, 255, 255, 0.8);
     --ph-surface: rgba(255, 255, 255, 0.6);
-    --ph-surface-soft: rgba(247, 249, 253, 0.92);
+    --ph-surface-soft: rgba(255, 253, 252, 0.62);
     --ph-surface-hover: rgba(0, 0, 0, 0.045);
     --ph-sidebar: rgba(248, 250, 254, 0.94);
     --ph-header: rgba(248, 250, 254, 0.72);
@@ -61,9 +62,11 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
     --ph-border-subtle: rgba(0, 0, 0, 0.065);
     --ph-text: #202124;
     --ph-text-secondary: #9b9b9f;
-    --ph-text-muted: #7a8392;
+    --ph-text-muted: #363f46;
     --ph-shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.045);
     --ph-shadow-md: 0 14px 38px rgba(0, 0, 0, 0.09);
+    --ph-matrix-text: rgba(77, 161, 49, 0.826);
+    --ph-text-speed: black;
 }
 
 :root[data-theme='dark'] {
@@ -86,8 +89,9 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
         radial-gradient(ellipse at 75% 48%, rgba(91, 65, 78, 0.31), transparent 38%),
         radial-gradient(ellipse at 20% 75%, rgba(55, 66, 92, 0.32), transparent 48%),
         linear-gradient(135deg, #22252d 0%, #1d1d24 54%, #171b23 100%);
+    --ph-status-block: rgba(36, 39, 45, 0.92);
     --ph-surface: rgba(31, 34, 39, 0.94);
-    --ph-surface-soft: rgba(36, 39, 45, 0.92);
+    --ph-surface-soft: rgba(36, 39, 45, 0.82);
     --ph-surface-hover: rgba(255, 255, 255, 0.065);
     --ph-sidebar: rgba(25, 28, 33, 0.96);
     --ph-header: rgba(25, 28, 33, 0.72);
@@ -98,6 +102,8 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
     --ph-text-muted: #949dab;
     --ph-shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.18);
     --ph-shadow-md: 0 14px 38px rgba(0, 0, 0, 0.28);
+    --ph-matrix-text: rgba(150, 235, 122, 0.826);
+    --ph-text-speed: white;
 }
 
 @mixin scrollbar {
@@ -167,7 +173,6 @@ textarea {
 .page-stack {
     width: 100%;
     max-width: 1480px;
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 16px;

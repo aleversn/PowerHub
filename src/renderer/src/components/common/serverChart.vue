@@ -10,6 +10,7 @@
 
 <script>
 import * as echarts from 'echarts';
+import onecolor from 'onecolor';
 
 export default {
     name: 'ServerChart',
@@ -29,6 +30,10 @@ export default {
         values: {
             type: Array,
             default: () => []
+        },
+        ringColors: {
+            type: Array,
+            default: () => ['#10b981', '#0ea5e9', '#8b5cf6']
         },
         label: {
             type: String,
@@ -65,8 +70,7 @@ export default {
             return {
                 text: dark ? '#c2c8d2' : '#505867',
                 grid: dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
-                track: dark ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.07)',
-                border: dark ? '#1f2227' : '#ffffff'
+                track: dark ? '#555960' : 'rgba(239, 239, 239, 0.8)'
             };
         }
     },
@@ -83,7 +87,13 @@ export default {
         values() {
             this.renderChart();
         },
+        ringColors() {
+            this.renderChart();
+        },
         theme() {
+            this.renderChart();
+        },
+        color() {
             this.renderChart();
         }
     },
@@ -137,8 +147,7 @@ export default {
                         label: { show: false },
                         emphasis: { scale: false },
                         itemStyle: {
-                            borderColor: this.chartColors.border,
-                            borderWidth: 2,
+                            borderWidth: 0,
                             borderRadius: 8
                         },
                         data: [
@@ -159,7 +168,7 @@ export default {
             const rings = (this.values.length ? this.values : [0, 0, 0])
                 .slice(0, 3)
                 .map((item) => Math.min(Math.max(Number(item) || 0, 0), 100));
-            const palette = ['#10b981', '#0ea5e9', '#8b5cf6'];
+            const palette = this.ringColors;
             const radii = [
                 ['76%', '96%'],
                 ['52%', '72%'],
@@ -177,8 +186,7 @@ export default {
                     label: { show: false },
                     emphasis: { scale: false },
                     itemStyle: {
-                        borderColor: this.chartColors.border,
-                        borderWidth: 1
+                        borderWidth: 0
                     },
                     data: [
                         { value, itemStyle: { color: this.loadColor(value, palette[index]) } },
@@ -235,20 +243,8 @@ export default {
             };
         },
         withAlpha(color, alpha) {
-            if (!color?.startsWith('#')) return color;
-            const value = color.slice(1);
-            const normalized =
-                value.length === 3
-                    ? value
-                          .split('')
-                          .map((item) => item + item)
-                          .join('')
-                    : value;
-            const numeric = Number.parseInt(normalized, 16);
-            const red = (numeric >> 16) & 255;
-            const green = (numeric >> 8) & 255;
-            const blue = numeric & 255;
-            return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+            const parsed = onecolor(color);
+            return parsed ? parsed.alpha(alpha).cssa() : color;
         }
     }
 };

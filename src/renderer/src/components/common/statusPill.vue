@@ -69,7 +69,7 @@ export default {
     gap: 7px;
     min-height: 24px;
     padding: 0 9px;
-    background: var(--ph-surface-soft);
+    background: var(--ph-status-block);
     border: 1px solid var(--ph-border);
     border-radius: 999px;
     color: var(--ph-text-secondary);

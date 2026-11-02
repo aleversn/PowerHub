@@ -1,9 +1,9 @@
 <template>
-    <div class="page-stack server-status-page">
+    <div class="page-stack server-status-page" :style="{ '--status-sub-color': subColor }">
         <section class="status-summary">
             <article class="summary-card">
                 <span class="summary-icon accent">
-                    <i class="ms-Icon ms-Icon--Server"></i>
+                    <i class="ms-Icon ms-Icon--MapDrive"></i>
                 </span>
                 <div>
                     <span>{{ local('Enabled servers') }}</span>
@@ -79,7 +79,7 @@
                         {{ autoRefresh ? local('Live') : local('Paused') }}
                     </button>
                     <fv-button
-                        :theme="resolvedTheme"
+                        :background="subColor"
                         border-radius="8"
                         icon="Refresh"
                         style="height: 34px"
@@ -136,6 +136,7 @@
                                 type="load"
                                 :theme="resolvedTheme"
                                 :values="loadRingValues(server)"
+                                :ring-colors="loadRingColors"
                                 :value="server.metrics.load1"
                             ></serverChart>
                             <span class="metric-name">{{ local('Load') }}</span>
@@ -166,7 +167,7 @@
                                 :theme="resolvedTheme"
                                 :value="server.metrics.swap"
                                 :label="local('Swap')"
-                                color="#8b5cf6"
+                                :color="color"
                             ></serverChart>
                             <span class="metric-name">{{ local('Swap') }}</span>
                         </div>
@@ -179,7 +180,8 @@
                             :class="{
                                 'is-flipped': isFlipped(server.id, 'net')
                             }"
-                            @click="toggleFlip(server.id, 'net')"
+                            @click.stop="toggleFlip(server.id, 'net')"
+                            @keydown.stop
                         >
                             <span class="flip-inner">
                                 <span class="flip-face flip-front">
@@ -193,7 +195,7 @@
                                     <span class="flip-lines">
                                         <span
                                             ><i
-                                                class="ms-Icon ms-Icon--Download"
+                                                class="ms-Icon ms-Icon--CaretDownSolid8"
                                             ></i
                                             >{{
                                                 formatRate(
@@ -203,7 +205,7 @@
                                         >
                                         <span
                                             ><i
-                                                class="ms-Icon ms-Icon--Upload"
+                                                class="ms-Icon ms-Icon--CaretUpSolid8"
                                             ></i
                                             >{{
                                                 formatRate(
@@ -224,7 +226,7 @@
                                     <span class="flip-lines">
                                         <span
                                             ><i
-                                                class="ms-Icon ms-Icon--Download"
+                                                class="ms-Icon ms-Icon--CaretDownSolid8"
                                             ></i
                                             >{{
                                                 formatBytes(
@@ -234,7 +236,7 @@
                                         >
                                         <span
                                             ><i
-                                                class="ms-Icon ms-Icon--Upload"
+                                                class="ms-Icon ms-Icon--CaretUpSolid8"
                                             ></i
                                             >{{
                                                 formatBytes(
@@ -252,7 +254,8 @@
                             :class="{
                                 'is-flipped': isFlipped(server.id, 'disk')
                             }"
-                            @click="toggleFlip(server.id, 'disk')"
+                            @click.stop="toggleFlip(server.id, 'disk')"
+                            @keydown.stop
                         >
                             <span class="flip-inner">
                                 <span class="flip-face flip-front">
@@ -266,7 +269,7 @@
                                     <span class="flip-lines">
                                         <span
                                             ><i
-                                                class="ms-Icon ms-Icon--Read"
+                                                class="ms-Icon ms-Icon--CaretRightSolid8"
                                             ></i
                                             >{{
                                                 formatRate(
@@ -276,7 +279,7 @@
                                         >
                                         <span
                                             ><i
-                                                class="ms-Icon ms-Icon--Edit"
+                                                class="ms-Icon ms-Icon--CaretLeftSolid8"
                                             ></i
                                             >{{
                                                 formatRate(
@@ -297,7 +300,7 @@
                                     <span class="flip-lines">
                                         <span
                                             ><i
-                                                class="ms-Icon ms-Icon--Read"
+                                                class="ms-Icon ms-Icon--CaretRightSolid8"
                                             ></i
                                             >{{
                                                 formatBytes(
@@ -307,7 +310,7 @@
                                         >
                                         <span
                                             ><i
-                                                class="ms-Icon ms-Icon--Edit"
+                                                class="ms-Icon ms-Icon--CaretLeftSolid8"
                                             ></i
                                             >{{
                                                 formatBytes(
@@ -331,7 +334,7 @@
                             type="line"
                             :theme="resolvedTheme"
                             :series="server.history.trafficIn"
-                            color="#10b981"
+                            :color="subColor"
                         ></serverChart>
                     </div>
 
@@ -352,7 +355,7 @@
                             }}</strong>
                         </div>
                         <fv-button
-                            :theme="resolvedTheme"
+                            :background="subColor"
                             border-radius="8"
                             style="width: 34px; height: 34px"
                             :title="local('Refresh')"
@@ -385,6 +388,7 @@ import serverChart from '@/components/common/serverChart.vue';
 import statusPill from '@/components/common/statusPill.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useServerStore } from '@/stores/servers';
+import { useThemeStore } from '@/stores/theme';
 
 const UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
@@ -428,6 +432,12 @@ export default {
             'autoRefresh',
             'pollSeconds'
         ]),
+        ...mapState(useThemeStore, ['color', 'subColor']),
+        loadRingColors() {
+            return this.resolvedTheme === 'dark'
+                ? [this.subColor, 'rgb(49, 250, 172)', this.color]
+                : ['#d5eb7a', '#89e4c1', '#684ce1'];
+        },
         enabledServerList() {
             return this.servers.filter((server) => server.enabled);
         }
@@ -464,7 +474,7 @@ export default {
         memoryColor(value) {
             if (value >= 85) return '#ef4444';
             if (value >= 70) return '#f59e0b';
-            return '#10b981';
+            return this.subColor;
         },
         formatTemperature(value) {
             const number = Number(value);
@@ -499,23 +509,13 @@ export default {
 
     padding: 18px;
     border-radius: 18px;
-    --servercat-panel: rgba(255, 255, 255, 0.9);
-    --servercat-card: rgba(255, 255, 255, 0.94);
-    --servercat-card-soft: rgba(242, 245, 249, 0.96);
-    --servercat-border: rgba(31, 41, 55, 0.1);
-    --servercat-text: #1f2937;
-    --servercat-muted: #667085;
-    --servercat-red: #d83b30;
-
-    :global(:root[data-theme='dark']) & {
-        background: #101216;
-        --servercat-panel: #15171c;
-        --servercat-card: #1c1f26;
-        --servercat-card-soft: #22262e;
-        --servercat-border: rgba(255, 255, 255, 0.095);
-        --servercat-text: #f4f6f8;
-        --servercat-muted: #8c95a3;
-    }
+    --servercat-panel: var(--ph-surface);
+    --servercat-card: var(--ph-surface);
+    --servercat-card-soft: var(--ph-surface-soft);
+    --servercat-border: var(--ph-border);
+    --servercat-text: var(--ph-text);
+    --servercat-muted: var(--ph-text-muted);
+    --servercat-red: var(--ph-danger);
 
     .status-summary {
         display: grid;
@@ -528,7 +528,7 @@ export default {
         padding: 18px;
         border: 1px solid var(--servercat-border);
         border-radius: 26px;
-        background: var(--ph-card-gradient-porcelain);
+        background: var(--ph-card-gradient-mist);
         box-shadow: var(--ph-shadow-sm);
         display: flex;
         align-items: center;
@@ -539,7 +539,13 @@ export default {
         }
 
         &:nth-child(3) {
-            background: var(--ph-card-gradient-mist);
+            background: var(--ph-card-gradient-olive);
+
+            > div span,
+            > div small,
+            > div strong {
+                color: whitesmoke;
+            }
         }
 
         &:nth-child(4) {
@@ -608,7 +614,7 @@ export default {
         }
 
         &.warning {
-            color: var(--ph-text-secondary);
+            color: var(--ph-text-speed);
         }
 
         &.violet {
@@ -618,10 +624,6 @@ export default {
     }
 
     :deep(.section-card) {
-        border-color: var(--servercat-border);
-        background: var(--servercat-panel);
-        box-shadow: none;
-
         .section-heading h2 {
             color: var(--servercat-text);
         }
@@ -681,7 +683,7 @@ export default {
         padding: 16px;
         border: 1px solid var(--servercat-border);
         border-radius: 26px;
-        background: var(--ph-card-gradient-porcelain);
+        background: var(--ph-card-gradient-mist);
         box-shadow: var(--ph-shadow-sm);
         display: flex;
         flex-direction: column;
@@ -714,9 +716,8 @@ export default {
     .temperature-chip {
         height: 24px;
         padding: 0 8px;
-        border: 1px solid var(--servercat-border);
         border-radius: 999px;
-        background: var(--servercat-card-soft);
+        background: var(--ph-status-block);
         color: var(--servercat-muted);
         display: flex;
         align-items: center;
@@ -840,9 +841,8 @@ export default {
         position: absolute;
         inset: 0;
         padding: 9px 10px;
-        border: 1px solid var(--servercat-border);
-        border-radius: 10px;
-        background: var(--servercat-card-soft);
+        border-radius: 18px;
+        background: var(--ph-status-block);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -877,15 +877,16 @@ export default {
     .flip-lines {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 5px;
 
         span {
             min-width: 0;
-            color: var(--servercat-text);
+            color: var(--ph-matrix-text);
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 12px;
+            font-size: 15px;
+            font-weight: 600;
             font-variant-numeric: tabular-nums;
             white-space: nowrap;
 
@@ -899,9 +900,8 @@ export default {
 
     .trend-block {
         padding: 10px;
-        border: 1px solid var(--servercat-border);
-        border-radius: 12px;
-        background: var(--servercat-card-soft);
+        border-radius: 18px;
+        background: var(--ph-status-block);
         display: flex;
         flex-direction: column;
         gap: 4px;

@@ -56,9 +56,7 @@ export default {
 <style lang="scss" scoped>
 .server-hero {
     padding: 16px;
-    border: 1px solid var(--servercat-border);
     border-radius: 14px;
-    background: var(--servercat-card);
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -77,14 +75,15 @@ export default {
         h1 {
             margin: 0;
             color: var(--servercat-text);
-            font-size: 28px;
+            font-size: 18px;
             line-height: 1.15;
+            user-select: none;
         }
 
         p {
             margin: 3px 0 0;
             color: var(--servercat-text);
-            font-size: 13px;
+            font-size: 12px;
         }
 
         small {

@@ -15,7 +15,7 @@
                         class="back-button"
                         :theme="resolvedTheme"
                         border-radius="8"
-                        style="width: 38px; height: 38px; flex-shrink: 0"
+                        style="width: 32px; height: 34px; flex-shrink: 0"
                         :title="local('Back to endpoints')"
                         @click="backToEndpoints"
                     >
@@ -26,61 +26,91 @@
                         :theme="resolvedTheme"
                         :placeholder="local('Name')"
                         border-radius="8"
-                        style="flex: 1; min-width: 160px; max-width: 360px"
+                        :reveal-border="true"
+                        :reveal-border-color="[color]"
+                        :reveal-background-color="['rgba(200, 200, 200, 0.1)']"
+                        style="
+                            flex: 1;
+                            min-width: 160px;
+                            max-width: 360px;
+                            height: 34px;
+                        "
                     ></fv-text-box>
-                    <fv-drop-down
+                    <fv-combobox
                         :model-value="collectionSelection"
                         :options="collectionOptions"
                         :theme="resolvedTheme"
                         border-radius="8"
                         :placeholder="local('Collection')"
-                        style="width: 220px"
-                        @update:model-value="changeCollection"
-                    ></fv-drop-down>
+                        :input-font-size="12"
+                        :drop-down-font-size="12"
+                        :choosen-slider-background="color"
+                        :input-background="
+                            resolvedTheme === 'dark'
+                                ? 'rgba(143, 145, 233, 0.3)'
+                                : 'rgba(143, 145, 233, 0.1)'
+                        "
+                        style="width: 220px; height: 34px"
+                        @choose-item="changeCollection"
+                    ></fv-combobox>
                     <fv-toggle-switch
                         :model-value="draft.enabled"
                         :theme="resolvedTheme"
-                        :width="38"
-                        :height="20"
+                        :width="68"
+                        :height="30"
                         :switch-on-background="subColor"
+                        :inside-content="true"
                         @update:model-value="setEnabled"
                     ></fv-toggle-switch>
                     <div class="topbar-spacer"></div>
                     <fv-button
-                        :background="subColor"
+                        theme="dark"
+                        :background="color"
                         border-radius="8"
-                        icon="Save"
-                        style="height: 38px; flex-shrink: 0"
+                        style="width: 32px; height: 34px; flex-shrink: 0"
                         :disabled="saving"
+                        :title="
+                            saving ? local('Saving') : local('Save endpoint')
+                        "
                         @click="saveEndpoint"
                     >
-                        {{ saving ? local('Saving') : local('Save endpoint') }}
+                        <i class="ms-Icon ms-Icon--Save"></i>
                     </fv-button>
                 </div>
 
                 <div class="request-bar">
-                    <fv-drop-down
+                    <fv-combobox
                         :model-value="methodSelection"
                         :options="methodOptions"
                         :theme="resolvedTheme"
                         border-radius="8"
-                        input-height="38px"
-                        style="width: 116px"
-                        @update:model-value="changeMethod"
-                    ></fv-drop-down>
+                        :input-font-size="12"
+                        :drop-down-font-size="12"
+                        :choosen-slider-background="color"
+                        :input-background="
+                            resolvedTheme === 'dark'
+                                ? 'rgba(143, 145, 233, 0.3)'
+                                : 'rgba(143, 145, 233, 0.1)'
+                        "
+                        style="width: 116px; height: 34px"
+                        @choose-item="changeMethod"
+                    ></fv-combobox>
                     <fv-text-box
                         v-model="draft.url"
                         :theme="resolvedTheme"
                         :placeholder="local('Request URL')"
                         border-radius="8"
-                        style="flex: 1; min-width: 220px"
+                        :reveal-border="true"
+                        :reveal-border-color="[color]"
+                        :reveal-background-color="['rgba(200, 200, 200, 0.1)']"
+                        style="flex: 1; min-width: 220px; height: 34px"
                         @keyup.enter="sendRequest"
                     ></fv-text-box>
                     <fv-button
                         :background="subColor"
                         border-radius="8"
                         icon="Play"
-                        style="height: 38px"
+                        style="height: 34px"
                         :disabled="sending"
                         @click="sendRequest"
                     >
@@ -96,14 +126,13 @@
                     :model-value="pivotValue"
                     :items="pivotItems"
                     :theme="resolvedTheme"
-                    :font-size="13"
-                    :background="pivotBackground"
+                    :font-size="12"
                     :border-radius="10"
-                    :padding="4"
+                    :padding="5"
                     :item-padding="'8px 18px'"
                     :foreground="pivotForeground"
                     :choosen-foreground="pivotChoosenForeground"
-                    :slider-background="pivotSliderBackground"
+                    :slider-background="subColor"
                     :slider-boxshadow="true"
                     :slider-border-radius="8"
                     style="width: fit-content; max-width: 100%"
@@ -112,27 +141,26 @@
 
                 <div class="editor-tab-panel">
                     <div v-show="activeTabKey === 'docs'" class="docs-panel">
-                        <div class="docs-editor">
-                            <power-editor
-                                ref="docsEditor"
-                                :model-value="''"
-                                :theme="resolvedTheme"
-                                :language="editorLanguage"
-                                :placeholder="local('Describe this endpoint')"
-                                :show-save="false"
-                                :toolbar-height="75"
-                                :editable-padding-top="90"
-                                :editable-padding-bottom="40"
-                                :read-only-padding-top="20"
-                                :read-only-padding-bottom="40"
-                                :content-max-width="'min(900px, calc(100% - 40px))'"
-                                :show-drag-handler="true"
-                                :use-tab="true"
-                                style="width: 100%"
-                                @on-mounted="onDocsMounted"
-                                @change="onDocsChange"
-                            ></power-editor>
-                        </div>
+                        <power-editor
+                            ref="docsEditor"
+                            :model-value="''"
+                            :theme="resolvedTheme"
+                            :language="editorLanguage"
+                            :placeholder="local('Describe this endpoint')"
+                            :show-save="false"
+                            :toolbar-height="75"
+                            :editable-padding-top="90"
+                            :editable-padding-bottom="40"
+                            :read-only-padding-top="20"
+                            :read-only-padding-bottom="40"
+                            :show-drag-handler="true"
+                            :use-tab="true"
+                            :editor-background="'transparent'"
+                            :editor-outside-background="'transparent'"
+                            style="width: 100%; flex: 1"
+                            @on-mounted="onDocsMounted"
+                            @change="onDocsChange"
+                        ></power-editor>
                     </div>
 
                     <div v-show="activeTabKey === 'params'" class="kv-panel">
@@ -156,14 +184,22 @@
                         class="auth-panel"
                     >
                         <div class="auth-type-row">
-                            <fv-drop-down
+                            <fv-combobox
                                 :model-value="authTypeSelection"
                                 :options="authTypeOptions"
                                 :theme="resolvedTheme"
                                 border-radius="8"
+                                :input-font-size="12"
+                                :drop-down-font-size="12"
+                                :choosen-slider-background="color"
+                                :input-background="
+                                    resolvedTheme === 'dark'
+                                        ? 'rgba(143, 145, 233, 0.3)'
+                                        : 'rgba(143, 145, 233, 0.1)'
+                                "
                                 style="width: 220px"
-                                @update:model-value="changeAuthType"
-                            ></fv-drop-down>
+                                @choose-item="changeAuthType"
+                            ></fv-combobox>
                         </div>
 
                         <div
@@ -191,7 +227,6 @@
                                     v-model="draft.authData.username"
                                     :variables="collectionVariableRows"
                                     :placeholder="local('Username')"
-
                                 ></variableInput>
                             </div>
                             <div class="field-block">
@@ -215,7 +250,6 @@
                                     v-model="draft.authData.key"
                                     :variables="collectionVariableRows"
                                     :placeholder="local('Key')"
-
                                 ></variableInput>
                             </div>
                             <div class="field-block">
@@ -229,13 +263,21 @@
                             </div>
                             <div class="field-block">
                                 <span>{{ local('Add to') }}</span>
-                                <fv-drop-down
+                                <fv-combobox
                                     :model-value="authLocationSelection"
                                     :options="authLocationOptions"
                                     :theme="resolvedTheme"
                                     border-radius="8"
-                                    @update:model-value="changeAuthLocation"
-                                ></fv-drop-down>
+                                    :input-font-size="12"
+                                    :drop-down-font-size="12"
+                                    :choosen-slider-background="color"
+                                    :input-background="
+                                        resolvedTheme === 'dark'
+                                            ? 'rgba(143, 145, 233, 0.3)'
+                                            : 'rgba(143, 145, 233, 0.1)'
+                                    "
+                                    @choose-item="changeAuthLocation"
+                                ></fv-combobox>
                             </div>
                         </div>
 
@@ -263,14 +305,22 @@
                     <div v-show="activeTabKey === 'body'" class="body-panel">
                         <div class="body-toolbar">
                             <span>{{ local('Body type') }}</span>
-                            <fv-drop-down
+                            <fv-combobox
                                 :model-value="bodyTypeSelection"
                                 :options="bodyTypeOptions"
                                 :theme="resolvedTheme"
                                 border-radius="8"
+                                :input-font-size="12"
+                                :drop-down-font-size="12"
+                                :choosen-slider-background="color"
+                                :input-background="
+                                    resolvedTheme === 'dark'
+                                        ? 'rgba(143, 145, 233, 0.3)'
+                                        : 'rgba(143, 145, 233, 0.1)'
+                                "
                                 style="width: 190px"
-                                @update:model-value="changeBodyType"
-                            ></fv-drop-down>
+                                @choose-item="changeBodyType"
+                            ></fv-combobox>
                         </div>
 
                         <keyValueEditor
@@ -314,13 +364,12 @@
                                     :items="scriptPivotItems"
                                     :theme="resolvedTheme"
                                     :font-size="12"
-                                    :background="pivotBackground"
                                     :border-radius="10"
                                     :padding="4"
                                     :item-padding="'6px 14px'"
                                     :foreground="pivotForeground"
                                     :choosen-foreground="pivotChoosenForeground"
-                                    :slider-background="pivotSliderBackground"
+                                    :slider-background="subColor"
                                     :slider-boxshadow="true"
                                     :slider-border-radius="8"
                                     style="width: fit-content; max-width: 100%"
@@ -349,16 +398,16 @@
                                         :theme="resolvedTheme"
                                         border-radius="8"
                                         icon="Snippet"
-                                        style="height: 32px"
+                                        style="flex: 1; height: 32px"
                                         @click="insertScriptSnippet"
                                     >
                                         {{ local('Snippets') }}
                                     </fv-button>
                                     <fv-button
-                                        :theme="resolvedTheme"
+                                        :background="subColor"
                                         border-radius="8"
                                         icon="Play"
-                                        style="height: 32px"
+                                        style="flex: 1; height: 32px"
                                         :disabled="scriptRunning"
                                         @click="runCurrentScript"
                                     >
@@ -376,16 +425,16 @@
                                     v-model="draft.preRequestScript"
                                     language="javascript"
                                     :theme="monacoTheme"
-                                    :height="'320px'"
                                     :minimap="false"
+                                    style="flex: 1"
                                 ></monacoEditor>
                                 <monacoEditor
                                     v-else
                                     v-model="draft.postResponseScript"
                                     language="javascript"
                                     :theme="monacoTheme"
-                                    :height="'320px'"
                                     :minimap="false"
+                                    style="flex: 1"
                                 ></monacoEditor>
                                 <div
                                     v-if="scriptFeedback"
@@ -486,7 +535,10 @@
                                 <code>{{ formatSize(response.size) }}</code>
                             </span>
                         </div>
-                        <div v-if="responseScriptPhases.length" class="response-scripts">
+                        <div
+                            v-if="responseScriptPhases.length"
+                            class="response-scripts"
+                        >
                             <strong>{{ local('Script results') }}</strong>
                             <div
                                 v-for="phase in responseScriptPhases"
@@ -494,14 +546,42 @@
                                 class="response-script-phase"
                             >
                                 <span>{{ local(phase.label) }}</span>
-                                <div v-if="phase.result.error" class="response-error">{{ phase.result.error }}</div>
-                                <ul v-if="phase.result.tests?.length" class="scripts-tests">
-                                    <li v-for="(test, index) in phase.result.tests" :key="index" :class="{ failed: test.passed === false }">
-                                        {{ test.passed === false ? '✗' : '✓' }} {{ test.name }}
-                                        <span v-if="test.error" class="scripts-test-error">{{ test.error }}</span>
+                                <div
+                                    v-if="phase.result.error"
+                                    class="response-error"
+                                >
+                                    {{ phase.result.error }}
+                                </div>
+                                <ul
+                                    v-if="phase.result.tests?.length"
+                                    class="scripts-tests"
+                                >
+                                    <li
+                                        v-for="(test, index) in phase.result
+                                            .tests"
+                                        :key="index"
+                                        :class="{
+                                            failed: test.passed === false
+                                        }"
+                                    >
+                                        {{ test.passed === false ? '✗' : '✓' }}
+                                        {{ test.name }}
+                                        <span
+                                            v-if="test.error"
+                                            class="scripts-test-error"
+                                            >{{ test.error }}</span
+                                        >
                                     </li>
                                 </ul>
-                                <pre v-if="phase.result.console?.length" class="scripts-console">{{ formatScriptConsole(phase.result.console) }}</pre>
+                                <pre
+                                    v-if="phase.result.console?.length"
+                                    class="scripts-console"
+                                    >{{
+                                        formatScriptConsole(
+                                            phase.result.console
+                                        )
+                                    }}</pre
+                                >
                             </div>
                         </div>
                         <details class="response-headers">
@@ -510,8 +590,12 @@
                         </details>
                         <div class="field-block">
                             <span>{{ local('Response body') }}</span>
-                            <file-response v-if="responseFile" :file="responseFile" />
-                            <monacoEditor v-else
+                            <file-response
+                                v-if="responseFile"
+                                :file="responseFile"
+                            />
+                            <monacoEditor
+                                v-else
                                 :model-value="response.response || ''"
                                 :language="responseLanguage"
                                 :theme="monacoTheme"
@@ -622,7 +706,7 @@ export default {
         };
     },
     computed: {
-        ...mapState(useThemeStore, ['subColor']),
+        ...mapState(useThemeStore, ['color', 'subColor']),
         ...mapState(useAppConfigStore, [
             'resolvedTheme',
             'local',
@@ -690,16 +774,32 @@ export default {
         },
         responseScriptPhases() {
             return [
-                { key: 'preRequest', label: 'Pre-request', result: this.response?.script?.preRequest },
-                { key: 'postResponse', label: 'Post-response', result: this.response?.script?.postResponse }
-            ].filter(({ result }) => result && (result.error || result.tests?.length || result.console?.length));
+                {
+                    key: 'preRequest',
+                    label: 'Pre-request',
+                    result: this.response?.script?.preRequest
+                },
+                {
+                    key: 'postResponse',
+                    label: 'Post-response',
+                    result: this.response?.script?.postResponse
+                }
+            ].filter(
+                ({ result }) =>
+                    result &&
+                    (result.error ||
+                        result.tests?.length ||
+                        result.console?.length)
+            );
         },
         methodOptions() {
             return METHODS.map((method) => ({ key: method, text: method }));
         },
         methodSelection() {
-            return this.methodOptions.filter(
-                (item) => item.key === this.draft.method
+            return (
+                this.methodOptions.find(
+                    (item) => item.key === this.draft.method
+                ) || {}
             );
         },
         bodyTypeOptions() {
@@ -709,8 +809,10 @@ export default {
             }));
         },
         bodyTypeSelection() {
-            return this.bodyTypeOptions.filter(
-                (item) => item.key === this.draft.bodyType
+            return (
+                this.bodyTypeOptions.find(
+                    (item) => item.key === this.draft.bodyType
+                ) || {}
             );
         },
         authTypeOptions() {
@@ -720,8 +822,10 @@ export default {
             }));
         },
         authTypeSelection() {
-            return this.authTypeOptions.filter(
-                (item) => item.key === this.draft.authType
+            return (
+                this.authTypeOptions.find(
+                    (item) => item.key === this.draft.authType
+                ) || {}
             );
         },
         authLocationOptions() {
@@ -732,8 +836,10 @@ export default {
         },
         authLocationSelection() {
             const location = this.draft.authData?.in || 'header';
-            return this.authLocationOptions.filter(
-                (item) => item.key === location
+            return (
+                this.authLocationOptions.find(
+                    (item) => item.key === location
+                ) || {}
             );
         },
         collectionOptions() {
@@ -743,8 +849,10 @@ export default {
             }));
         },
         collectionSelection() {
-            return this.collectionOptions.filter(
-                (item) => item.key === this.draft.collection
+            return (
+                this.collectionOptions.find(
+                    (item) => item.key === this.draft.collection
+                ) || {}
             );
         },
         formRows: {
@@ -759,7 +867,12 @@ export default {
             if (this.draft.bodyType === 'json') return 'json';
             return 'plaintext';
         },
-        responseFile() { return fileResponse(this.response?.response, this.response?.headers); },
+        responseFile() {
+            return fileResponse(
+                this.response?.response,
+                this.response?.headers
+            );
+        },
         responseLanguage() {
             const contentType = String(this.response?.contentType || '');
             if (contentType.includes('json')) return 'json';
@@ -885,17 +998,17 @@ export default {
             if (value?.key) this.activeTabKey = value.key;
         },
         changeMethod(options) {
-            this.draft.method = options?.[0]?.key || 'GET';
+            this.draft.method = options?.key || 'GET';
         },
         changeBodyType(options) {
-            const nextType = options?.[0]?.key || 'none';
+            const nextType = options?.key || 'none';
             this.draft.bodyType = nextType;
             if (nextType === 'form' && !parseFormRows(this.draft.body).length) {
                 this.draft.body = '[]';
             }
         },
         changeAuthType(options) {
-            const nextType = options?.[0]?.key || 'none';
+            const nextType = options?.key || 'none';
             this.draft.authType = nextType;
             if (nextType === 'bearer' && !this.draft.authData.token) {
                 this.draft.authData.token = '';
@@ -913,10 +1026,10 @@ export default {
             }
         },
         changeAuthLocation(options) {
-            this.draft.authData.in = options?.[0]?.key || 'header';
+            this.draft.authData.in = options?.key || 'header';
         },
         changeCollection(options) {
-            this.draft.collection = options?.[0]?.key || DEFAULT_COLLECTION;
+            this.draft.collection = options?.key || DEFAULT_COLLECTION;
         },
         setEnabled(value) {
             this.draft.enabled = Boolean(value);
@@ -957,12 +1070,16 @@ export default {
             });
         },
         formatScriptConsole(entries) {
-            return entries.map((entry) => {
-                const parts = (entry?.args || []).map((arg) =>
-                    typeof arg === 'string' ? arg : this.stringifyConsoleArg(arg)
-                );
-                return `[${entry?.level || 'log'}] ${parts.join(' ')}`;
-            }).join('\n');
+            return entries
+                .map((entry) => {
+                    const parts = (entry?.args || []).map((arg) =>
+                        typeof arg === 'string'
+                            ? arg
+                            : this.stringifyConsoleArg(arg)
+                    );
+                    return `[${entry?.level || 'log'}] ${parts.join(' ')}`;
+                })
+                .join('\n');
         },
         async sendRequest() {
             this.errorMessage = '';
@@ -1130,10 +1247,13 @@ export default {
     .editor-tab-panel {
         min-height: 320px;
         margin-top: 14px;
+        flex: 1;
         padding: 18px;
         border: 1px solid var(--ph-border);
         border-radius: 12px;
         background: var(--ph-surface-soft);
+        display: flex;
+        flex-direction: column;
     }
 
     .panel-heading {
@@ -1165,13 +1285,14 @@ export default {
         }
 
         :deep(.fv-TextBox),
-        :deep(.fv-DropDown) {
+        :deep(.fv-Combobox) {
             width: 100%;
             min-width: 0;
         }
     }
 
     .docs-panel {
+        flex: 1;
         display: flex;
         flex-direction: column;
     }
@@ -1225,20 +1346,34 @@ export default {
 
     .scripts-panel {
         min-width: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
     }
 
     .scripts-layout {
-        display: grid;
-        grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+        flex: 1;
         gap: 16px;
         align-items: start;
-    }
-
-    .scripts-side {
-        min-width: 0;
         display: flex;
-        flex-direction: column;
-        gap: 12px;
+        overflow: hidden;
+
+        .scripts-side {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .scripts-main {
+            min-width: 300px;
+            height: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
     }
 
     .scripts-hint {
@@ -1248,16 +1383,11 @@ export default {
     }
 
     .scripts-toolbar {
+        position: relative;
+        width: 100%;
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-    }
-
-    .scripts-main {
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
     }
 
     .scripts-feedback {
@@ -1417,14 +1547,21 @@ export default {
             font-size: 12px;
         }
     }
+}
 
-    @media (max-width: 880px) {
+@media (max-width: 880px) {
+    .endpoint-editor-page {
         .auth-grid {
             grid-template-columns: 1fr;
         }
 
         .scripts-layout {
-            grid-template-columns: 1fr;
+            flex-direction: column;
+
+            .scripts-main {
+                width: 100%;
+                height: 10px;
+            }
         }
 
         .request-bar {

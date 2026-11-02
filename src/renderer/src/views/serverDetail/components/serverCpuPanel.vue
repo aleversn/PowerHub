@@ -1,5 +1,5 @@
 <template>
-    <article class="server-cpu-panel">
+    <article class="server-cpu-panel" :class="[{dark: resolvedTheme === 'dark'}]">
         <header class="cpu-summary">
             <div class="cpu-total">
                 <strong>{{ formatNumber(metrics.cpu) }}</strong>
@@ -70,6 +70,7 @@ import { mapState } from 'pinia';
 
 import serverChart from '@/components/common/serverChart.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
+import {useThemeStore} from '@/stores/theme';
 
 import { formatPercent } from '../utils/format';
 

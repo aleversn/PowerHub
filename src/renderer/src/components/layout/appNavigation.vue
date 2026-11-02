@@ -134,7 +134,7 @@ export default {
                 },
                 {
                     key: 'server-status',
-                    name: () => this.local('Server Status'),
+                    name: () => this.local('Status Hub'),
                     image: monitorIcon,
                     route: '/server-status'
                 },

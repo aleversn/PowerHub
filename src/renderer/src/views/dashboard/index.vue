@@ -47,12 +47,12 @@
                         class="data-table__row"
                     >
                         <div class="primary-cell">
-                            <strong>{{ endpointName(run.endpointId) }}</strong>
-                            <span>{{ endpointUrl(run.endpointId) }}</span>
+                            <strong>{{ runName(run) }}</strong>
+                            <span>{{ run.endpointId ? endpointUrl(run.endpointId) : local('Collection') }}</span>
                         </div>
-                        <statusPill :status="run.status" />
-                        <span class="numeric-cell">{{ run.duration }} ms</span>
-                        <span>{{ formatDate(run.startedAt) }}</span>
+                        <div><statusPill :status="run.status" /></div>
+                        <fv-tag class="run-tag numeric-cell" :style="{ '--run-tag-color': subColor }" :model-value="[{ text: run.duration == null ? '-' : `${run.duration} ms` }]" :theme="resolvedTheme" :font-size="11" :border-radius="8" />
+                        <div class="recent-time"><time-rounder :model-value="run.startedAt" :style="{ color: color, fontWeight: 'bold', width: 'auto' }" /></div>
                     </div>
                 </div>
             </sectionCard>
@@ -69,11 +69,11 @@
                         </div>
                         <div class="schedule-copy">
                             <strong>{{ schedule.name }}</strong>
-                            <span>{{ endpointName(schedule.endpointId) }}</span>
+                            <span>{{ schedule.taskType === 'collection' ? local('Collection') : endpointName(schedule.endpointId) }}</span>
                         </div>
                         <div class="schedule-time">
-                            <strong>{{ formatDate(schedule.nextRun) }}</strong>
-                            <span>{{ schedule.cron }}</span>
+                            <time-rounder :model-value="schedule.nextRun" :style="{ color: color, fontWeight: 'bold', width: 'auto' }" />
+                            <code class="schedule-cron">{{ schedule.cron }}</code>
                         </div>
                     </div>
                 </div>
@@ -87,6 +87,7 @@ import { mapActions, mapState } from 'pinia';
 
 import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
+import timeRounder from '@/components/general/timeRounder.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useThemeStore } from '@/stores/theme';
 import { useWorkspaceStore } from '@/stores/workspace';
@@ -95,13 +96,15 @@ export default {
     name: 'DashboardView',
     components: {
         sectionCard,
-        statusPill
+        statusPill,
+        timeRounder
     },
     computed: {
-        ...mapState(useAppConfigStore, ['local', 'formatDate']),
-        ...mapState(useThemeStore, ['subColor']),
+        ...mapState(useAppConfigStore, ['local', 'resolvedTheme']),
+        ...mapState(useThemeStore, ['color', 'subColor']),
         ...mapState(useWorkspaceStore, [
             'endpointById',
+            'scheduleById',
             'endpoints',
             'runs',
             'schedules',
@@ -165,11 +168,14 @@ export default {
         ...mapActions(useWorkspaceStore, {
             workspaceInitialize: 'initialize'
         }),
+        runName(run) {
+            return this.scheduleById[run.scheduleId]?.name || this.endpointById[run.endpointId]?.name || run.nodeResults?.[0]?.name || '-';
+        },
         endpointName(id) {
             return this.endpointById[id]?.name || '-';
         },
         endpointUrl(id) {
-            return this.endpointById[id]?.url || '-';
+            return this.endpointById[id]?.url || this.local('Collection');
         }
     }
 };
@@ -313,29 +319,46 @@ export default {
 
     .data-table__head,
     .data-table__row {
-        min-width: 528px;
-        display: grid;
-        grid-template-columns: minmax(180px, 1.5fr) 100px 90px 116px;
+        box-sizing: border-box;
+        min-width: 560px;
+        display: flex;
         align-items: center;
         gap: 14px;
+
+        > :first-child { flex: 1 1 180px; min-width: 180px; }
+        > :nth-child(2) { flex: 0 0 100px; }
+        > :nth-child(3) { flex: 0 0 90px; }
+        > :nth-child(4) { flex: 0 0 116px; min-width: 0; }
     }
 
     .data-table__head {
         min-height: 34px;
+        padding: 0 16px;
         border-bottom: 1px solid var(--ph-border);
         color: var(--ph-text-muted);
         font-size: 10px;
-        text-transform: uppercase;
     }
 
     .data-table__row {
-        min-height: 58px;
-        border-bottom: 1px solid var(--ph-border-subtle);
+        min-height: 68px;
+        margin-top: 10px;
+        padding: 12px 15px;
+        border: 1px solid var(--ph-border-subtle);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--ph-surface) 65%, transparent);
         color: var(--ph-text-secondary);
         font-size: 12px;
+    }
 
-        &:last-child {
-            border-bottom: 0;
+    .recent-time { display: flex; align-items: center; }
+
+    .run-tag {
+        min-width: 0;
+
+        :deep(.fv-tag-item) {
+            background: color-mix(in srgb, var(--run-tag-color) 24%, var(--ph-surface));
+            border-color: transparent;
+            color: var(--ph-text);
         }
     }
 
@@ -379,6 +402,7 @@ export default {
         background: var(--ph-surface-soft);
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 10px;
     }
 
@@ -393,48 +417,45 @@ export default {
         place-items: center;
     }
 
-    .schedule-copy,
-    .schedule-time {
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-
-        strong,
-        span {
-            @include nowrap;
-        }
-    }
-
     .schedule-copy {
-        flex: 1;
+        display: flex;
+        flex: 1 1 100px;
+        flex-direction: column;
+        min-width: 0;
+        gap: 3px;
 
-        strong {
-            color: var(--ph-text);
-            font-size: 12px;
+        strong, span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-
-        span {
-            margin-top: 3px;
-            color: var(--ph-text-muted);
-            font-size: 10px;
-        }
+        strong { color: var(--ph-text); font-size: 12px; }
+        span { color: var(--ph-text-muted); font-size: 10px; }
     }
 
     .schedule-time {
+        display: flex;
         flex: 0 0 auto;
+        flex-direction: column;
         align-items: flex-end;
+        margin-left: auto;
+        min-width: 0;
+        gap: 6px;
+    }
 
-        strong {
-            color: var(--ph-text-secondary);
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        span {
-            margin-top: 3px;
-            color: var(--ph-text-muted);
-            font-size: 10px;
-        }
+    .schedule-cron {
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 7px 10px;
+        border: 1px solid var(--ph-border);
+        border-radius: 10px;
+        background: var(--ph-surface);
+        color: var(--ph-text);
+        font-family: var(--ph-code-font);
+        font-size: 11px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     @media (max-width: 1180px) {
