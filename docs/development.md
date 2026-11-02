@@ -60,4 +60,4 @@ git push
 git push --tags
 ```
 
-工作流先分别构建 Windows NSIS 安装包和 macOS DMG / ZIP，再统一上传至 GitHub Release。当前构建未签名、未公证；发布前应在对应系统验证安装、原生 SQLite 模块、数据库迁移及应用启动。应用没有内置自动更新功能。
+工作流为构建进程设置 4 GB 的 Node 堆上限，先分别构建 Windows NSIS 安装包和 macOS DMG / ZIP，再统一上传至 GitHub Release。当前构建未签名、未公证；发布前应在对应系统验证安装、原生 SQLite 模块、数据库迁移及应用启动。应用没有内置自动更新功能。
