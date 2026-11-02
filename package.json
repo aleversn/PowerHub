@@ -1,6 +1,6 @@
 {
     "name": "powerhub",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "A cross-platform workspace for server monitoring and API automation",
     "main": "./out/main/index.js",
     "author": "Creator-SN",
