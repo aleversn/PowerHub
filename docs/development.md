@@ -2,7 +2,7 @@
 
 ## 环境与启动
 
-- Node.js 20（CI 使用 Node 20）和 Yarn 1.x。
+- Node.js 22 或更新版本（CI 使用 Node 22）和 Yarn 1.x。
 - Windows 或 macOS，用于对应平台的桌面构建和验证。
 - `better-sqlite3` 是原生模块；安装时可能需要 Python 和平台 C++ 编译工具。
 

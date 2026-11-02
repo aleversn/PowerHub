@@ -18,7 +18,7 @@ PowerHub 是一个面向个人使用的桌面项目，结合 ServerCat 风格的
 
 ## 开始使用
 
-需要 Node.js 20、Yarn 1.x 和可用的原生模块构建环境。
+需要 Node.js 22 或更新版本、Yarn 1.x 和可用的原生模块构建环境。
 
 ```bash
 yarn install --frozen-lockfile
