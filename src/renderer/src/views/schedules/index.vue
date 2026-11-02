@@ -4,6 +4,9 @@
             :title="local('Schedules')"
             :description="local('Schedules run while PowerHub is open.')"
         >
+            <template #info>
+                <p></p>
+            </template>
             <template #actions>
                 <fv-button
                     :background="subColor"

@@ -29,17 +29,17 @@
             <template #actions>
                 <div class="toolbar-actions">
                     <fv-button
-                        :background="subColor"
+                        theme="dark"
+                        :background="gradient"
                         border-radius="8"
                         :title="local('New collection')"
                         style="width: 32px; height: 34px"
-                        @click="showCollectionCreator = !showCollectionCreator"
+                        @click="showCollectionCreator = true"
                     >
                         <i class="ms-Icon ms-Icon--OEM"></i>
                     </fv-button>
                     <fv-button
-                        theme="dark"
-                        :background="'linear-gradient(90deg, rgba(233, 155, 89, 1), rgba(255, 196, 0, 1))'"
+                        :background="subColor"
                         border-radius="8"
                         style="width: 32px; height: 34px"
                         :title="local('New endpoint')"
@@ -49,40 +49,6 @@
                     </fv-button>
                 </div>
             </template>
-
-            <div v-if="showCollectionCreator" class="collection-creator">
-                <emoji-callout
-                    :model-value="newCollectionEmoji"
-                    :theme="resolvedTheme"
-                    @insert-emoji="newCollectionEmoji = $event"
-                ></emoji-callout>
-                <fv-text-box
-                    v-model="newCollectionName"
-                    :theme="resolvedTheme"
-                    :placeholder="local('Collection name')"
-                    border-radius="8"
-                    style="min-width: 240px; flex: 1"
-                    @keyup.enter="createCollection"
-                ></fv-text-box>
-                <fv-button
-                    :theme="resolvedTheme"
-                    background="#0078d4"
-                    foreground="#ffffff"
-                    border-radius="8"
-                    style="height: 34px"
-                    @click="createCollection"
-                >
-                    {{ local('Create') }}
-                </fv-button>
-                <fv-button
-                    :theme="resolvedTheme"
-                    border-radius="8"
-                    style="height: 34px"
-                    @click="cancelCreateCollection"
-                >
-                    {{ local('Cancel') }}
-                </fv-button>
-            </div>
 
             <div v-if="errorMessage" class="endpoint-alert">
                 {{ errorMessage }}
@@ -137,7 +103,6 @@
                                     @keyup.enter="saveCollectionName(group)"
                                 ></fv-text-box>
                                 <fv-button
-                                    :theme="resolvedTheme"
                                     border-radius="8"
                                     style="height: 32px"
                                     @click="saveCollectionName(group)"
@@ -157,6 +122,7 @@
                                 <fv-button
                                     :background="subColor"
                                     border-radius="8"
+                                    foreground="black"
                                     style="width: 32px; height: 32px"
                                     :title="local('Add endpoint')"
                                     @click="createEndpoint(group.name)"
@@ -220,7 +186,7 @@
                                 :model-value="endpoint.enabled"
                                 :theme="resolvedTheme"
                                 :width="90"
-                                :height="20"
+                                :height="30"
                                 :switch-on-background="subColor"
                                 :inside-content="true"
                                 @click.stop
@@ -306,6 +272,11 @@
                                     input-height="32px"
                                     input-font-size="10px"
                                     :drop-down-font-size="10"
+                                    :input-background="
+                                        resolvedTheme === 'dark'
+                                            ? 'rgba(143, 145, 233, 0.3)'
+                                            : 'rgba(143, 145, 233, 0.1)'
+                                    "
                                     style="width: 150px"
                                     @update:model-value="
                                         moveToCollection(endpoint, $event)
@@ -334,6 +305,7 @@
                 </fv-collapse>
             </div>
         </sectionCard>
+        <collection-creator v-model="showCollectionCreator" />
     </div>
 </template>
 
@@ -341,6 +313,7 @@
 import { mapActions, mapState } from 'pinia';
 
 import sectionCard from '@/components/common/sectionCard.vue';
+import CollectionCreator from './collectionCreator.vue';
 import statusPill from '@/components/common/statusPill.vue';
 import emojiCallout from '@/components/general/callout/emojiCallout.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
@@ -353,6 +326,7 @@ export default {
     name: 'EndpointsView',
     components: {
         sectionCard,
+        CollectionCreator,
         statusPill,
         emojiCallout
     },
@@ -361,12 +335,11 @@ export default {
             DEFAULT_COLLECTION,
             keyword: '',
             showCollectionCreator: false,
-            newCollectionName: '',
-            newCollectionEmoji: '',
             expandedGroups: {},
             renamingCollectionId: '',
             renamingCollectionName: '',
             sendingEndpointId: '',
+            deleting: false,
             errorMessage: ''
         };
     },
@@ -379,13 +352,13 @@ export default {
         }),
         collapseBackground() {
             return this.resolvedTheme === 'dark'
-                ? 'rgba(23, 29, 39, 0.6)'
-                : 'rgba(255, 255, 255, 0.72)';
+                ? 'rgba(19, 24, 35, 0.6)'
+                : 'rgba(255, 255, 255, 0.32)';
         },
         collapseHoverBackground() {
             return this.resolvedTheme === 'dark'
-                ? 'rgba(19, 24, 35, 1)'
-                : 'rgba(255, 255, 255, 0.96)';
+                ? 'rgba(23, 29, 39, 0.6)'
+                : 'rgba(255, 255, 255, 0.66)';
         },
         collapseBorderColor() {
             return this.resolvedTheme === 'dark'
@@ -451,7 +424,6 @@ export default {
             toggleEndpoint: 'toggleEndpoint',
             moveEndpoint: 'moveEndpoint',
             removeEndpoint: 'removeEndpoint',
-            addCollection: 'addCollection',
             updateCollection: 'updateCollection',
             removeCollection: 'removeCollection',
             runEndpoint: 'runEndpoint'
@@ -571,26 +543,6 @@ export default {
                 )
             );
         },
-        async createCollection() {
-            const name = this.newCollectionName.trim();
-            if (!name) return;
-            const result = await this.addCollection({
-                name,
-                emoji: this.newCollectionEmoji
-            });
-            if (!result.ok) {
-                this.errorMessage = result.message;
-                return;
-            }
-            this.newCollectionName = '';
-            this.newCollectionEmoji = '';
-            this.showCollectionCreator = false;
-        },
-        cancelCreateCollection() {
-            this.newCollectionName = '';
-            this.newCollectionEmoji = '';
-            this.showCollectionCreator = false;
-        },
         beginRenameCollection(group) {
             this.renamingCollectionId = group.id;
             this.renamingCollectionName = group.name;
@@ -612,22 +564,56 @@ export default {
             }
             this.cancelRenameCollection();
         },
-        async deleteCollection(group) {
+        deleteCollection(group) {
             if (group.name === DEFAULT_COLLECTION) return;
-            const confirmed = window.confirm(
-                `${this.local('Delete')} "${group.name}"?`
+            this.$infoBox(
+                `${this.local('Delete this collection? Its endpoints will be moved to the default collection.')}\n${group.name}`,
+                {
+                    title: this.local('Delete'),
+                    status: 'warning',
+                    theme: this.resolvedTheme,
+                    confirmTitle: this.local('Delete'),
+                    cancelTitle: this.local('Cancel'),
+                    confirm: async () => {
+                        if (this.deleting) return;
+                        this.deleting = true;
+                        this.errorMessage = '';
+                        try {
+                            const result = await this.removeCollection(
+                                group.id
+                            );
+                            if (!result.ok) this.errorMessage = result.message;
+                        } finally {
+                            this.deleting = false;
+                        }
+                    }
+                }
             );
-            if (!confirmed) return;
-            const result = await this.removeCollection(group.id);
-            if (!result.ok) this.errorMessage = result.message;
         },
-        async deleteEndpoint(endpoint) {
-            const confirmed = window.confirm(
-                `${this.local('Delete')} "${endpoint.name}"?`
+        deleteEndpoint(endpoint) {
+            this.$infoBox(
+                `${this.local('Delete this endpoint?')}\n${endpoint.name}`,
+                {
+                    title: this.local('Delete'),
+                    status: 'warning',
+                    theme: this.resolvedTheme,
+                    confirmTitle: this.local('Delete'),
+                    cancelTitle: this.local('Cancel'),
+                    confirm: async () => {
+                        if (this.deleting) return;
+                        this.deleting = true;
+                        this.errorMessage = '';
+                        try {
+                            const result = await this.removeEndpoint(
+                                endpoint.id
+                            );
+                            if (!result.ok) this.errorMessage = result.message;
+                        } finally {
+                            this.deleting = false;
+                        }
+                    }
+                }
             );
-            if (!confirmed) return;
-            const result = await this.removeEndpoint(endpoint.id);
-            if (!result.ok) this.errorMessage = result.message;
         }
     }
 };
@@ -643,7 +629,6 @@ export default {
     overflow: hidden;
     .toolbar-actions,
     .collection-toolbar,
-    .collection-creator,
     .collection-extension,
     .endpoint-actions {
         display: flex;
@@ -659,14 +644,6 @@ export default {
     .record-count {
         color: var(--ph-text-muted);
         font-size: 11px;
-    }
-
-    .collection-creator {
-        margin-bottom: 14px;
-        padding: 12px;
-        border: 1px solid var(--ph-border);
-        border-radius: 12px;
-        background: var(--ph-surface-soft);
     }
 
     .endpoint-alert {
@@ -716,7 +693,6 @@ export default {
         margin-left: 6px;
     }
 
-    .collection-creator,
     .collection-extension {
         :deep(.fv-TextBox) {
             flex: 1;
@@ -738,7 +714,7 @@ export default {
         padding: 8px 10px;
         border: 1px solid var(--ph-border-subtle);
         border-radius: 10px;
-        background: rgba(255, 255, 255, 0.44);
+        background: var(--ph-surface);
         display: grid;
         grid-template-columns: 64px minmax(170px, 1fr) 96px 52px auto;
         align-items: center;
@@ -847,8 +823,7 @@ export default {
     @media (max-width: 760px) {
         .toolbar-actions,
         .collection-toolbar,
-        .collection-creator,
-        .endpoint-actions {
+            .endpoint-actions {
             align-items: stretch;
             flex-direction: column;
         }

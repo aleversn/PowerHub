@@ -1,4 +1,7 @@
 export default {
+    "Delete this collection? Its endpoints will be moved to the default collection.": {"en": "Delete this collection? Its endpoints will be moved to the default collection.", "cn": "确定删除此集合？其中的接口将移至默认集合。"},
+    "Delete this endpoint?": {"en": "Delete this endpoint?", "cn": "确定删除此接口？"},
+    "Delete this row?": {"en": "Delete this row?", "cn": "确定删除此行？"},
     "Download": {"en": "Download", "cn": "下载"},
     "File data is unavailable for this older record. Send the request again to download it.": {"en": "File data is unavailable for this older record. Send the request again to download it.", "cn": "旧记录的文件数据不可用，请重新发送请求后下载。"},
     "Could not download the file.": {"en": "Could not download the file.", "cn": "无法下载文件。"},

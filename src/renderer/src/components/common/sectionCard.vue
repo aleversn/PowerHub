@@ -76,6 +76,7 @@ export default {
     .section-heading {
         min-width: 0;
         flex: 1;
+        user-select: none;
 
         h2 {
             margin: 0;
@@ -104,7 +105,8 @@ export default {
         flex: 1;
         padding: 15px;
         box-sizing: border-box;
-        min-height: 0;
+        display: flex;
+        flex-direction: column;
         overflow: auto;
     }
     @media (max-width: 640px) {

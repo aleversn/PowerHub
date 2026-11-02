@@ -6,7 +6,7 @@
         :width="width"
         :height="height"
         :background="panelBackground"
-        :title-size="15"
+        :title-size="13"
         :teleport="teleport"
         :is-acrylic="true"
         :is-central-side="true"
@@ -17,7 +17,7 @@
         <template #header>
             <slot name="control-header">
                 <slot name="header">
-                    <p class="panel-title">{{ title }}</p>
+                    <p class="panel-title" style="font-size: 13px;">{{ title }}</p>
                 </slot>
                 <button
                     class="window-close-button"

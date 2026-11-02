@@ -40,16 +40,20 @@
             <template #info>
                 <div class="variables-toolbar">
                     <span>{{ local('Collection') }}</span>
-                    <fv-drop-down
+                    <fv-combobox
                         :model-value="collectionSelection"
                         :options="collectionOptions"
                         :theme="resolvedTheme"
                         :disabled="saving || deleting"
                         border-radius="8"
-                        input-height="36px"
-                        style="width: min(280px, 100%)"
-                        @update:model-value="changeCollection"
-                    ></fv-drop-down>
+                        :input-font-size="12"
+                        :drop-down-font-size="12"
+                        :choosen-slider-background="color"
+                        :input-background="resolvedTheme === 'dark' ? 'rgba(143, 145, 233, 0.3)' : 'rgba(143, 145, 233, 0.1)'"
+                        :aria-label="local('Collection')"
+                        style="width: min(280px, 100%); height: 36px"
+                        @choose-item="changeCollection"
+                    ></fv-combobox>
                     <span class="record-count">
                         {{ rows.length }} {{ local('Variables') }}
                     </span>
@@ -79,6 +83,7 @@
                         :model-value="item.enabled"
                         theme="dark"
                         :background="subColor"
+                        style="height: 34px"
                         @update:model-value="
                             updateRow(index, { enabled: $event })
                         "
@@ -88,6 +93,8 @@
                         :theme="resolvedTheme"
                         :placeholder="local('Key')"
                         border-radius="8"
+                        :font-size="12"
+                        style="height: 34px"
                         @update:model-value="updateRow(index, { key: $event })"
                     ></fv-text-box>
                     <fv-text-box
@@ -97,30 +104,38 @@
                         :icon="item.hidden ? 'View' : 'Hide'"
                         :placeholder="local('Value')"
                         border-radius="8"
+                        :font-size="12"
+                        style="height: 34px"
                         @icon-click="updateRow(index, { hidden: !item.hidden })"
                         @update:model-value="
                             updateRow(index, { value: $event })
                         "
                     ></fv-text-box>
-                    <fv-drop-down
+                    <fv-combobox
                         :model-value="typeSelection(item)"
                         :options="typeOptions"
                         :theme="resolvedTheme"
                         border-radius="8"
-                        input-height="34px"
-                        @update:model-value="changeType(index, $event)"
-                    ></fv-drop-down>
+                        :aria-label="local('Type')"
+                        :input-font-size="12"
+                        :drop-down-font-size="12"
+                        :choosen-slider-background="color"
+                        style="height: 34px"
+                        @choose-item="changeType(index, $event)"
+                    ></fv-combobox>
                     <fv-text-box
                         :model-value="item.description"
                         :theme="resolvedTheme"
                         :placeholder="local('Description')"
                         border-radius="8"
+                        style="height: 34px"
                         @update:model-value="
                             updateRow(index, { description: $event })
                         "
                     ></fv-text-box>
                     <fv-button
-                        :theme="resolvedTheme"
+                        theme="dark"
+                        background="rgba(200, 38, 45, 1)"
                         border-radius="8"
                         style="width: 34px; height: 34px"
                         :title="local('Delete')"
@@ -196,8 +211,10 @@ export default {
             return names.map((name) => ({ key: name, text: name }));
         },
         collectionSelection() {
-            return this.collectionOptions.filter(
-                (item) => item.key === this.activeCollection
+            return (
+                this.collectionOptions.find(
+                    (item) => item.key === this.activeCollection
+                ) || {}
             );
         },
         typeOptions() {
@@ -237,15 +254,16 @@ export default {
             removeVariable: 'removeVariable'
         }),
         typeSelection(item) {
-            return this.typeOptions.filter(
-                (option) => option.key === item.type
+            return (
+                this.typeOptions.find((option) => option.key === item.type) ||
+                {}
             );
         },
         changeCollection(value) {
-            this.activeCollection = value?.[0]?.key || DEFAULT_COLLECTION;
+            this.activeCollection = value?.key || DEFAULT_COLLECTION;
         },
         changeType(index, value) {
-            this.updateRow(index, { type: value?.[0]?.key || 'text' });
+            this.updateRow(index, { type: value?.key || 'text' });
         },
         syncRows() {
             const items =
@@ -403,7 +421,7 @@ export default {
         }
 
         :deep(.fv-TextBox),
-        :deep(.fv-DropDown) {
+        :deep(.fv-Combobox) {
             width: 100%;
             min-width: 0;
         }

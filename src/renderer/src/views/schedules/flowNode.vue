@@ -68,7 +68,7 @@
             >
                 <summary>{{ local('Response body') }}</summary>
                 <file-response v-if="fileResponse(data.response, data.responseHeaders)" :file="fileResponse(data.response, data.responseHeaders)" />
-                <pre v-else>{{ data.response }}</pre>
+                <response-text v-else :text="data.response" :headers="data.responseHeaders" />
             </details>
             <div v-if="data.error" class="node-error">
                 {{ local(data.error) }}
@@ -83,10 +83,11 @@ import { mapState } from 'pinia';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useThemeStore } from '@/stores/theme';
 import FileResponse from '@/components/common/fileResponse.vue';
+import ResponseText from '@/components/common/responseText.vue';
 import { fileResponse } from '@/js/responseFile';
 export default {
     name: 'ScheduleFlowNode',
-    components: { Handle, FileResponse },
+    components: { Handle, FileResponse, ResponseText },
     props: {
         id: { type: String, default: '' },
         data: { type: Object, default: () => ({}) },

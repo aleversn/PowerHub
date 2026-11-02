@@ -150,7 +150,6 @@ export const useAppConfigStore = defineStore('appConfig', {
                 this.config.language === 'cn' ? 'zh-CN' : 'en';
             document.documentElement.dataset.theme = this.config.theme;
             document.documentElement.dataset.density = this.config.density;
-            document.documentElement.style.colorScheme = this.config.theme;
             document.title = `${this.config.appName} · API Scheduler`;
         },
         initialize() {

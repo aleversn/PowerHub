@@ -8,28 +8,35 @@
                 )
             "
         >
+            <template #info>
+                <div class="run-actions">
+                    <fv-button
+                        :background="subColor"
+                        border-radius="8"
+                        style="width: 32px; height: 34px"
+                        :title="local('Refresh')"
+                        @click="refresh"
+                    >
+                        <i class="ms-Icon ms-Icon--Refresh"></i>
+                    </fv-button>
+                </div>
+            </template>
             <template #actions>
                 <div class="run-actions">
                     <fv-button
-                        :theme="resolvedTheme"
-                        border-radius="8"
-                        icon="Refresh"
-                        style="height: 34px"
-                        @click="refresh"
-                    >
-                        {{ local('Refresh') }}
-                    </fv-button>
-                    <fv-button
-                        :theme="resolvedTheme"
-                        icon="Delete"
+                        theme="dark"
+                        :background="'rgba(200, 38, 45, 1)'"
                         :disabled="
                             busy ||
                             !runs.length ||
                             runs.some((run) => run.status === 'running')
                         "
+                        style="width: 32px; height: 34px"
+                        :title="local('Clear all')"
                         @click="confirmClear"
-                        >{{ local('Clear all') }}</fv-button
                     >
+                        <i class="ms-Icon ms-Icon--Delete"></i>
+                    </fv-button>
                 </div>
             </template>
 
@@ -39,17 +46,27 @@
 
             <div class="runs-table">
                 <div class="runs-table__head">
-                    <span>{{ local('Request') }}</span>
-                    <span>{{ local('Status') }}</span>
-                    <span>{{ local('Status code') }}</span>
-                    <span>{{ local('Duration') }}</span>
-                    <span>{{ local('Triggered by') }}</span>
-                    <span>{{ local('Started at') }}</span>
-                    <span></span>
+                    <span class="run-column-request">{{
+                        local('Request')
+                    }}</span>
+                    <span class="run-column-status">{{ local('Status') }}</span>
+                    <span class="run-column-code">{{
+                        local('Status code')
+                    }}</span>
+                    <span class="run-column-duration">{{
+                        local('Duration')
+                    }}</span>
+                    <span class="run-column-trigger">{{
+                        local('Triggered by')
+                    }}</span>
+                    <span class="run-column-time">{{
+                        local('Started at')
+                    }}</span>
+                    <span class="run-column-action">{{ local('Action') }}</span>
                 </div>
                 <div v-for="run in runs" :key="run.id" class="run-card">
                     <div class="runs-table__row">
-                        <div class="run-main">
+                        <div class="run-main run-column-request">
                             <strong>{{
                                 run.nodeResults?.length
                                     ? scheduleById[run.scheduleId]?.name ||
@@ -58,62 +75,74 @@
                             }}</strong>
                             <span>{{ endpointUrl(run.endpointId) }}</span>
                         </div>
-                        <statusPill :status="run.status" />
-                        <code
-                            class="status-code"
-                            :class="statusClass(run.statusCode)"
-                        >
-                            {{ run.statusCode }}
-                        </code>
-                        <fv-tag
-                            class="run-tag numeric-cell"
-                            :style="{ '--run-tag-color': subColor }"
-                            :model-value="[
-                                {
-                                    text:
-                                        run.duration == null
-                                            ? '-'
-                                            : `${run.duration} ms`
-                                }
-                            ]"
-                            :theme="resolvedTheme"
-                            :font-size="11"
-                            :border-radius="8"
-                        />
-                        <fv-tag
-                            class="run-tag"
-                            :style="{ '--run-tag-color': subColor }"
-                            :model-value="[
-                                { text: triggerLabel(run.triggeredBy) }
-                            ]"
-                            :theme="resolvedTheme"
-                            :font-size="11"
-                            :border-radius="8"
-                        />
-                        <time-rounder
-                            :model-value="run.startedAt"
-                            style="width: auto"
-                        />
-                        <fv-button
-                            theme="dark"
-                            background="rgba(200, 38, 45, 1)"
-                            :disabled="busy || run.status === 'running'"
-                            :title="local('Delete')"
-                            :aria-label="local('Delete')"
-                            style="width: 34px; height: 34px"
-                            @click="confirmRemove(run)"
-                            ><i class="ms-Icon ms-Icon--Delete"></i
-                        ></fv-button>
+                        <div class="run-column-status">
+                            <statusPill :status="run.status" />
+                        </div>
+                        <div class="run-column-code">
+                            <code
+                                class="status-code"
+                                :class="statusClass(run.statusCode)"
+                            >
+                                {{ run.statusCode }}
+                            </code>
+                        </div>
+                        <div class="run-column-duration">
+                            <fv-tag
+                                class="run-tag numeric-cell"
+                                :style="{ '--run-tag-color': subColor }"
+                                :model-value="[
+                                    {
+                                        text:
+                                            run.duration == null
+                                                ? '-'
+                                                : `${run.duration} ms`
+                                    }
+                                ]"
+                                :theme="resolvedTheme"
+                                :font-size="11"
+                                :border-radius="8"
+                            />
+                        </div>
+                        <div class="run-column-trigger">
+                            <fv-tag
+                                class="run-tag"
+                                :style="{ '--run-tag-color': subColor }"
+                                :model-value="[
+                                    { text: triggerLabel(run.triggeredBy) }
+                                ]"
+                                :theme="resolvedTheme"
+                                :font-size="11"
+                                :border-radius="8"
+                            />
+                        </div>
+                        <div class="run-column-time">
+                            <time-rounder
+                                :model-value="run.startedAt"
+                                style="width: auto; font-weight: bold"
+                                :style="{ color: color }"
+                            />
+                        </div>
+                        <div class="run-column-action">
+                            <fv-button
+                                theme="dark"
+                                background="rgba(200, 38, 45, 1)"
+                                :disabled="busy || run.status === 'running'"
+                                :title="local('Delete')"
+                                :aria-label="local('Delete')"
+                                style="width: 34px; height: 34px"
+                                @click="confirmRemove(run)"
+                                ><i class="ms-Icon ms-Icon--Delete"></i
+                            ></fv-button>
+                        </div>
                     </div>
-                    <details class="run-nodes">
-                        <summary v-if="run.nodeResults?.length">
-                            {{ local('Node results') }} ({{
-                                run.nodeResults.length
-                            }})
-                        </summary>
-                        <summary v-else>
-                            {{ local('Execution result') }}
-                        </summary>
+                    <expandable-section
+                        class="run-nodes"
+                        :title="
+                            run.nodeResults?.length
+                                ? `${local('Node results')} (${run.nodeResults.length})`
+                                : local('Execution result')
+                        "
+                    >
                         <div v-if="run.flowSnapshot?.nodes?.length">
                             <strong>{{ local('Execution flow') }}</strong>
                             <flowResult :run="run" />
@@ -121,18 +150,36 @@
                         <div v-if="run.error" class="run-error">
                             {{ local(run.error) }}
                         </div>
-                        <details
+                        <expandable-section
                             v-if="
                                 !run.nodeResults?.length &&
                                 run.response !== null &&
                                 run.response !== undefined
                             "
                             class="response-detail"
+                            :title="local('Response body')"
+                            :default-open="true"
                         >
-                            <summary>{{ local('Response body') }}</summary>
-                            <file-response v-if="fileResponse(run.response, run.responseHeaders)" :file="fileResponse(run.response, run.responseHeaders)" />
-                            <pre v-else>{{ run.response }}</pre>
-                        </details>
+                            <file-response
+                                v-if="
+                                    fileResponse(
+                                        run.response,
+                                        run.responseHeaders
+                                    )
+                                "
+                                :file="
+                                    fileResponse(
+                                        run.response,
+                                        run.responseHeaders
+                                    )
+                                "
+                            />
+                            <response-text
+                                v-else
+                                :text="run.response"
+                                :headers="run.responseHeaders"
+                            />
+                        </expandable-section>
                         <div
                             v-for="(node, index) in run.nodeResults"
                             :key="index"
@@ -148,19 +195,37 @@
                             <span v-if="node.error" class="run-error">{{
                                 local(node.error)
                             }}</span>
-                            <details
+                            <expandable-section
                                 v-if="
                                     node.response !== null &&
                                     node.response !== undefined
                                 "
                                 class="response-detail"
+                                :title="local('Response body')"
+                                :default-open="true"
                             >
-                                <summary>{{ local('Response body') }}</summary>
-                                <file-response v-if="fileResponse(node.response, node.responseHeaders)" :file="fileResponse(node.response, node.responseHeaders)" />
-                                <pre v-else>{{ node.response }}</pre>
-                            </details>
+                                <file-response
+                                    v-if="
+                                        fileResponse(
+                                            node.response,
+                                            node.responseHeaders
+                                        )
+                                    "
+                                    :file="
+                                        fileResponse(
+                                            node.response,
+                                            node.responseHeaders
+                                        )
+                                    "
+                                />
+                                <response-text
+                                    v-else
+                                    :text="node.response"
+                                    :headers="node.responseHeaders"
+                                />
+                            </expandable-section>
                         </div>
-                    </details>
+                    </expandable-section>
                 </div>
             </div>
         </sectionCard>
@@ -174,6 +239,8 @@ import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
 import flowResult from './flowResult.vue';
 import FileResponse from '@/components/common/fileResponse.vue';
+import ResponseText from '@/components/common/responseText.vue';
+import ExpandableSection from '@/components/common/expandableSection.vue';
 import { fileResponse } from '@/js/responseFile';
 import timeRounder from '@/components/general/timeRounder.vue';
 import { useThemeStore } from '@/stores/theme';
@@ -187,6 +254,8 @@ export default {
         statusPill,
         flowResult,
         FileResponse,
+        ResponseText,
+        ExpandableSection,
         timeRounder
     },
     data() {
@@ -198,7 +267,7 @@ export default {
     },
     computed: {
         ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
-        ...mapState(useThemeStore, ['subColor']),
+        ...mapState(useThemeStore, ['color', 'subColor']),
         ...mapState(useWorkspaceStore, ['endpointById', 'scheduleById', 'runs'])
     },
     async mounted() {
@@ -217,7 +286,7 @@ export default {
             return this.endpointById[id]?.name || '-';
         },
         endpointUrl(id) {
-            return this.endpointById[id]?.url || '-';
+            return this.endpointById[id]?.url || this.local('Collection');
         },
         statusClass(statusCode) {
             if (statusCode === null || statusCode === undefined) return '';
@@ -333,18 +402,15 @@ export default {
 
     .runs-table__head,
     .runs-table__row {
-        min-width: 830px;
-        display: grid;
-        grid-template-columns:
-            minmax(230px, 1.6fr)
-            106px 82px 86px 96px 118px 34px;
+        min-width: 880px;
+        display: flex;
         align-items: center;
         gap: 14px;
     }
 
     .runs-table__head {
         box-sizing: border-box;
-        padding: 0 16px;
+        padding: 0 17px;
         min-height: 36px;
         border-bottom: 1px solid var(--ph-border);
         color: var(--ph-text-muted);
@@ -353,15 +419,22 @@ export default {
     }
 
     .run-card {
-        box-sizing: border-box;
-        min-width: 830px;
+        position: relative;
+        width: 100%;
+        flex-shrink: 0;
+        min-width: 880px;
         margin-top: 10px;
         border: 1px solid var(--ph-border-subtle);
         border-radius: 14px;
         background: color-mix(in srgb, var(--ph-surface) 65%, transparent);
+        box-sizing: border-box;
+        overflow: hidden;
     }
 
     .runs-table__row {
+        min-width: 0;
+        position: relative;
+        width: 100%;
         box-sizing: border-box;
         padding: 12px 16px;
         min-height: 62px;
@@ -393,9 +466,13 @@ export default {
     }
 
     .status-code {
-        width: fit-content;
+        @include HcenterVcenter;
+
+        min-width: fit-content;
+        width: 60px;
+        height: 20px;
         padding: 4px 7px;
-        border-radius: 6px;
+        border-radius: 12px;
         font-family: Consolas, 'Courier New', monospace;
         font-size: 11px;
 
@@ -433,14 +510,43 @@ export default {
         }
     }
 
+    .run-column-request {
+        flex: 1 1 230px;
+        min-width: 230px;
+    }
+    .run-column-status {
+        flex: 0 0 80px;
+        min-width: 0;
+    }
+    .run-column-code {
+        flex: 0 0 82px;
+        min-width: 0;
+    }
+    .run-column-duration {
+        flex: 0 0 86px;
+        min-width: 0;
+    }
+    .run-column-trigger {
+        flex: 0 0 96px;
+        min-width: 0;
+    }
+    .run-column-time {
+        flex: 0 0 120px;
+        min-width: 0;
+    }
+    .run-column-action {
+        flex: 0 0 50px;
+        text-align: center;
+    }
+
     @media (max-width: 820px) {
         .runs-table {
             overflow-x: auto;
         }
 
         .runs-table__head,
-        .runs-table__row {
-            min-width: 830px;
+        .run-card {
+            min-width: 880px;
         }
     }
 }

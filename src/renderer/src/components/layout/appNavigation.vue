@@ -34,7 +34,7 @@
                         class="nav-icon"
                         :class="{ selected: currentNavItem.key === item.key }"
                     >
-                        <img :src="item.image" alt="" />
+                        <img :draggable="false" :src="item.image" alt="" />
                     </span>
                     <div
                         class="nav-text"
@@ -256,6 +256,7 @@ export default {
         .nav-text {
             flex: 1;
             font-size: 12px;
+            user-select: none;
 
             &.header {
                 font-size: 12px;

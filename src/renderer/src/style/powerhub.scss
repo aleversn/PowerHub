@@ -10,6 +10,9 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
 :root {
     --ph-font: #{$title-font};
     --ph-code-font: #{$code-font};
+    --ph-code-key: #3565a0;
+    --ph-code-string: #23734b;
+    --ph-code-value: #985168;
     --ph-brand: #0078d4;
     --ph-brand-gradient: linear-gradient(
         135deg,
@@ -64,6 +67,9 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
 }
 
 :root[data-theme='dark'] {
+    --ph-code-key: #91bdf4;
+    --ph-code-string: #9ed8ae;
+    --ph-code-value: #edaabf;
     --ph-accent: #62bdfc;
     --ph-accent-soft: rgba(98, 189, 252, 0.13);
     --ph-success: #6ccb5f;
@@ -141,7 +147,6 @@ $code-font: 'Cascadia Code', Consolas, 'Courier New', monospace;
 
 html {
     min-width: 320px;
-    color-scheme: light dark;
     font-family: var(--ph-font);
     font-size: 14px;
     text-rendering: optimizeLegibility;

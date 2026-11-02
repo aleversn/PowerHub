@@ -37,7 +37,7 @@
                 border-radius="8"
                 style="width: 34px; height: 34px"
                 :title="local('Delete')"
-                @click="removeRow(index)"
+                @click="confirmRemoveRow(item)"
             >
                 <i class="ms-Icon ms-Icon--Delete"></i>
             </fv-button>
@@ -129,14 +129,15 @@ export default {
                 createRow()
             ]);
         },
-        removeRow(index) {
-            this.emptyRow = createRow();
-            this.$emit(
-                'update:modelValue',
-                this.displayRows
-                    .filter((_, itemIndex) => itemIndex !== index)
-                    .map((item) => ({ ...item }))
-            );
+        confirmRemoveRow(item) {
+            this.$infoBox(this.local('Delete this row?'), {
+                title: this.local('Delete'), status: 'warning', theme: this.resolvedTheme,
+                confirmTitle: this.local('Delete'), cancelTitle: this.local('Cancel'),
+                confirm: () => {
+                    const rows = this.displayRows.filter((row) => row.id !== item.id);
+                    this.emitRows(rows);
+                }
+            });
         }
     }
 };
