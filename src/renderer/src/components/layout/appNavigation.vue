@@ -1,5 +1,5 @@
 <template>
-    <aside class="app-navigation" :class="{ dark: resolvedTheme === 'dark' }">
+    <aside class="app-navigation">
         <fv-navigation-view
             v-model="currentNavItem"
             :title="''"
@@ -194,6 +194,11 @@ export default {
 
     .navigation-view {
         height: 100%;
+
+        :deep(.fv-nav-default-item i.icon),
+        :deep(.fv-nav-default-item p.name) {
+            color: var(--ph-text);
+        }
     }
 
     .banner {
@@ -207,7 +212,7 @@ export default {
         p {
             font-size: 13px;
             font-weight: 600;
-            color: rgba(153, 158, 162, 1);
+            color: var(--ph-text-secondary);
             letter-spacing: 0.06em;
             text-transform: uppercase;
         }
@@ -242,13 +247,13 @@ export default {
                 width: 18px;
                 height: 18px;
                 object-fit: contain;
-                filter: brightness(200%) saturate(100%) invert(48%);
+                filter: var(--ph-nav-icon-filter);
                 transition: filter 140ms ease;
-                opacity: 0.5;
+                opacity: 0.65;
             }
 
             &.selected img {
-                filter: brightness(0) saturate(100%);
+                filter: var(--ph-nav-icon-filter);
                 opacity: 1;
             }
         }
@@ -256,38 +261,16 @@ export default {
         .nav-text {
             flex: 1;
             font-size: 12px;
+            color: var(--ph-text);
             user-select: none;
 
             &.header {
                 font-size: 12px;
-                color: rgba(30, 30, 30, 0.8);
+                color: var(--ph-text-muted);
             }
 
             &.selected {
                 font-weight: bold;
-            }
-        }
-    }
-
-    &.dark {
-        .custom-list-view-item {
-            .nav-icon.selected {
-                position: relative;
-
-                img {
-                    position: relative;
-                    filter: invert(100%);
-                }
-            }
-
-            .nav-text {
-                color: rgba(255, 255, 255, 0.8);
-            }
-        }
-
-        .banner {
-            p {
-                color: whitesmoke;
             }
         }
     }

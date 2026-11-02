@@ -290,6 +290,7 @@ export default {
     padding: 15px;
     box-sizing: border-box;
     overflow: auto;
+    overflow-x: hidden;
 
     max-width: 1120px;
 
