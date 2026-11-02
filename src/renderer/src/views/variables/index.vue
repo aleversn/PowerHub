@@ -195,10 +195,11 @@ export default {
         };
     },
     computed: {
-        ...mapState(useAppConfigStore, ['resolvedTheme', 'local']),
+        ...mapState(useAppConfigStore, ['resolvedTheme', 'local', 'config']),
         ...mapState(useThemeStore, ['color', 'subColor', 'gradient']),
         ...mapState(useWorkspaceStore, {
             workspaceCollections: 'collections',
+            workspaceLoaded: 'loaded',
             variablesByCollection: 'variablesByCollection'
         }),
         collectionOptions() {
@@ -231,28 +232,33 @@ export default {
                 this.syncRows();
             }
         },
+        workspaceLoaded(loaded) {
+            if (loaded) this.restoreCollection();
+        },
         variablesByCollection() {
             if (!this.dirty) this.syncRows();
         }
     },
     async mounted() {
         await this.workspaceInitialize();
-        if (
-            !this.workspaceCollections.some(
-                (collection) => collection.name === this.activeCollection
-            )
-        ) {
-            this.activeCollection =
-                this.workspaceCollections[0]?.name || DEFAULT_COLLECTION;
-        }
-        this.syncRows();
+        if (this.workspaceLoaded) this.restoreCollection();
     },
     methods: {
+        ...mapActions(useAppConfigStore, ['updateConfig']),
         ...mapActions(useWorkspaceStore, {
             workspaceInitialize: 'initialize',
             saveVariables: 'saveVariables',
             removeVariable: 'removeVariable'
         }),
+        restoreCollection() {
+            const remembered = this.config.lastVariablesCollection;
+            this.activeCollection = this.collectionOptions.some(
+                (item) => item.key === remembered
+            )
+                ? remembered
+                : this.workspaceCollections[0]?.name || DEFAULT_COLLECTION;
+            this.syncRows();
+        },
         typeSelection(item) {
             return (
                 this.typeOptions.find((option) => option.key === item.type) ||
@@ -261,6 +267,9 @@ export default {
         },
         changeCollection(value) {
             this.activeCollection = value?.key || DEFAULT_COLLECTION;
+            this.updateConfig({
+                lastVariablesCollection: this.activeCollection
+            });
         },
         changeType(index, value) {
             this.updateRow(index, { type: value?.key || 'text' });

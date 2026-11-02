@@ -17,6 +17,7 @@ export const defaultAppConfig = Object.freeze({
     language: 'cn',
     density: 'comfortable',
     sidebarCollapsed: false,
+    lastVariablesCollection: '',
     requestTimeout: 30000,
     followRedirects: true,
     verifySSL: true,
@@ -64,6 +65,10 @@ const normalizeConfig = (config = {}) => {
         language,
         density,
         sidebarCollapsed: Boolean(source.sidebarCollapsed),
+        lastVariablesCollection:
+            typeof source.lastVariablesCollection === 'string'
+                ? source.lastVariablesCollection
+                : defaults.lastVariablesCollection,
         requestTimeout: Number.isFinite(timeout)
             ? Math.min(Math.max(timeout, 1000), 300000)
             : defaults.requestTimeout,

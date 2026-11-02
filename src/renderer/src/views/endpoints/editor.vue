@@ -122,22 +122,24 @@
                     {{ errorMessage }}
                 </div>
 
-                <fv-pivot
-                    :model-value="pivotValue"
-                    :items="pivotItems"
-                    :theme="resolvedTheme"
-                    :font-size="12"
-                    :border-radius="10"
-                    :padding="5"
-                    :item-padding="'8px 18px'"
-                    :foreground="pivotForeground"
-                    :choosen-foreground="pivotChoosenForeground"
-                    :slider-background="subColor"
-                    :slider-boxshadow="true"
-                    :slider-border-radius="8"
-                    style="width: fit-content; max-width: 100%"
-                    @update:model-value="onTabChange"
-                ></fv-pivot>
+                <div class="request-tabs">
+                    <fv-pivot
+                        :model-value="pivotValue"
+                        :items="pivotItems"
+                        :theme="resolvedTheme"
+                        :font-size="12"
+                        :border-radius="10"
+                        :padding="5"
+                        :item-padding="'8px 18px'"
+                        :foreground="pivotForeground"
+                        :choosen-foreground="pivotChoosenForeground"
+                        :slider-background="subColor"
+                        :slider-boxshadow="true"
+                        :slider-border-radius="8"
+                        style="width: max-content"
+                        @update:model-value="onTabChange"
+                    ></fv-pivot>
+                </div>
 
                 <div class="editor-tab-panel">
                     <div v-show="activeTabKey === 'docs'" class="docs-panel">
@@ -689,7 +691,7 @@ export default {
     },
     data() {
         return {
-            activeTabKey: 'docs',
+            activeTabKey: 'params',
             activeScriptKey: 'preRequest',
             scriptRunning: false,
             scriptFeedback: null,
@@ -1242,6 +1244,12 @@ export default {
         background: rgba(196, 43, 28, 0.08);
         color: var(--ph-danger);
         font-size: 12px;
+    }
+
+    .request-tabs {
+        min-width: 0;
+        flex: 0 0 auto;
+        overflow-x: auto;
     }
 
     .editor-tab-panel {

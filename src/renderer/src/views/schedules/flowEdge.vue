@@ -1,11 +1,25 @@
 <template>
     <g class="flow-edge">
         <defs>
-            <linearGradient :id="gradientId" x1="0" y1="0" x2="1" y2="0">
+            <linearGradient
+                :id="gradientId"
+                gradientUnits="userSpaceOnUse"
+                :x1="sourceX"
+                :y1="sourceY"
+                :x2="targetX"
+                :y2="targetY"
+            >
                 <stop offset="0%" :stop-color="colors[0]" />
                 <stop offset="100%" :stop-color="colors[1]" />
             </linearGradient>
-            <filter :id="glowId" x="-50%" y="-50%" width="200%" height="200%">
+            <filter
+                :id="glowId"
+                filterUnits="userSpaceOnUse"
+                :x="Math.min(sourceX, targetX) - 200"
+                :y="Math.min(sourceY, targetY) - 200"
+                :width="Math.abs(targetX - sourceX) + 400"
+                :height="Math.abs(targetY - sourceY) + 400"
+            >
                 <feDropShadow dx="0" dy="1" stdDeviation="3" :flood-color="colors[0]" flood-opacity="0.3" />
             </filter>
         </defs>

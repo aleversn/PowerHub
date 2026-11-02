@@ -307,7 +307,10 @@ export default {
                     type: 'endpoint',
                     position: positions.get(endpoint.id) || {
                         x: 360 + (i % 2) * 320,
-                        y: 50 + Math.floor(i / 2) * 190
+                        y:
+                            50 +
+                            Math.floor(i / 2) * 190 +
+                            (i % 2 === 0 ? 2 : -3)
                     },
                     data: {
                         label: endpoint.name,

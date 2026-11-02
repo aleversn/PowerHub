@@ -9,18 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-2022
-            platform: windows
-            command: yarn build:win --publish never
-          - os: macos-14
-            platform: macos
-            command: yarn build:mac --publish never
-    runs-on: ${{ matrix.os }}
+  build-windows:
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,33 +31,96 @@ jobs:
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
           NODE_OPTIONS: '--max-old-space-size=4096'
-        run: ${{ matrix.command }}
+        run: yarn build:win --publish never
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: powerhub-${{ matrix.platform }}
+          name: powerhub-windows
           path: |
             dist/*.exe
+            dist/*.blockmap
+          if-no-files-found: error
+
+  build-macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check tag matches package version
+        shell: bash
+        run: |
+          version=$(node -p "require('./package.json').version")
+          test "$GITHUB_REF_NAME" = "v$version" || { echo "Tag must match package.json version $version"; exit 1; }
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Build package
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          NODE_OPTIONS: '--max-old-space-size=4096'
+        run: yarn build:mac --publish never
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhub-macos
+          path: |
             dist/*.dmg
             dist/*.zip
             dist/*.blockmap
           if-no-files-found: error
 
-  release:
-    needs: build
+  release-windows:
+    needs: build-windows
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    concurrency:
+      group: release-${{ github.repository }}-${{ github.ref_name }}
+      cancel-in-progress: false
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: powerhub-*
+          name: powerhub-windows
           path: release
-          merge-multiple: true
-      - name: Publish release
+      - name: Publish windows artifacts
         uses: ncipollo/release-action@v1
         with:
           artifacts: 'release/*'
           allowUpdates: true
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
           prerelease: ${{ contains(github.ref_name, 'beta') }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  release-macos:
+    needs: build-macos
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: release-${{ github.repository }}-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: powerhub-macos
+          path: release
+      - name: Publish macos artifacts
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: 'release/*'
+          allowUpdates: true
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
+          prerelease: ${{ contains(github.ref_name, 'beta') }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
