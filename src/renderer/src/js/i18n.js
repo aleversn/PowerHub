@@ -1,4 +1,7 @@
 export default {
+    "Download": {"en": "Download", "cn": "下载"},
+    "File data is unavailable for this older record. Send the request again to download it.": {"en": "File data is unavailable for this older record. Send the request again to download it.", "cn": "旧记录的文件数据不可用，请重新发送请求后下载。"},
+    "Could not download the file.": {"en": "Could not download the file.", "cn": "无法下载文件。"},
     "Zoom in": {"en": "Zoom in", "cn": "放大"},
     "Zoom out": {"en": "Zoom out", "cn": "缩小"},
     "Fit view": {"en": "Fit view", "cn": "适应画布"},

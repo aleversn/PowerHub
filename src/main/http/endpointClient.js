@@ -322,6 +322,11 @@ export async function sendEndpointRequest(payload = {}) {
                 const duration = Date.now() - startedAt;
                 const contentType = String(response.headers['content-type'] || '');
                 const responseText = buffer.toString('utf8');
+                const disposition = String(response.headers['content-disposition'] || '');
+                const mime = contentType.split(';')[0].trim().toLowerCase();
+                const textual = !mime || mime.startsWith('text/') || /(?:json|xml|javascript|x-www-form-urlencoded|graphql|yaml|svg)/.test(mime);
+                const binary = /(?:^|;)\s*attachment\b/i.test(disposition) || !textual || buffer.includes(0) || !Buffer.from(responseText, 'utf8').equals(buffer);
+                const responseBody = binary ? `powerhub-file-v1:${JSON.stringify({ base64: buffer.toString('base64'), contentType, disposition, size: buffer.length })}` : responseText;
                 const statusCode = Number(response.statusCode) || 0;
                 resolve({
                     ok: statusCode >= 200 && statusCode < 400,
@@ -337,7 +342,7 @@ export async function sendEndpointRequest(payload = {}) {
                     url: finalTarget.toString(),
                     headers: response.headers,
                     contentType,
-                    response: responseText.slice(0, MAX_RESPONSE_BYTES),
+                    response: responseBody,
                     size: buffer.length
                 });
             } catch (error) {

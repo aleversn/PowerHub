@@ -147,7 +147,7 @@ export async function runSchedule(id, triggeredBy = 'manual') {
                     const result = await sendEndpointRequest(endpoint);
                     const scripts = [result.script?.preRequest, result.script?.postResponse].filter(Boolean);
                     const scriptError = scripts.find(item => item.error || item.tests?.some(test => test.passed === false));
-                    const outcome = { status: result.status === 'success' && !scriptError ? 'success' : 'failed', statusCode: result.statusCode, duration: result.duration, response: result.response ?? null, error: result.error || scriptError?.error || scriptError?.tests?.find(test => test.passed === false)?.error || null };
+                    const outcome = { status: result.status === 'success' && !scriptError ? 'success' : 'failed', statusCode: result.statusCode, duration: result.duration, response: result.response ?? null, responseHeaders: result.headers || {}, error: result.error || scriptError?.error || scriptError?.tests?.find(test => test.passed === false)?.error || null };
                     setNode(endpointId, outcome);
                     return outcome;
                 } catch (exception) {

@@ -510,7 +510,8 @@
                         </details>
                         <div class="field-block">
                             <span>{{ local('Response body') }}</span>
-                            <monacoEditor
+                            <file-response v-if="responseFile" :file="responseFile" />
+                            <monacoEditor v-else
                                 :model-value="response.response || ''"
                                 :language="responseLanguage"
                                 :theme="monacoTheme"
@@ -543,6 +544,8 @@ import sectionCard from '@/components/common/sectionCard.vue';
 import statusPill from '@/components/common/statusPill.vue';
 import keyValueEditor from '@/components/common/keyValueEditor/index.vue';
 import monacoEditor from '@/components/common/monacoEditor.vue';
+import FileResponse from '@/components/common/fileResponse.vue';
+import { fileResponse } from '@/js/responseFile';
 import variableInput from '@/components/common/variableInput.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useThemeStore } from '@/stores/theme';
@@ -597,7 +600,8 @@ export default {
         statusPill,
         keyValueEditor,
         variableInput,
-        monacoEditor
+        monacoEditor,
+        FileResponse
     },
     data() {
         return {
@@ -755,6 +759,7 @@ export default {
             if (this.draft.bodyType === 'json') return 'json';
             return 'plaintext';
         },
+        responseFile() { return fileResponse(this.response?.response, this.response?.headers); },
         responseLanguage() {
             const contentType = String(this.response?.contentType || '');
             if (contentType.includes('json')) return 'json';

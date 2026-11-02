@@ -67,7 +67,8 @@
                 v-if="data.response !== null && data.response !== undefined"
             >
                 <summary>{{ local('Response body') }}</summary>
-                <pre>{{ data.response }}</pre>
+                <file-response v-if="fileResponse(data.response, data.responseHeaders)" :file="fileResponse(data.response, data.responseHeaders)" />
+                <pre v-else>{{ data.response }}</pre>
             </details>
             <div v-if="data.error" class="node-error">
                 {{ local(data.error) }}
@@ -81,15 +82,18 @@ import { Handle, Position } from '@vue-flow/core';
 import { mapState } from 'pinia';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useThemeStore } from '@/stores/theme';
+import FileResponse from '@/components/common/fileResponse.vue';
+import { fileResponse } from '@/js/responseFile';
 export default {
     name: 'ScheduleFlowNode',
-    components: { Handle },
+    components: { Handle, FileResponse },
     props: {
         id: { type: String, default: '' },
         data: { type: Object, default: () => ({}) },
         selected: { type: Boolean, default: false }
     },
     emits: ['update-delay'],
+    methods: { fileResponse },
     data() {
         return { Position };
     },
