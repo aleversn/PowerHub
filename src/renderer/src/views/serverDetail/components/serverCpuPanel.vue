@@ -70,7 +70,6 @@ import { mapState } from 'pinia';
 
 import serverChart from '@/components/common/serverChart.vue';
 import { useAppConfigStore } from '@/stores/appConfig';
-import {useThemeStore} from '@/stores/theme';
 
 import { formatPercent } from '../utils/format';
 

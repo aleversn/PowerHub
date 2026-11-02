@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: vf3forelectron
+appId: com.creatorsn.powerhub
+productName: PowerHub
 directories:
   buildResources: build
 files:
@@ -11,13 +11,18 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: vf3forelectron
+  executableName: PowerHub
+  icon: build/icon.ico
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  icon: build/icon.icns
+  target:
+    - dmg
+    - zip
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.
@@ -36,7 +41,4 @@ linux:
   category: Utility
 appImage:
   artifactName: ${name}-${version}.${ext}
-npmRebuild: false
-publish:
-  provider: generic
-  url: https://example.com/auto-updates
+npmRebuild: true
