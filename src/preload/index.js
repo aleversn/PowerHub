@@ -63,6 +63,17 @@ const workspace = {
 // Custom APIs for renderer
 const api = {
     isMaximized: () => ipcRenderer.invoke('is-window-maximized'),
+    appUpdate: {
+        getState: () => ipcRenderer.invoke('app-update:get-state'),
+        check: () => ipcRenderer.invoke('app-update:check'),
+        install: () => ipcRenderer.invoke('app-update:install'),
+        openReleases: () => ipcRenderer.invoke('app-update:open-releases'),
+        onState: (callback) => {
+            const listener = (_event, state) => callback(state);
+            ipcRenderer.on('app-update:state', listener);
+            return () => ipcRenderer.removeListener('app-update:state', listener);
+        }
+    },
     // 顶层别名，避免个别运行环境下 workspace 嵌套不可见。
     servers: workspace.servers,
     workspace

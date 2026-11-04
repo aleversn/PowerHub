@@ -183,6 +183,8 @@
             </div>
         </sectionCard>
 
+        <app-update></app-update>
+
         <div class="settings-footer">
             <fv-button
                 :theme="resolvedTheme"
@@ -201,13 +203,15 @@
 import { mapActions, mapState } from 'pinia';
 
 import sectionCard from '@/components/common/sectionCard.vue';
+import AppUpdate from '@/components/common/appUpdate.vue';
 import { useAppConfigStore, defaultAppConfig } from '@/stores/appConfig';
 import { useThemeStore } from '@/stores/theme';
 
 export default {
     name: 'SettingsView',
     components: {
-        sectionCard
+        sectionCard,
+        AppUpdate
     },
     data() {
         const appConfig = useAppConfigStore();

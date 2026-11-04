@@ -47,7 +47,7 @@ HTTP 请求、SSH 和调度在主进程中运行。调度器随应用启动和�
 
 ## 图标与打包
 
-`src/renderer/src/assets/logo_acrylic.png` 是图标源文件；`build/icon.ico` 和 `build/icon.icns` 分别供 Windows 和 macOS 使用，`build/icon.png` 供 Linux 使用。打包配置位于 `electron-builder.yml`。应用签名、Apple 公证和自动更新尚未配置，未签名的构建可能触发系统安全提示。
+`src/renderer/src/assets/logo_acrylic.png` 是图标源文件；`build/icon.ico` 和 `build/icon.icns` 分别供 Windows 和 macOS 使用，`build/icon.png` 供 Linux 使用。打包配置位于 `electron-builder.yml`。当前应用尚未签名或公证，未签名的构建可能触发系统安全提示。macOS 自动更新依赖应用签名，现有未签名构建需从 Releases 手动下载安装。
 
 ## GitHub 发布
 
@@ -60,4 +60,6 @@ git push
 git push --tags
 ```
 
-工作流为构建进程设置 4 GB 的 Node 堆上限。Windows NSIS 安装包和 macOS DMG / ZIP 分别构建：任一平台成功后即可将其产物上传到同一个 GitHub Release，不受另一平台失败影响。发布步骤串行更新 Release，避免同时创建或修改时发生冲突。当前构建未签名、未公证；发布前应在对应系统验证安装、原生 SQLite 模块、数据库迁移及应用启动。应用没有内置自动更新功能。
+工作流为构建进程设置 4 GB 的 Node 堆上限。Windows NSIS 安装包和 macOS DMG / ZIP 分别构建：任一平台成功后即可将其产物上传到同一个 GitHub Release，不受另一平台失败影响。发布步骤串行更新 Release，避免同时创建或修改时发生冲突。当前构建未签名、未公证；发布前应在对应系统验证安装、原生 SQLite 模块、数据库迁移及应用启动。设置页通过主进程的 electron-updater 检查 GitHub Release、下载更新并由用户主动重启安装；开发模式不会执行更新。发布包需同时上传对应平台的更新清单（Windows 的 `latest.yml`、macOS 的 `latest-mac.yml`，预发布使用对应渠道名）及其引用的安装包和 blockmap。现有版本没有内置更新能力，需要先手动安装含更新功能的新版本。
+
+如需启用 macOS 自动安装更新，可在 GitHub Actions 中配置 `APP_P12`（Developer ID Application 证书的 Base64 内容）和 `CSC_KEY_PASSWORD`；工作流会在证书可用时签名，仍需自行配置 Apple 公证并在实际 macOS 设备上验证完整升级流程。签名证书必须适用于已安装版本及后续更新。

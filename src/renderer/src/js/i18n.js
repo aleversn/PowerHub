@@ -1,4 +1,64 @@
 export default {
+    "Update is not ready to install.": {
+        "en": "Update is not ready to install.",
+        "cn": "更新尚未准备好安装。"
+    },
+    "Automatic installation on macOS requires a signed app.": {
+        "en": "Automatic installation on macOS requires a signed app.",
+        "cn": "macOS 自动安装更新需要已签名的应用。"
+    },
+    "Update failed. Please try again or open releases.": {
+        "en": "Update failed. Please try again or open releases.",
+        "cn": "更新失败，请重试或打开下载页面。"
+    },
+    "Updates are available in packaged Windows and macOS apps.": {
+        "en": "Updates are available in packaged Windows and macOS apps.",
+        "cn": "更新功能可在打包后的 Windows 和 macOS 应用中使用。"
+    },
+    "You are up to date.": {
+        "en": "You are up to date.",
+        "cn": "当前已是最新版本。"
+    },
+    "Update downloaded and ready to install.": {
+        "en": "Update downloaded and ready to install.",
+        "cn": "更新已下载，可以安装。"
+    },
+    "Downloading update…": {
+        "en": "Downloading update…",
+        "cn": "正在下载更新…"
+    },
+    "Checking for updates…": {
+        "en": "Checking for updates…",
+        "cn": "正在检查更新…"
+    },
+    "Check for the latest version.": {
+        "en": "Check for the latest version.",
+        "cn": "检查是否有最新版本。"
+    },
+    "Open releases": {
+        "en": "Open releases",
+        "cn": "打开下载页面"
+    },
+    "Restart and install": {
+        "en": "Restart and install",
+        "cn": "重启并安装"
+    },
+    "Check for updates": {
+        "en": "Check for updates",
+        "cn": "检查更新"
+    },
+    "Available version": {
+        "en": "Available version",
+        "cn": "可用版本"
+    },
+    "Current version": {
+        "en": "Current version",
+        "cn": "当前版本"
+    },
+    "App updates": {
+        "en": "App updates",
+        "cn": "应用更新"
+    },
     "Delete this collection? Its endpoints will be moved to the default collection.": {
         "en": "Delete this collection? Its endpoints will be moved to the default collection.",
         "cn": "确定删除此集合？其中的接口将移至默认集合。"

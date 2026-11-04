@@ -6,6 +6,7 @@ import { initDatabase, closeDatabase } from './db/index.js'
 import { registerWorkspaceIpc } from './ipc/workspace.js'
 import { seedDemoData } from './repositories/workspace.js'
 import { startScheduler, stopScheduler } from './schedules/scheduler.js'
+import { registerUpdater } from './updater.js'
 
 function createWindow() {
   // Create the browser window.
@@ -81,6 +82,7 @@ app.whenReady().then(() => {
   })
   seedDemoData()
   registerWorkspaceIpc()
+  registerUpdater()
   startScheduler()
 
   // IPC test

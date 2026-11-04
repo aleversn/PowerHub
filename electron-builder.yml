@@ -42,3 +42,7 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: true
+publish:
+  provider: github
+  owner: aleversn
+  repo: PowerHub
