@@ -70,10 +70,19 @@ jobs:
       - name: Build package
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
-          CSC_LINK: ${{ secrets.APP_P12 }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.APP_P12 != '' && 'true' || 'false' }}
-        run: yarn build:mac --publish never
+          POWERHUB_MAC_CERTIFICATE: ${{ secrets.APP_P12 }}
+          POWERHUB_MAC_CERTIFICATE_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          if [ -n "$POWERHUB_MAC_CERTIFICATE" ]; then
+            export CSC_LINK="$POWERHUB_MAC_CERTIFICATE"
+            export CSC_KEY_PASSWORD="$POWERHUB_MAC_CERTIFICATE_PASSWORD"
+            export CSC_IDENTITY_AUTO_DISCOVERY=true
+          else
+            unset CSC_LINK CSC_KEY_PASSWORD
+            export CSC_IDENTITY_AUTO_DISCOVERY=false
+          fi
+          yarn build:mac --publish never
       - name: Verify update metadata
         shell: bash
         run: |
