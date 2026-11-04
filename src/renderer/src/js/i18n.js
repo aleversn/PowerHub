@@ -1287,6 +1287,18 @@ export default {
         "en": "Rename",
         "cn": "重命名"
     },
+    "Reorder server": {
+        "en": "Reorder server",
+        "cn": "调整服务器顺序"
+    },
+    "Drag to reorder; use arrow keys to move": {
+        "en": "Drag to reorder; use arrow keys to move",
+        "cn": "拖拽排序，或使用方向键移动"
+    },
+    "Could not save server order.": {
+        "en": "Could not save server order.",
+        "cn": "无法保存服务器顺序。"
+    },
     "Move up": {
         "en": "Move up",
         "cn": "上移"

@@ -1,5 +1,5 @@
 <template>
-    <div class="page-stack servers-page">
+    <div class="page-stack servers-page" :style="{ '--server-drop-color': color }">
         <sectionCard
             :title="local('Servers')"
             :description="
@@ -43,14 +43,35 @@
                 </fv-button>
             </template>
 
+            <div v-if="reorderError" class="reorder-error" role="alert">
+                {{ reorderError }}
+            </div>
             <div class="server-list">
                 <article
                     v-for="server in filteredServers"
                     :key="server.id"
                     class="server-card"
-                    :class="server.status"
+                    :class="[server.status, { 'is-dragging': draggedServerId === server.id, 'drop-before': dropTargetId === server.id && !dropAfter, 'drop-after': dropTargetId === server.id && dropAfter }]"
+                    @dragover.prevent="onServerDragOver($event, server.id)"
+                    @dragleave="onServerDragLeave($event, server.id)"
+                    @drop.prevent="onServerDrop(server.id)"
                 >
                     <header class="server-card-header">
+                        <button
+                            type="button"
+                            class="server-drag-handle"
+                            draggable="true"
+                            :aria-label="local('Reorder server') + ': ' + server.name"
+                            :title="local('Drag to reorder; use arrow keys to move')"
+                            @dragstart="onServerDragStart($event, server.id)"
+                            @dragend="clearServerDrag"
+                            @keydown.up.prevent="moveServerByKeyboard(server.id, -1)"
+                            @keydown.down.prevent="moveServerByKeyboard(server.id, 1)"
+                            @keydown.left.prevent="moveServerByKeyboard(server.id, -1)"
+                            @keydown.right.prevent="moveServerByKeyboard(server.id, 1)"
+                        >
+                            <i class="ms-Icon ms-Icon--GripperDotsVertical" aria-hidden="true"></i>
+                        </button>
                         <div class="server-identity">
                             <span class="server-state"></span>
                             <span class="server-icon">
@@ -343,6 +364,10 @@ export default {
     data() {
         return {
             keyword: '',
+            draggedServerId: '',
+            dropTargetId: '',
+            dropAfter: false,
+            reorderError: '',
             editorOpen: false,
             editorMode: 'create',
             editingId: '',
@@ -386,8 +411,52 @@ export default {
             'updateServer',
             'removeServer',
             'toggleServer',
-            'refreshServer'
+            'refreshServer',
+            'reorderServer'
         ]),
+        onServerDragStart(event, id) {
+            this.draggedServerId = id;
+            this.reorderError = '';
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', id);
+        },
+        onServerDragOver(event, id) {
+            if (!this.draggedServerId || this.draggedServerId === id) {
+                this.dropTargetId = '';
+                return;
+            }
+            const bounds = event.currentTarget.getBoundingClientRect();
+            this.dropTargetId = id;
+            this.dropAfter = event.clientX >= bounds.left + bounds.width / 2;
+            event.dataTransfer.dropEffect = 'move';
+        },
+        onServerDragLeave(event, id) {
+            if (!event.currentTarget.contains(event.relatedTarget) && this.dropTargetId === id) {
+                this.dropTargetId = '';
+            }
+        },
+        onServerDrop(id) {
+            if (this.draggedServerId && this.dropTargetId === id) {
+                this.applyServerOrder(this.draggedServerId, id, this.dropAfter);
+            }
+            this.clearServerDrag();
+        },
+        clearServerDrag() {
+            this.draggedServerId = '';
+            this.dropTargetId = '';
+            this.dropAfter = false;
+        },
+        moveServerByKeyboard(id, direction) {
+            const index = this.filteredServers.findIndex((server) => server.id === id);
+            const target = this.filteredServers[index + direction];
+            if (index < 0 || !target) return;
+            this.applyServerOrder(id, target.id, direction > 0);
+        },
+        applyServerOrder(sourceId, targetId, after) {
+            this.reorderError = this.reorderServer(sourceId, targetId, after)
+                ? ''
+                : this.local('Could not save server order.');
+        },
         isServerLoading(id) {
             return this.loadingServerIds.includes(id);
         },
@@ -504,6 +573,7 @@ export default {
     }
 
     .server-card {
+        position: relative;
         min-width: 0;
         padding: 16px;
         border: 1px solid var(--servercat-border);
@@ -523,6 +593,58 @@ export default {
         }
     }
 
+    .reorder-error {
+        margin-bottom: 12px;
+        color: var(--ph-danger);
+        font-size: 12px;
+    }
+
+    .server-card.is-dragging {
+        opacity: 0.45;
+    }
+
+    .server-card.drop-before::before,
+    .server-card.drop-after::after {
+        position: absolute;
+        top: 10px;
+        bottom: 10px;
+        width: 3px;
+        border-radius: 3px;
+        background: var(--server-drop-color);
+        content: '';
+        pointer-events: none;
+        opacity: 0.45;
+    }
+
+    .server-card.drop-before::before {
+        left: -9px;
+    }
+
+    .server-card.drop-after::after {
+        right: -9px;
+    }
+
+    .server-drag-handle {
+        flex: 0 0 24px;
+        min-height: 36px;
+        padding: 0;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--ph-text-muted);
+        cursor: grab;
+        font-size: 16px;
+
+        &:hover, &:focus-visible {
+            background: var(--ph-surface-hover);
+            color: var(--ph-text);
+        }
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
+
     .server-card-header {
         min-width: 0;
         display: flex;
@@ -533,6 +655,7 @@ export default {
 
     .server-identity {
         min-width: 0;
+        flex: 1;
         display: flex;
         align-items: center;
         gap: 10px;

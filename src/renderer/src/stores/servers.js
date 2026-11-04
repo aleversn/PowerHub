@@ -286,8 +286,10 @@ const readServers = () => {
 const persistServers = (servers) => {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(servers));
+        return true;
     } catch {
         // Local persistence is best effort in restricted renderer contexts.
+        return false;
     }
 };
 
@@ -348,6 +350,19 @@ export const useServerStore = defineStore('servers', {
     actions: {
         persist() {
             persistServers(this.servers);
+        },
+        reorderServer(sourceId, targetId, after = false) {
+            const sourceIndex = this.servers.findIndex((server) => server.id === sourceId);
+            const targetIndex = this.servers.findIndex((server) => server.id === targetId);
+            if (sourceIndex < 0 || targetIndex < 0) return false;
+            if (sourceId === targetId) return true;
+            const reordered = [...this.servers];
+            const [server] = reordered.splice(sourceIndex, 1);
+            const index = reordered.findIndex((item) => item.id === targetId);
+            reordered.splice(index + (after ? 1 : 0), 0, server);
+            if (!persistServers(reordered)) return false;
+            this.servers = reordered;
+            return true;
         },
         isServerLoading(id) {
             return this.loadingServerIds.includes(id);
