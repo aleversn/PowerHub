@@ -60,6 +60,28 @@
             </div>
         </sectionCard>
 
+        <sectionCard :fill="false" :title="local('Startup')">
+            <div class="setting-list">
+                <div class="setting-row">
+                    <div class="setting-copy">
+                        <strong>{{ local('Launch at login') }}</strong>
+                        <span>{{ startup.supported ? local('Start PowerHub when you sign in to your computer.') : local('Available in installed Windows and macOS versions.') }}</span>
+                        <span v-if="startupError" class="startup-error" role="alert">{{ startupError }}</span>
+                    </div>
+                    <fv-toggle-switch
+                        :model-value="startup.enabled"
+                        :theme="resolvedTheme"
+                        :width="42"
+                        :height="22"
+                        :switch-on-background="subColor"
+                        :disabled="startupLoading || !startup.supported"
+                        :aria-label="local('Launch at login')"
+                        @update:model-value="changeStartup"
+                    ></fv-toggle-switch>
+                </div>
+            </div>
+        </sectionCard>
+
         <sectionCard :fill="false" :title="local('Request defaults')">
             <div class="setting-list">
 
@@ -216,6 +238,9 @@ export default {
     data() {
         const appConfig = useAppConfigStore();
         return {
+            startup: { supported: false, enabled: false },
+            startupLoading: true,
+            startupError: '',
             timeoutDraft: String(appConfig.config.requestTimeout),
             retentionDraft: String(appConfig.config.historyRetention),
             themeOptions: [
@@ -256,6 +281,7 @@ export default {
             );
         }
     },
+    mounted() { this.loadStartup(); },
     watch: {
         'config.requestTimeout'(value) {
             this.timeoutDraft = String(value);
@@ -266,6 +292,28 @@ export default {
     },
     methods: {
         ...mapActions(useAppConfigStore, ['updateConfig', 'setTheme', 'setLanguage']),
+        async loadStartup() {
+            this.startupLoading = true;
+            try {
+                this.startup = await window.api.desktop.getStartup();
+                this.startupError = '';
+            } catch (error) {
+                console.error('Failed to read startup setting:', error);
+                this.startupError = this.local('Could not read the startup setting.');
+            } finally { this.startupLoading = false; }
+        },
+        async changeStartup(enabled) {
+            if (this.startupLoading || !this.startup.supported) return;
+            this.startupLoading = true;
+            try {
+                this.startup = await window.api.desktop.setStartup(enabled === true);
+                this.startupError = '';
+            } catch (error) {
+                console.error('Failed to update startup setting:', error);
+                this.startupError = this.local('Could not update the startup setting.');
+                try { this.startup = await window.api.desktop.getStartup(); } catch (readError) { console.error('Failed to refresh startup setting:', readError); }
+            } finally { this.startupLoading = false; }
+        },
         changeLanguage(options) {
             this.setLanguage(options?.[0]?.key || 'cn');
         },
@@ -342,6 +390,8 @@ export default {
             font-size: 11px;
         }
     }
+
+    .setting-copy .startup-error { color: var(--ph-danger); white-space: normal; }
 
     .segmented-control {
         padding: 3px;

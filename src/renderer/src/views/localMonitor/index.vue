@@ -36,8 +36,21 @@
             <div v-if="error" class="monitor-error" role="alert">
                 {{ local('Could not collect local metrics.') }} {{ error }}
             </div>
-            <div v-if="!snapshot && loading" class="monitor-message">
-                {{ local('Collecting local metrics…') }}
+            <div
+                v-if="!snapshot && loading"
+                class="monitor-message"
+                role="status"
+                aria-live="polite"
+            >
+                <fv-progress-ring
+                    :r="22"
+                    :loading="true"
+                    :border-width="4"
+                    :color="color"
+                    background="rgba(136, 129, 238, 0.14)"
+                    aria-hidden="true"
+                ></fv-progress-ring>
+                <strong>{{ local('Collecting local metrics…') }}</strong>
             </div>
             <template v-if="snapshot">
                 <header class="machine-heading">
@@ -67,7 +80,7 @@
                     </div>
                     <div class="machine-badges">
                         <span class="temperature-chip"
-                            ><i class="ms-Icon ms-Icon--Sunny"></i
+                            ><i class="ms-Icon ms-Icon--Frigid"></i
                             >{{ local('CPU temperature') }}
                             {{ degrees(snapshot.cpu.temperature) }}</span
                         >
@@ -77,6 +90,13 @@
                         >
                     </div>
                 </header>
+                <p class="sensor-note">
+                    {{
+                        local(
+                            'Hardware readings depend on your operating system and available sensors. Unavailable readings are shown as —.'
+                        )
+                    }}
+                </p>
                 <div v-if="snapshot.errors.length" class="monitor-warning">
                     {{ local('Some metrics could not be collected.') }}
                 </div>
@@ -144,10 +164,32 @@
                                 <span class="item-name">{{
                                     network.name
                                 }}</span>
-                                <span
-                                    >↓ {{ rate(network.download) }} · ↑
-                                    {{ rate(network.upload) }}</span
-                                >
+                                <div class="network-rates">
+                                    <fv-tag
+                                        class="network-rate-tag"
+                                        :model-value="[{ text: rate(network.download) }]"
+                                        :theme="resolvedTheme"
+                                        :font-size="11"
+                                        :border-radius="8"
+                                        :aria-label="local('Download') + ': ' + rate(network.download)"
+                                        :title="local('Download') + ': ' + rate(network.download)"
+                                    >
+                                        <i class="ms-Icon ms-Icon--CaretDownSolid8" aria-hidden="true"></i>
+                                        <span>{{ rate(network.download) }}</span>
+                                    </fv-tag>
+                                    <fv-tag
+                                        class="network-rate-tag"
+                                        :model-value="[{ text: rate(network.upload) }]"
+                                        :theme="resolvedTheme"
+                                        :font-size="11"
+                                        :border-radius="8"
+                                        :aria-label="local('Upload') + ': ' + rate(network.upload)"
+                                        :title="local('Upload') + ': ' + rate(network.upload)"
+                                    >
+                                        <i class="ms-Icon ms-Icon--CaretUpSolid8" aria-hidden="true"></i>
+                                        <span>{{ rate(network.upload) }}</span>
+                                    </fv-tag>
+                                </div>
                             </div>
                         </div>
                         <p v-else class="unavailable">
@@ -156,7 +198,7 @@
                     </section>
                     <section class="detail-card">
                         <div class="card-heading">
-                            <i class="ms-Icon ms-Icon--Processing"></i
+                            <i class="ms-Icon ms-Icon--Video"></i
                             ><strong>{{ local('Graphics') }}</strong>
                         </div>
                         <div
@@ -244,13 +286,6 @@
                         </p>
                     </section>
                 </div>
-                <p class="sensor-note">
-                    {{
-                        local(
-                            'Hardware readings depend on your operating system and available sensors. Unavailable readings are shown as —.'
-                        )
-                    }}
-                </p>
             </template>
         </section-card>
     </div>
@@ -291,28 +326,28 @@ export default {
             return [
                 {
                     label: 'CPU',
-                    icon: 'Processing',
+                    icon: 'LightningBolt',
                     detail: cpu.name || this.local('Unavailable'),
                     progress: cpu.usage,
                     color: this.color
                 },
                 {
                     label: 'Memory',
-                    icon: 'Server',
+                    icon: 'NetworkPhysical',
                     detail: this.memoryUsage(memory.used, memory.total),
                     progress: memory.usage,
                     color: '#10b981'
                 },
                 {
                     label: 'GPU utilization',
-                    icon: 'Video',
+                    icon: 'SpeedHigh',
                     detail: gpu?.name || this.local('Unavailable'),
                     progress: gpu?.utilization ?? null,
                     color: this.color
                 },
                 {
                     label: 'Disk storage',
-                    icon: 'HardDrive',
+                    icon: 'StorageOptical',
                     detail: disk
                         ? `${disk.name} · ${this.memoryUsage(disk.used, disk.size)}`
                         : this.local('Unavailable'),
@@ -324,15 +359,21 @@ export default {
     },
     mounted() {
         this.alive = true;
-        this.refresh();
+        document.addEventListener('visibilitychange', this.onVisibilityChange);
+        if (!document.hidden) this.refresh();
     },
     beforeUnmount() {
         this.alive = false;
+        document.removeEventListener('visibilitychange', this.onVisibilityChange);
         clearTimeout(this.timer);
     },
     methods: {
+        onVisibilityChange() {
+            clearTimeout(this.timer);
+            if (!document.hidden && this.autoRefresh) this.refresh();
+        },
         async refresh() {
-            if (this.loading) return;
+            if (this.loading || document.hidden) return;
             clearTimeout(this.timer);
             this.loading = true;
             try {
@@ -351,7 +392,7 @@ export default {
                 if (this.alive) this.error = error?.message || String(error);
             } finally {
                 this.loading = false;
-                if (this.alive && this.autoRefresh)
+                if (this.alive && this.autoRefresh && !document.hidden)
                     this.timer = setTimeout(() => this.refresh(), 5000);
             }
         },
@@ -663,6 +704,33 @@ export default {
         align-items: center;
         gap: 10px;
     }
+    .network-rates {
+        width: min(224px, 100%);
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+    .network-rate-tag {
+        min-width: 0;
+        :deep(.fv-tag-item) {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            background: var(--ph-white-black);
+            border-color: transparent;
+            color: var(--ph-text);
+        }
+        :deep(.fv-tag-content) {
+            min-width: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        i { flex: 0 0 auto; font-size: 10px; }
+        span { @include nowrap; min-width: 0; font-variant-numeric: tabular-nums; }
+    }
     .data-row > :last-child {
         flex-shrink: 0;
         text-align: right;
@@ -686,7 +754,8 @@ export default {
         flex-wrap: wrap;
     }
     .sensor-note {
-        line-height: 1.6;
+        margin-bottom: 10px;
+        text-indent: 5px;
     }
     .monitor-error,
     .monitor-warning {
@@ -702,8 +771,24 @@ export default {
         color: var(--ph-warning);
     }
     .monitor-message {
-        padding: 40px 0;
-        color: var(--ph-text-muted);
+        min-height: 280px;
+        padding: 32px 20px;
+        border: 1px solid var(--ph-border-subtle);
+        border-radius: 22px;
+        background: var(--ph-card-gradient-mist);
+        box-shadow: var(--ph-shadow-sm);
+        color: var(--ph-text);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        text-align: center;
+
+        strong {
+            font-size: 13px;
+            font-weight: 600;
+        }
     }
     @media (max-width: 1180px) {
         .summary-grid {

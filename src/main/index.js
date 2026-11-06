@@ -1,6 +1,6 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
 
 import { initDatabase, closeDatabase } from './db/index.js'
 import { registerWorkspaceIpc } from './ipc/workspace.js'
@@ -8,59 +8,7 @@ import { seedDemoData } from './repositories/workspace.js'
 import { startScheduler, stopScheduler } from './schedules/scheduler.js'
 import { registerUpdater } from './updater.js'
 import { registerLocalMetricsIpc } from './localMetrics.js'
-
-function createWindow() {
-  // Create the browser window.
-  const win = new BrowserWindow({
-    frame: false,
-    width: 1200,
-    height: 800,
-    transparent: false,
-    backgroundMaterial: 'acrylic',
-    webPreferences: {
-      enableRemoteModule: true,
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-      devTools: true
-    }
-  })
-
-  win.on('ready-to-show', () => {
-    win.show()
-  })
-
-  win.setMenu(null)
-
-  ipcMain.on('min', () => {
-    win.minimize()
-  })
-
-  ipcMain.on('max', () => {
-    if (win.isMaximized()) win.restore()
-    else win.maximize()
-  })
-
-  ipcMain.on('close', () => {
-    win.close()
-  })
-
-  win.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    win.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    win.loadFile(join(__dirname, '../renderer/index.html'))
-  }
-}
+import { createMainWindow, registerDesktop, showMainWindow, hasTray, restoreDesktopWindows } from './desktop.js'
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -85,6 +33,7 @@ app.whenReady().then(() => {
   registerWorkspaceIpc()
   registerUpdater()
   registerLocalMetricsIpc()
+  registerDesktop()
   startScheduler()
 
   // IPC test
@@ -95,22 +44,17 @@ app.whenReady().then(() => {
     return win.isMaximized()
   })
 
-  createWindow()
+  createMainWindow()
+  restoreDesktopWindows()
 
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
+  app.on('activate', showMainWindow)
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  if (!hasTray() && process.platform !== 'darwin') app.quit()
 })
 
 app.on('will-quit', () => {

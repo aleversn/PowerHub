@@ -18,7 +18,7 @@
                     :theme="resolvedTheme"
                     border-radius="8"
                     icon="Refresh"
-                    style="height: 34px"
+                    style="width: 120px; height: 34px"
                     :disabled="busy || updater.status === 'downloaded' || !updateApi"
                     @click="checkForUpdates"
                 >{{ local('Check for updates') }}</fv-button>
@@ -26,14 +26,14 @@
                     v-if="updater.status === 'downloaded'"
                     :background="subColor"
                     border-radius="8"
-                    style="height: 34px"
+                    style="width: 120px; height: 34px"
                     @click="installUpdate"
                 >{{ local('Restart and install') }}</fv-button>
                 <fv-button
                     v-if="updater.status === 'error' || updater.status === 'unsupported'"
                     :theme="resolvedTheme"
                     border-radius="8"
-                    style="height: 34px"
+                    style="width: 120px; height: 34px"
                     @click="openReleases"
                 >{{ local('Open releases') }}</fv-button>
             </div>

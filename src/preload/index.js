@@ -64,6 +64,25 @@ const workspace = {
 const api = {
     isMaximized: () => ipcRenderer.invoke('is-window-maximized'),
     localMetrics: { get: () => ipcRenderer.invoke('local-metrics:get') },
+    desktop: {
+        getState: () => ipcRenderer.invoke('desktop:get-state'),
+        getStartup: () => ipcRenderer.invoke('desktop:get-startup'),
+        setStartup: (enabled) => ipcRenderer.invoke('desktop:set-startup', enabled),
+        onState: (callback) => {
+            const listener = (_event, state) => callback(state);
+            ipcRenderer.on('desktop:state', listener);
+            return () => ipcRenderer.removeListener('desktop:state', listener);
+        },
+        configure: (options) => ipcRenderer.invoke('desktop:configure', options),
+        hideFloating: () => ipcRenderer.invoke('desktop:hide-floating'),
+        showMain: () => ipcRenderer.invoke('desktop:show-main'),
+        dragFloating: (phase) => ipcRenderer.send('desktop:floating-drag', phase),
+        onMetrics: (callback) => {
+            const listener = (_event, metrics) => callback(metrics);
+            ipcRenderer.on('floating-monitor:metrics', listener);
+            return () => ipcRenderer.removeListener('floating-monitor:metrics', listener);
+        }
+    },
     appUpdate: {
         getState: () => ipcRenderer.invoke('app-update:get-state'),
         check: () => ipcRenderer.invoke('app-update:check'),

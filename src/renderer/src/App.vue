@@ -24,14 +24,22 @@ export default {
         titleBar
     },
     computed: {
-        ...mapState(useAppConfigStore, ['resolvedTheme'])
+        ...mapState(useAppConfigStore, ['resolvedTheme', 'config'])
     },
     mounted() {
         this.initialize();
         this.reviseI18N(i18n);
+        this.syncDesktop();
+    },
+    watch: {
+        'config.language'() { this.syncDesktop(); },
+        'config.theme'() { this.syncDesktop(); }
     },
     methods: {
-        ...mapActions(useAppConfigStore, ['initialize', 'reviseI18N'])
+        ...mapActions(useAppConfigStore, ['initialize', 'reviseI18N']),
+        syncDesktop() {
+            window.api?.desktop?.configure({ language: this.config.language, theme: this.config.theme }).catch((error) => console.error('Desktop configuration failed:', error));
+        }
     }
 };
 </script>

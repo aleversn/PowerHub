@@ -63,3 +63,7 @@ git push --tags
 工作流为构建进程设置 4 GB 的 Node 堆上限。Windows NSIS 安装包和 macOS DMG / ZIP 分别构建：任一平台成功后即可将其产物上传到同一个 GitHub Release，不受另一平台失败影响。发布步骤串行更新 Release，避免同时创建或修改时发生冲突。当前构建未签名、未公证；发布前应在对应系统验证安装、原生 SQLite 模块、数据库迁移及应用启动。设置页通过主进程的 electron-updater 检查 GitHub Release、下载更新并由用户主动重启安装；开发模式不会执行更新。发布包需同时上传对应平台的更新清单（Windows 的 `latest.yml`、macOS 的 `latest-mac.yml`，预发布使用对应渠道名）及其引用的安装包和 blockmap。现有版本没有内置更新能力，需要先手动安装含更新功能的新版本。
 
 如需启用 macOS 自动安装更新，可在 GitHub Actions 中配置 `APP_P12`（Developer ID Application 证书的 Base64 内容）和 `CSC_KEY_PASSWORD`；工作流会在证书可用时签名，仍需自行配置 Apple 公证并在实际 macOS 设备上验证完整升级流程。签名证书必须适用于已安装版本及后续更新。
+
+## 托盘与悬浮监控
+
+关闭主窗口后应用留在系统托盘，定时调度仍会运行；通过托盘菜单的“退出”结束应用。托盘菜单的勾选项控制悬浮窗显示或隐藏，悬浮窗可与主窗口同时显示；双击悬浮窗内容可显示主窗口。隐藏悬浮窗后采样停止。悬浮窗每秒读取 CPU、内存、网络速率以及可用的 GPU 利用率和温度；Windows 使用常驻网络计数器，GPU 读取依赖可用的 NVIDIA `nvidia-smi`，其他显卡及 macOS 不支持的 GPU 指标显示为 `—`。macOS 与 Linux 的网络速率使用默认网络接口。

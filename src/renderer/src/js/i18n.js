@@ -1,4 +1,38 @@
 export default {
+    "Startup": { "en": "Startup", "cn": "启动" },
+    "Launch at login": { "en": "Launch at login", "cn": "开机自启动" },
+    "Start PowerHub when you sign in to your computer.": { "en": "Start PowerHub when you sign in to your computer.", "cn": "登录电脑时自动启动 PowerHub。" },
+    "Available in installed Windows and macOS versions.": { "en": "Available in installed Windows and macOS versions.", "cn": "仅在已安装的 Windows 和 macOS 版本中可用。" },
+    "Could not read the startup setting.": { "en": "Could not read the startup setting.", "cn": "无法读取开机自启动设置。" },
+    "Could not update the startup setting.": { "en": "Could not update the startup setting.", "cn": "无法更新开机自启动设置。" },
+    "Could not control window.": {
+        "en": "Could not control window.",
+        "cn": "无法操作窗口。"
+    },
+    "Could not update window preference.": {
+        "en": "Could not update window preference.",
+        "cn": "无法保存窗口显示设置。"
+    },
+    "GPU temperature": {
+        "en": "GPU temperature",
+        "cn": "GPU 温度"
+    },
+    "Hide floating window": {
+        "en": "Hide floating window",
+        "cn": "隐藏悬浮窗"
+    },
+    "Show main window": {
+        "en": "Show main window",
+        "cn": "显示主界面"
+    },
+    "Show alongside main window": {
+        "en": "Show alongside main window",
+        "cn": "与主界面同时显示"
+    },
+    "Floating monitor": {
+        "en": "Floating monitor",
+        "cn": "悬浮监控"
+    },
     "Unavailable": {
         "en": "Unavailable",
         "cn": "不可用"
