@@ -63,6 +63,7 @@ const workspace = {
 // Custom APIs for renderer
 const api = {
     isMaximized: () => ipcRenderer.invoke('is-window-maximized'),
+    localMetrics: { get: () => ipcRenderer.invoke('local-metrics:get') },
     appUpdate: {
         getState: () => ipcRenderer.invoke('app-update:get-state'),
         check: () => ipcRenderer.invoke('app-update:check'),

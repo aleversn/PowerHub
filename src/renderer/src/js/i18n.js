@@ -1,4 +1,100 @@
 export default {
+    "Unavailable": {
+        "en": "Unavailable",
+        "cn": "不可用"
+    },
+    "Local metrics are unavailable in this environment.": {
+        "en": "Local metrics are unavailable in this environment.",
+        "cn": "当前环境无法使用本机监控。"
+    },
+    "All active network interfaces": {
+        "en": "All active network interfaces",
+        "cn": "所有活动网卡"
+    },
+    "GPU utilization": {
+        "en": "GPU utilization",
+        "cn": "GPU 利用率"
+    },
+    "logical cores": {
+        "en": "logical cores",
+        "cn": "逻辑核心"
+    },
+    "CPU temperature": {
+        "en": "CPU temperature",
+        "cn": "CPU 温度"
+    },
+    "Hardware readings depend on your operating system and available sensors. Unavailable readings are shown as —.": {
+        "en": "Hardware readings depend on your operating system and available sensors. Unavailable readings are shown as —.",
+        "cn": "硬件数据取决于操作系统和可用传感器，无法读取的指标以 — 显示。"
+    },
+    "No disk information available.": {
+        "en": "No disk information available.",
+        "cn": "暂无磁盘信息。"
+    },
+    "Disk storage": {
+        "en": "Disk storage",
+        "cn": "磁盘存储"
+    },
+    "No graphics information available.": {
+        "en": "No graphics information available.",
+        "cn": "暂无显卡信息。"
+    },
+    "Video memory": {
+        "en": "Video memory",
+        "cn": "显存"
+    },
+    "Temperature": {
+        "en": "Temperature",
+        "cn": "温度"
+    },
+    "Utilization": {
+        "en": "Utilization",
+        "cn": "利用率"
+    },
+    "Graphics processor": {
+        "en": "Graphics processor",
+        "cn": "图形处理器"
+    },
+    "Graphics": {
+        "en": "Graphics",
+        "cn": "显卡"
+    },
+    "No network information available.": {
+        "en": "No network information available.",
+        "cn": "暂无网络信息。"
+    },
+    "Upload": {
+        "en": "Upload",
+        "cn": "上传"
+    },
+    "Network activity": {
+        "en": "Network activity",
+        "cn": "网络活动"
+    },
+    "Some metrics could not be collected.": {
+        "en": "Some metrics could not be collected.",
+        "cn": "部分指标采集失败。"
+    },
+    "Last updated": {
+        "en": "Last updated",
+        "cn": "最近更新"
+    },
+    "Collecting local metrics…": {
+        "en": "Collecting local metrics…",
+        "cn": "正在采集本机数据…"
+    },
+    "Could not collect local metrics.": {
+        "en": "Could not collect local metrics.",
+        "cn": "无法采集本机数据。"
+    },
+    "Monitor this computer’s hardware and network activity.": {
+        "en": "Monitor this computer’s hardware and network activity.",
+        "cn": "查看本机硬件和网络活动。"
+    },
+    "Local machine": {
+        "en": "Local machine",
+        "cn": "本机"
+    },
     "Update is not ready to install.": {
         "en": "Update is not ready to install.",
         "cn": "更新尚未准备好安装。"

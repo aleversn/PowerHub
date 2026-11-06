@@ -140,8 +140,11 @@ export default {
 
 <style lang="scss" scoped>
 .server-detail-page {
+    position: relative;
+    width: 100%;
     min-height: 0;
     flex: 1;
+    box-sizing: border-box;
     overflow: hidden;
 
     padding: 18px;

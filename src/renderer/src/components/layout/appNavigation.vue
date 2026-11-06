@@ -30,11 +30,12 @@
             <template #listItem="{ item, valueTrigger }">
                 <div class="custom-list-view-item">
                     <span
-                        v-if="item.image"
+                        v-if="item.image || item.icon"
                         class="nav-icon"
                         :class="{ selected: currentNavItem.key === item.key }"
                     >
-                        <img :draggable="false" :src="item.image" alt="" />
+                        <img v-if="item.image" :draggable="false" :src="item.image" alt="" />
+                        <i v-else :class="'ms-Icon ms-Icon--' + item.icon" aria-hidden="true"></i>
                     </span>
                     <div
                         class="nav-text"
@@ -137,6 +138,12 @@ export default {
                     name: () => this.local('Status Hub'),
                     image: monitorIcon,
                     route: '/server-status'
+                },
+                {
+                    key: 'local-monitor',
+                    name: () => this.local('Local machine'),
+                    icon: 'PC1',
+                    route: '/local'
                 },
                 {
                     key: 'servers',
@@ -252,8 +259,14 @@ export default {
                 opacity: 0.65;
             }
 
-            &.selected img {
-                filter: var(--ph-nav-icon-filter);
+            i {
+                color: var(--ph-text);
+                font-size: 18px;
+                opacity: 0.65;
+            }
+
+            &.selected img,
+            &.selected i {
                 opacity: 1;
             }
         }

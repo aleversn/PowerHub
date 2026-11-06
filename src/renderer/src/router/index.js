@@ -107,6 +107,15 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: 'local',
+                    name: 'local-monitor',
+                    component: AsyncLoad(() => import('@/views/localMonitor/index.vue')),
+                    meta: {
+                        title: 'Local machine',
+                        description: 'Monitor this computer’s hardware and network activity.'
+                    }
+                },
+                {
                     path: 'servers',
                     name: 'servers',
                     component: AsyncLoad(

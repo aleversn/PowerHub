@@ -65,8 +65,10 @@ export default {
 <style lang="scss" scoped>
 .app-header {
     min-height: 80px;
-    padding: 14px 22px;
+    padding: 5px 22px;
+    padding-top: 50px;
     backdrop-filter: blur(18px);
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
