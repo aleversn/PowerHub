@@ -43,7 +43,15 @@ jobs:
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
           NODE_OPTIONS: '--max-old-space-size=4096'
-        run: yarn build:win --publish never
+        shell: bash
+        run: |
+          yarn build
+          for attempt in 1 2 3; do
+            if yarn electron-builder --win --publish never; then exit 0; fi
+            if [ "$attempt" -eq 3 ]; then echo "Packaging failed after $attempt attempts."; exit 1; fi
+            echo "Packaging failed; retrying in 15 seconds (attempt $((attempt + 1))/3)."
+            sleep 15
+          done
       - name: Verify update metadata
         shell: bash
         run: |
@@ -106,7 +114,13 @@ jobs:
             unset CSC_LINK CSC_KEY_PASSWORD
             export CSC_IDENTITY_AUTO_DISCOVERY=false
           fi
-          yarn build:mac --publish never
+          yarn build
+          for attempt in 1 2 3; do
+            if yarn electron-builder --mac --publish never; then exit 0; fi
+            if [ "$attempt" -eq 3 ]; then echo "Packaging failed after $attempt attempts."; exit 1; fi
+            echo "Packaging failed; retrying in 15 seconds (attempt $((attempt + 1))/3)."
+            sleep 15
+          done
       - name: Verify update metadata
         shell: bash
         run: |
