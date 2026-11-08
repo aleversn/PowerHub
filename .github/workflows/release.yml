@@ -26,7 +26,19 @@ jobs:
           version=$(node -p "require('./package.json').version")
           test "$GITHUB_REF_NAME" = "v$version" || { echo "Tag must match package.json version $version"; exit 1; }
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            if yarn install --frozen-lockfile; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "Dependency installation failed after $attempt attempts."
+              exit 1
+            fi
+            echo "Dependency installation failed; retrying in 15 seconds (attempt $((attempt + 1))/3)."
+            sleep 15
+          done
       - name: Build package
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
@@ -66,7 +78,19 @@ jobs:
           version=$(node -p "require('./package.json').version")
           test "$GITHUB_REF_NAME" = "v$version" || { echo "Tag must match package.json version $version"; exit 1; }
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            if yarn install --frozen-lockfile; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "Dependency installation failed after $attempt attempts."
+              exit 1
+            fi
+            echo "Dependency installation failed; retrying in 15 seconds (attempt $((attempt + 1))/3)."
+            sleep 15
+          done
       - name: Build package
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
